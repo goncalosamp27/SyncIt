@@ -51,14 +51,13 @@ CREATE TABLE event (
 );
 
 CREATE TABLE comment (
-	comment_id SERIAL NOT NULL,
+	comment_id SERIAL PRIMARY KEY NOT NULL UNIQUE,
 	text TEXT NOT NULL,
 	date TIMESTAMP NOT NULL CHECK (date >= CURRENT_DATE),
 	event_id INT NOT NULL,
 	member_id INT NOT NULL,
 	response_comment_id INT,
 
-	PRIMARY KEY (comment_id, event_id, member_id), 
 	FOREIGN KEY (member_id) REFERENCES member(member_id),
 	FOREIGN KEY (event_id) REFERENCES event(event_id),
 	FOREIGN KEY (response_comment_id) REFERENCES comment(comment_id)
@@ -80,12 +79,11 @@ CREATE TABLE event_tag (
 );
 
 CREATE TABLE ticket (
-	ticket_id SERIAL NOT NULL,
+	ticket_id SERIAL PRIMARY KEY NOT NULL UNIQUE,
 	event_id INT NOT NULL,
 	price INT NOT NULL,
 	date TIMESTAMP NOT NULL CHECK (date >= CURRENT_DATE),
 
-	PRIMARY KEY (ticket_id, event_id), 
 	FOREIGN KEY (event_id) REFERENCES event(event_id)
 );
 
