@@ -31,7 +31,6 @@ CREATE TABLE artist (
     rating DECIMAL(2,1) NOT NULL CHECK (rating >= 0 AND rating <= 5),
     FOREIGN KEY (artist_id) REFERENCES member(member_id)
 );
-CREATE INDEX artist_rating_idx ON artist (rating);
 
 
 CREATE TABLE admin (
@@ -47,13 +46,12 @@ CREATE TABLE event (
     date TIMESTAMP NOT NULL CHECK (date >= CURRENT_DATE),
     location VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
-    type INT NOT NULL CHECK (type IN (0,1)),
+    type_of_event INT NOT NULL CHECK (type IN (0,1)), -- 0 means public, 1 is private
     rating DECIMAL(2,1) NOT NULL CHECK (rating >= 0 AND rating <= 5), 
     member_id INT NOT NULL,
     FOREIGN KEY (member_id) REFERENCES member(member_id)
 );
 CREATE INDEX event_date_idx ON event (date);
-CREATE INDEX event_type_idx ON event (type);
 CREATE INDEX event_rating_idx ON event (rating);
 CREATE INDEX event_member_id_idx ON event (member_id);
 
