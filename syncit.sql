@@ -14,15 +14,30 @@ DROP TABLE IF EXISTS option;
 DROP TABLE IF EXISTS invitation;
 DROP TABLE IF EXISTS notification;
 
+CREATE DOMAIN email_domain AS VARCHAR(255)
+CHECK (POSITION('@' IN VALUE) > 1);
+
+CREATE DOMAIN price_domain AS DECIMAL(6,2)
+CHECK (VALUE >= 0);
+
+CREATE DOMAIN event_type_domain AS VARCHAR(10)
+CHECK (VALUE IN ('Public', 'Private'));
+
+CREATE DOMAIN member_status_domain AS VARCHAR(10)
+CHECK (VALUE IN ('Active', 'Suspended', 'Banned'));
+
+CREATE DOMAIN refund_policy AS DECIMAL(5, 2)
+CHECK (VALUE BETWEEN 0 AND 100);
+
 
 CREATE TABLE member (
     member_id SERIAL PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
+    email email_domain UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
     bio VARCHAR(200),
     profile_pic_url VARCHAR(200),
-    status INT NOT NULL CHECK (status >= 0 AND status <= 3)
+    status member_status_domain NOT NULL,
 );
 
 
@@ -43,10 +58,12 @@ CREATE TABLE admin (
 CREATE TABLE event (
     event_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    date TIMESTAMP NOT NULL CHECK (date >= CURRENT_DATE),
+    date TIMESTAMP NOT NULL CHECK (date >= CURRENT_DATE + INTERVAL '1 day'),
     location VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
-    type_of_event INT NOT NULL CHECK (type IN (0,1)), -- 0 means public, 1 is private
+    refund refund_policy NOT NULL,
+    price price_domain NOT NULL,
+    type_of_event event_type_domain NOT NULL
     rating DECIMAL(2,1) NOT NULL CHECK (rating >= 0 AND rating <= 5), 
     member_id INT NOT NULL,
     FOREIGN KEY (member_id) REFERENCES member(member_id)
@@ -74,7 +91,7 @@ CREATE INDEX comment_date_idx ON comment (date);
 
 CREATE TABLE tag (
     tag_id SERIAL PRIMARY KEY,
-    name VARCHAR(20) NOT NULL,
+    tag_name VARCHAR(20) NOT NULL,
     color VARCHAR(6) NOT NULL
 );
 CREATE INDEX tag_name_idx ON tag (name);
@@ -87,14 +104,10 @@ CREATE TABLE event_tag (
     FOREIGN KEY (event_id) REFERENCES event(event_id),
     FOREIGN KEY (tag_id) REFERENCES tag(tag_id)
 );
-CREATE INDEX event_tag_event_id_idx ON event_tag (event_id);
-CREATE INDEX event_tag_tag_id_idx ON event_tag (tag_id);
-
 
 CREATE TABLE ticket (
     ticket_id SERIAL PRIMARY KEY,
     event_id INT NOT NULL,
-    price INT NOT NULL,
     date TIMESTAMP NOT NULL CHECK (date >= CURRENT_DATE),
     owner_id INT NOT NULL UNIQUE,
     FOREIGN KEY (event_id) REFERENCES event(event_id),
@@ -118,11 +131,11 @@ CREATE INDEX poll_end_date_idx ON poll (end_date);
 
 
 CREATE TABLE option (
-    option_id SERIAL NOT NULL,
+    option_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     votes INT NOT NULL,
     poll_id INT NOT NULL,
-    PRIMARY KEY (option_id, poll_id), 
+
     FOREIGN KEY (poll_id) REFERENCES poll(poll_id)
 );
 CREATE INDEX option_votes_idx ON option (votes);
@@ -152,3 +165,39 @@ CREATE TABLE notification (
 );
 CREATE INDEX notification_member_id_idx ON notification (member_id);
 CREATE INDEX notification_date_idx ON notification (date);
+
+CREATE TABLE invitation_notification (
+    notification_id INT NOT NULL,
+    invitation_id INT NOT NULL,
+
+    PRIMARY KEY (notification_id, invitation_id),
+    FOREIGN KEY (notification_id) REFERENCES notification(notification_id),
+    FOREIGN KEY (invitation_id) REFERENCES invitation(invitation_id)
+);
+
+CREATE TABLE follow_notification(
+    notification_id INT NOT NULL,
+    follower_id INT NOT NULL,
+
+    PRIMARY KEY (notification_id, follower_id),
+    FOREIGN KEY (notification_id) REFERENCES notification(notification_id),
+    FOREIGN KEY (follower_id) REFERENCES member(member_id)
+);  
+
+CREATE TABLE comment_notification (
+    notification_id INT NOT NULL,
+    comment_id INT NOT NULL,
+
+    PRIMARY KEY (notification_id, comment_id),
+    FOREIGN KEY (notification_id) REFERENCES notification(notification_id),
+    FOREIGN KEY (comment_id) REFERENCES comment(comment_id)
+);
+
+CREATE TABLE poll_notification (
+    notification_id INT NOT NULL,
+    poll_id INT NOT NULL,
+
+    PRIMARY KEY (notification_id, poll_id),
+    FOREIGN KEY (notification_id) REFERENCES notification(notification_id),
+    FOREIGN KEY (poll_id) REFERENCES poll(poll_id)
+);
