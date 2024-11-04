@@ -29,12 +29,15 @@ CHECK (VALUE IN ('Active', 'Suspended', 'Banned'));
 CREATE DOMAIN refund_policy AS DECIMAL(5, 2)
 CHECK (VALUE BETWEEN 0 AND 100);
 
+CREATE DOMAIN password_domain AS VARCHAR(100)
+CHECK (CHAR_LENGTH(VALUE) BETWEEN 8 AND 100);
+
 
 CREATE TABLE member (
     member_id SERIAL PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,
     email email_domain UNIQUE NOT NULL,
-    password VARCHAR(100) NOT NULL,
+    password password_domain NOT NULL,
     bio VARCHAR(200),
     profile_pic_url VARCHAR(200),
     status member_status_domain NOT NULL,
