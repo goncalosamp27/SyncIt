@@ -29,18 +29,25 @@ CHECK (VALUE IN ('Active', 'Suspended', 'Banned'));
 CREATE DOMAIN refund_policy AS DECIMAL(5, 2)
 CHECK (VALUE BETWEEN 0 AND 100);
 
+CREATE DOMAIN username_domain AS VARCHAR(50)
+CHECK (
+    CHAR_LENGTH(VALUE) BETWEEN 3 AND 50 
+    AND VALUE ~ '^[A-Za-z0-9_]+$'
+);
+
+
 CREATE DOMAIN password_domain AS VARCHAR(100)
 CHECK (CHAR_LENGTH(VALUE) BETWEEN 8 AND 100);
 
 
 CREATE TABLE member (
     member_id SERIAL PRIMARY KEY,
-    username VARCHAR(100) UNIQUE NOT NULL,
+    username username_domain UNIQUE NOT NULL,
     email email_domain UNIQUE NOT NULL,
     password password_domain NOT NULL,
     bio VARCHAR(200),
     profile_pic_url VARCHAR(200),
-    status member_status_domain NOT NULL,
+    member_status member_status_domain NOT NULL,
 );
 
 
@@ -49,6 +56,7 @@ CREATE TABLE artist (
     rating DECIMAL(2,1) NOT NULL CHECK (rating >= 0 AND rating <= 5),
     FOREIGN KEY (artist_id) REFERENCES member(member_id)
 );
+CREATE INDEX artist_id_idx ON event (artist_id);
 
 
 CREATE TABLE admin (
@@ -68,12 +76,12 @@ CREATE TABLE event (
     price price_domain NOT NULL,
     type_of_event event_type_domain NOT NULL
     rating DECIMAL(2,1) NOT NULL CHECK (rating >= 0 AND rating <= 5), 
-    member_id INT NOT NULL,
-    FOREIGN KEY (member_id) REFERENCES member(member_id)
+    artist_id INT NOT NULL,
+    FOREIGN KEY (artist_id) REFERENCES member(artist_id)
 );
 CREATE INDEX event_date_idx ON event (date);
 CREATE INDEX event_rating_idx ON event (rating);
-CREATE INDEX event_member_id_idx ON event (member_id);
+CREATE INDEX event_member_id_idx ON event (artist_id);
 
 
 CREATE TABLE comment (
@@ -203,4 +211,15 @@ CREATE TABLE poll_notification (
     PRIMARY KEY (notification_id, poll_id),
     FOREIGN KEY (notification_id) REFERENCES notification(notification_id),
     FOREIGN KEY (poll_id) REFERENCES poll(poll_id)
+);
+
+CREATE TABLE votings (
+    voting_id SERIAL PRIMARY KEY,
+    poll_id INT NOT NULL,
+    option_id INT NOT NULL,
+    member_id INT NOT NULL,
+    FOREIGN KEY (poll_id) REFERENCES poll(poll_id),
+    FOREIGN KEY (option_id) REFERENCES option(option_id),
+    FOREIGN KEY (member_id) REFERENCES member(member_id),
+    UNIQUE (poll_id, member_id) 
 );
