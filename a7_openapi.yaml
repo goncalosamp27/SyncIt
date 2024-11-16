@@ -292,7 +292,7 @@ paths:
 
 ###############################NOTIFICATIONS####################################
 
-  /home/notifications:
+  /notifications:
 
     get:
       operationId: R214
