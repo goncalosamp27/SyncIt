@@ -150,7 +150,7 @@ paths:
       summary: 'R106: View user profile'
       description: 'Show the individual user profile. Access: USR'
       tags:
-        - 'M01: Authentication'
+        - 'M01: Authentication and Individual Profile'
 
       parameters:
         - in: path
