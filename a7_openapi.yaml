@@ -94,7 +94,7 @@ paths:
     get:
       operationId: R104
       summary: 'R104: Register Form'
-      description: 'Provide new user registration form. Access: PUB'
+      description: 'Provide new user registration form. Access: VST'
       tags:
         - 'M01: Authentication'
       responses:
@@ -104,9 +104,9 @@ paths:
     post:
       operationId: R105
       summary: 'R105: Register Action'
-      description: 'Processes the new user registration form submission. Access: PUB'
+      description: 'Processes the new user registration form submission. Access: VST'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M01: Authentication'
 
       requestBody:
         required: true
@@ -140,6 +140,9 @@ paths:
                 302Failure:
                   description: 'Failed authentication. Redirect to login form.'
                   value: '/login'
+
+
+######################################USERS###########################################
 
   /users/{id}:
     get:
@@ -237,8 +240,6 @@ paths:
                     year: 1995
                     owner: Manuel Teixeira
                     type: DVD
-######################################USERS###########################################
-
 
 ###############################EVENTS AND TICKETS####################################
 
