@@ -273,7 +273,7 @@ paths:
           description: 'String to use for full-text search'
           schema:
             type: string
-          required: false
+          required: true
 
           
       responses:
