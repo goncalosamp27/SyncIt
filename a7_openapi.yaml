@@ -146,13 +146,13 @@ paths:
 
 ######################################USERS###########################################
 
-  /users/{id}:
+  /users:
     get:
       operationId: R106
       summary: 'R106: View user profile'
       description: 'Show the individual user profile. Access: USR'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M02: Users'
 
       parameters:
         - in: path
