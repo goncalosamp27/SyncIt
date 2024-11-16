@@ -174,8 +174,10 @@ paths:
                 302Failure:
                   description: 'Failure.'
 
- 
-####THIS CODE WAS GIVEN####
+
+#################################EVENTS AND TICKETS####################################
+
+#######GIVEN CODE#######
   /api/works:
     get:
       operationId: R202
@@ -253,7 +255,8 @@ paths:
                     owner: Manuel Teixeira
                     type: DVD
 
-#################################EVENTS AND TICKETS####################################
+#####GIVEN CODE#######
+
 
 /api/events/:
     get:
@@ -267,21 +270,21 @@ paths:
     parameters:
         - in: query
           name: query
-          description: String to use for full-text search
+          description: 'String to use for full-text search'
           schema:
             type: string
           required: false
 
         - in: query
           name: category
-          description: String corresponding to the category of the event
+          description: 'String corresponding to the category of the event'
           schema:
             type: string
           required: false
 
         - in: query
           name: tag
-          description: String corresponding to the tag of the event
+          description: 'String corresponding to the tag of the event'
           schema:
             type: string
           required: false
