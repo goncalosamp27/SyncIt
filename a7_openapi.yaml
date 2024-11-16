@@ -266,11 +266,11 @@ paths:
 
 ###############################NOTIFICATIONS####################################
 
-  /notifications:
+  /api/notifications:
 
     get:
-      operationId: R214
-      summary: 'R214: User notifications page.'
+      operationId: R601
+      summary: 'R601: User notifications page.'
       description: 'Show user notifications page. Access: MBR, ADM'
       tags:
         - 'M06: Notifications'
