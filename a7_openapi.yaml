@@ -172,7 +172,7 @@ paths:
       description: 'Searches for works and returns the results as JSON. Access: PUB.'
 
       tags: 
-        - 'M02: Events'
+        - 'M03: Events and Tickets'
 
       parameters:
         - in: query
