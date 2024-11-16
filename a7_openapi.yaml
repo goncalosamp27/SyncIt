@@ -183,42 +183,31 @@ paths:
     get:
       operationId: R202
       summary: 'R202: Search Works API'
-      description: 'Searches for works and returns the results as JSON. Access: PUB.'
+      description: 'Searches for events and returns the results as JSON. Access: MBR, ADM'
 
       tags: 
         - 'M03: Events and Tickets'
 
       parameters:
         - in: query
-          name: query
+          name: search
           description: String to use for full-text search
           schema:
             type: string
           required: false
         - in: query
-          name: item
-          description: Category of the works
+          name: category
+          description: Category of the event
           schema:
             type: string
           required: false
         - in: query
-          name: loaned
-          description: Boolean with the loaned flag value
+          name: tag
+          description: Tag of the event
           schema:
-            type: boolean
+            type: string
           required: false
-        - in: query
-          name: owner
-          description: Boolean with the owner flag value
-          schema:
-            type: boolean
-          required: false
-        - in: query
-          name: classification
-          description: Integer corresponding to the work classification
-          schema:
-            type: integer
-          required: false
+
 
       responses:
         '200':
