@@ -19,6 +19,8 @@ tags:
   - name: 'M03: Events and Tickets'
   - name: 'M04: Polls and Comments'
   - name: 'M05: Administration'
+  - name: 'M06: Notifications'
+
 
 paths:
 
@@ -251,3 +253,26 @@ paths:
 ###############################ADMINISTRATION####################################
 
 
+###############################NOTIFICATIONS####################################
+
+  /home/notifications:
+
+    get:
+      operationId: R214
+      summary: 'R214: User notifications page.'
+      description: 'Show user notifications page. Access: MBR, ADM'
+      tags:
+        - 'M06: Notifications'
+
+      responses:
+        '200':
+          description: 'OK. Show the user notifications page.'
+        '302':
+          description: 'Redirect if user is not logged in'
+          headers:
+            Location:
+              schema:
+                type: string
+              example:
+                302Failure:
+                  description: 'Failure. User not logged in.'
