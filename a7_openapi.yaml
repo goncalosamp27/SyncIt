@@ -162,6 +162,26 @@ paths:
       responses:
         '200':
           description: 'Ok. Show view profile UI'
+
+    /artists/{id}:
+    get:
+      operationId: R107
+      summary: 'R107: View artist page'
+      description: 'Show artist profile. Access: VST, MBR'
+      tags:
+        - 'M02: Users'
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+            description: 'ID of the artist to fetch details for'
+      responses:
+        '200':
+          description: 'Ok. Show view profile UI'
+        '404':
+          description: 'Artist not found.'
  
 
   /api/works:
@@ -242,8 +262,6 @@ paths:
                     type: DVD
 
 ###############################EVENTS AND TICKETS####################################
-
-
 
 
 ###############################POLLS AND COMMENTS####################################
