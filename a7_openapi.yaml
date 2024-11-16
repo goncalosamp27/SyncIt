@@ -266,7 +266,7 @@ paths:
 
     parameters:
         - in: query
-          name: search
+          name: query
           description: String to use for full-text search
           schema:
             type: string
