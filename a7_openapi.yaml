@@ -2,8 +2,8 @@ openapi: 3.0.0
 
 info:
   version: '1.0'
-  title: 'LBAW MediaLibrary Web API'
-  description: 'Web Resources Specification (A7) for MediaLibrary'
+  title: 'LBAW SyncIt! Web API'
+  description: 'Web Resources Specification (A7) for SyncIt!'
 
 servers:
 - url: http://lbaw.fe.up.pt
@@ -11,33 +11,35 @@ servers:
 
 externalDocs:
   description: Find more info here.
-  url: https://web.fe.up.pt/~ssn/wiki/teach/lbaw/medialib/a07
+  url: https://gitlab.up.pt/lbaw/lbaw2425/lbaw24115/-/wikis/eap
 
 tags:
-  - name: 'M01: Authentication and Individual Profile'
-  - name: 'M02: Works'
-  - name: 'M03: Reviews and Wish list'
-  - name: 'M04: Loans'
-  - name: 'M05: User Administration and Static pages'
+  - name: 'M01: Authentication'
+  - name: 'M02: Users'
+  - name: 'M03: Events and Tickets'
+  - name: 'M04: Polls and Comments'
+  - name: 'M05: Administration'
 
 paths:
+
+###################################AUTHENTICATION##############################################
 
   /login:
     get:
       operationId: R101
       summary: 'R101: Login Form'
-      description: 'Provide login form. Access: PUB'
+      description: 'Provide login form. Access: VST'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M01: Authentication'
       responses:
         '200':
           description: 'Ok. Show log-in UI'
     post:
       operationId: R102
       summary: 'R102: Login Action'
-      description: 'Processes the login form submission. Access: PUB'
+      description: 'Processes the login form submission. Access: VST'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M01: Authentication'
  
       requestBody:
         required: true
@@ -63,8 +65,8 @@ paths:
                 type: string
               examples:
                 302Success:
-                  description: 'Successful authentication. Redirect to user profile.'
-                  value: '/users/{id}'
+                  description: 'Successful authentication. Redirect to homepage.'
+                  value: '/home'
                 302Error:
                   description: 'Failed authentication. Redirect to login form.'
                   value: '/login'
@@ -73,9 +75,9 @@ paths:
     post:
       operationId: R103
       summary: 'R103: Logout Action'
-      description: 'Logout the current authenticated used. Access: USR, ADM'
+      description: 'Logout the current authenticated used. Access: MBR, ADM'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M01: Authentication'
       responses:
         '302':
           description: 'Redirect after processing logout.'
@@ -94,7 +96,7 @@ paths:
       summary: 'R104: Register Form'
       description: 'Provide new user registration form. Access: PUB'
       tags:
-        - 'M01: Authentication and Individual Profile'
+        - 'M01: Authentication'
       responses:
         '200':
           description: 'Ok. Show sign-up UI'
@@ -235,3 +237,15 @@ paths:
                     year: 1995
                     owner: Manuel Teixeira
                     type: DVD
+######################################USERS###########################################
+
+
+###############################EVENTS AND TICKETS####################################
+
+
+###############################POLLS AND COMMENTS####################################
+
+
+###############################ADMINISTRATION####################################
+
+
