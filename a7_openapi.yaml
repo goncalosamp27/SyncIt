@@ -270,7 +270,7 @@ paths:
           description: String to use for full-text search
           schema:
             type: string
-          required: true
+          required: false
 
         - in: query
           name: category
