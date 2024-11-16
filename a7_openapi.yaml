@@ -255,42 +255,6 @@ paths:
 
 #################################EVENTS AND TICKETS####################################
 
-/api/events/:
-    get:
-      operationId: R301
-      summary: 'R301: Search Events'
-      description: 'Searches for works and returns the results as JSON. Access: VST, MBR'
-
-      tags:
-        - 'M03: Events and Tickets'
-
-    parameters:
-        - in: query
-          name: query
-          description: String to use for full-text search
-          schema:
-            type: string
-          required: false
-
-        - in: query
-          name: category
-          description: String corresponding to the category of the event
-          schema:
-            type: string
-          required: false
-
-        - in: query
-          name: tag
-          description: String corresponding to the tag of the event
-          schema:
-            type: string
-          required: false
-          
-      responses:
-        '200':
-          description: 'Ok. Returns a list of matching events.'
-        '400':
-          description: 'Invalid request format.'
 
 
 ###############################POLLS AND COMMENTS####################################
