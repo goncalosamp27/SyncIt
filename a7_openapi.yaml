@@ -177,7 +177,7 @@ paths:
 
 #################################EVENTS AND TICKETS####################################
 
-#######GIVEN CODE#######
+#######GIVEN CODE######
   /api/works:
     get:
       operationId: R202
@@ -270,24 +270,11 @@ paths:
     parameters:
         - in: query
           name: query
-          description: 'String to use for full-text search'
+          description: String to use for full-text search
           schema:
             type: string
           required: false
 
-        - in: query
-          name: category
-          description: 'String corresponding to the category of the event'
-          schema:
-            type: string
-          required: false
-
-        - in: query
-          name: tag
-          description: 'String corresponding to the tag of the event'
-          schema:
-            type: string
-          required: false
           
       responses:
         '200':
