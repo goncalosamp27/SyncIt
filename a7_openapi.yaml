@@ -178,29 +178,6 @@ paths:
 #################################EVENTS AND TICKETS####################################
 
 #######GIVEN CODE######
- /home/events:
-    get:
-      operationId: R202
-      summary: 'R202: Search Works'
-      description: 'Searches for events. Access: MBR, ADM.'
-
-      tags: 
-        - 'M03: Events and Tickets'
-
-      parameters:
-        - in: query
-          name: query
-          description: String to use for full-text search
-          schema:
-            type: string
-          required: false
-
-
-      responses:
-        '200':
-          description: Success
-          
-
 
   /api/works:
     get:
