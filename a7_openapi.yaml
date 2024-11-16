@@ -146,7 +146,7 @@ paths:
 
 ######################################USERS###########################################
 
-  /users:
+  /users/{id}:
     get:
       operationId: R106
       summary: 'R106: View user profile'
@@ -164,6 +164,15 @@ paths:
       responses:
         '200':
           description: 'Ok. Show view profile UI'
+        '302':
+          description: 'Redirect if user is not logged in or other user doesnt exists'
+          headers:
+            Location:
+              schema:
+                type: string
+              example:
+                302Failure:
+                  description: 'Failure.'
 
  
 
