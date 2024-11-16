@@ -26,6 +26,7 @@ paths:
 
 ###################################AUTHENTICATION##############################################
 
+##LOGIN
   /login:
     get:
       operationId: R101
@@ -73,6 +74,7 @@ paths:
                   description: 'Failed authentication. Redirect to login form.'
                   value: '/login'
  
+##LOGOUT
   /logout:
     post:
       operationId: R103
@@ -92,6 +94,7 @@ paths:
                   description: 'Successful logout. Redirect to login form.'
                   value: '/login'
 
+##REGISTER
   /register:
     get:
       operationId: R104
@@ -146,6 +149,7 @@ paths:
 
 ######################################USERS###########################################
 
+##VIEW PROFILE
   /users/{id}:
     get:
       operationId: R201
@@ -177,12 +181,11 @@ paths:
 
 #################################EVENTS AND TICKETS####################################
 
-#######GIVEN CODE######
-
+##SEARCH EVENTS
   /api/events:
     get:
       operationId: R202
-      summary: 'R202: Search Works API'
+      summary: 'R202: Search Events API'
       description: 'Searches for events and returns the results as JSON. Access: MBR, ADM'
 
       tags: 
@@ -243,9 +246,6 @@ paths:
                     owner: "Carlos Rivera"
 
 
-#####GIVEN CODE#######
-
-
 ###############################POLLS AND COMMENTS####################################
 
 
@@ -254,6 +254,7 @@ paths:
 
 ###############################NOTIFICATIONS####################################
 
+##SEE NOTIFICATIONS
   /home/notifications:
 
     get:
