@@ -178,10 +178,10 @@ paths:
 #################################EVENTS AND TICKETS####################################
 
 #######GIVEN CODE######
- /api/events:
+ /home/events:
     get:
       operationId: R202
-      summary: 'R202: Search Works API'
+      summary: 'R202: Search Works'
       description: 'Searches for events. Access: MBR, ADM.'
 
       tags: 
