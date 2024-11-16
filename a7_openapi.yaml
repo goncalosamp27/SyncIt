@@ -223,27 +223,25 @@ paths:
                       type: string
                     title:
                       type: string
-                    obs:
+                    category:
                       type: string
-                    year:
+                    tag:
                       type: string
                     owner:
                       type: string
-                    type:
-                      type: string
                 example:
-                  - id: 1
-                    title: Rihanna - Unapologetic
-                    obs: Good pop music album.
-                    year: 2012
-                    owner: Joana Lima
-                    type: MP3
-                  - id: 15
-                    title: Mr. Bean
-                    obs: The best comedy movie.
-                    year: 1995
-                    owner: Manuel Teixeira
-                    type: DVD
+                  - id: "123"
+                    title: "Jazz Nights Festival"
+                    category: "Music"
+                    tag: "Jazz"
+                    owner: "Emily Davis"
+
+                  - id: "456"
+                    title: "Salsa Under the Stars"
+                    category: "Dance"
+                    tag: "Salsa"
+                    owner: "Carlos Rivera"
+
 
 #####GIVEN CODE#######
 
