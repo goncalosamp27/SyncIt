@@ -179,7 +179,7 @@ paths:
 
 #######GIVEN CODE######
 
-  /api/works:
+  /api/events:
     get:
       operationId: R202
       summary: 'R202: Search Works API'
