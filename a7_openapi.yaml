@@ -584,7 +584,7 @@ paths:
   /events/{event_id}/join:
     post:
       operationId: R205
-        summary: 'R205: Join Event'
+      summary: 'R205: Join Event'
         description: 'Allows a member to join an event and be added as a participant. Access: MBR'
               tags:
                 - 'M03: Events and Tickets'
@@ -633,7 +633,7 @@ paths:
       summary: 'R206: Leave Event'
       description: 'Allows a member to leave an event and be removed as a participant. Access: MBR'
       tags:
-        - 'M03: Events'
+        - 'M03: Events and Tickets'
       parameters:
         - in: path
           name: event_id
