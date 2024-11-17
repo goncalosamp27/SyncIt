@@ -413,7 +413,7 @@ paths:
                     tag: "Salsa"
                     owner: "Carlos Rivera"
 
-/events:
+/events/creation:
       post:
         operationId: R203
         summary: 'R203: Create Event with Media'
@@ -629,12 +629,12 @@ paths:
         
   /events/{event_id}/leave:
     post:
-              operationId: R205
-              summary: 'R205: Leave Event'
-              description: 'Allows a member to leave an event and be removed as a participant. Access: MBR'
-              tags:
-                - 'M03: Events'
-              parameters:
+      operationId: R205
+      summary: 'R205: Leave Event'
+      description: 'Allows a member to leave an event and be removed as a participant. Access: MBR'
+      tags:
+      - 'M03: Events'
+      parameters:
                 - in: path
                   name: event_id
                   schema:
