@@ -209,7 +209,14 @@ paths:
           description: Tag of the event
           schema:
             type: string
-          required: false        
+          required: false
+        - in: query
+          name: date
+          description: Date of the event (format: YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+          required: false
 
       responses:
         '200':
@@ -231,18 +238,24 @@ paths:
                       type: string
                     owner:
                       type: string
+                    date:
+                      type: string
+                      format: date
                 example:
                   - id: "123"
                     title: "Jazz Nights Festival"
                     category: "Music"
                     tag: "Jazz"
                     owner: "Emily Davis"
+                    date: "2024-11-20"
 
                   - id: "456"
                     title: "Salsa Under the Stars"
                     category: "Dance"
                     tag: "Salsa"
                     owner: "Carlos Rivera"
+                    date: "2024-12-05"
+
 
 
 ###############################POLLS AND COMMENTS####################################
