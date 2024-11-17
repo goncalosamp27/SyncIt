@@ -352,8 +352,8 @@ paths:
 ##SEARCH EVENTS
   /events:
     get:
-      operationId: R202
-      summary: 'R202: Search Events API'
+      operationId: R301
+      summary: 'R301: Search Events API'
       description: 'Searches for events and returns the results as JSON. Access: MBR, ADM'
 
       tags: 
@@ -415,8 +415,8 @@ paths:
 
   /events/creation:
       post:
-        operationId: R203
-        summary: 'R203: Create Event with Media'
+        operationId: R302
+        summary: 'R302: Create Event with Media'
         description: 'Allows a member to create a new event with optional media uploads (images). Access: MBR'
         tags:
           - 'M03: Events and Tickets'
@@ -500,8 +500,8 @@ paths:
 
   /events/{event_id}/invite:
     post:
-      operationId: R204
-      summary: 'R204: Invite Users to Event by Username'
+      operationId: R303
+      summary: 'R303: Invite Users to Event by Username'
       description: 'Allows an artist to invite friends to their event using their usernames. The invite is sent as an in-app notification. Access: OWN'
       tags:
         - 'M03: Events and Tickets'
@@ -583,8 +583,8 @@ paths:
           
   /events/{event_id}/join:
     post:
-      operationId: R205
-      summary: 'R205: Join Event'
+      operationId: R304
+      summary: 'R304: Join Event'
       description: 'Allows a member to join an event and be added as a participant. Access: MBR'
       tags:
         - 'M03: Events and Tickets'
@@ -629,8 +629,8 @@ paths:
         
   /events/{event_id}/leave:
     post:
-      operationId: R206
-      summary: 'R206: Leave Event'
+      operationId: R305
+      summary: 'R305: Leave Event'
       description: 'Allows a member to leave an event and be removed as a participant. Access: MBR'
       tags:
         - 'M03: Events and Tickets'
