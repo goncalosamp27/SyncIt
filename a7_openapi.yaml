@@ -209,16 +209,7 @@ paths:
           description: Tag of the event
           schema:
             type: string
-          required: false
-        - in: query
-          name: date
-          description: Date of the event in ISO 8601 format (YYYY-MM-DD)
-          schema:
-            type: string
-            format: date
-          required: false
-          
-
+          required: false        
 
       responses:
         '200':
