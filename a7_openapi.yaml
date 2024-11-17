@@ -210,6 +210,14 @@ paths:
           schema:
             type: string
           required: false
+        - in: query
+          name: date
+          description: Date of the event
+          schema:
+            type: string
+            format: date
+          required: false
+          
 
 
       responses:
