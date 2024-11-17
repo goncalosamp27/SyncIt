@@ -277,10 +277,6 @@ paths:
                 302Failure:
                   description: 'Failure. User not logged in.'
 
-# US14 - 
-# Email verification
-# As a visitor, I want my email address to be verified, so that I can trust the platform's security.
-
   /verify_email/send:
     get:
       operationId: E201
@@ -362,25 +358,7 @@ paths:
                   email: 'user@example.com'
                   confirmed: true
         '404':
-          description: 'Email address not found.'
-
-components:
-  schemas:
-    ErrorResponse:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-      example:
-        error: 'InvalidToken'
-        message: 'The provided token is invalid or has expired.'          
-
-# US15
-# Logout
-# As a member, I want to be able to log out of my SyncIt! account, 
-# so that I don’t leave my account logged in for other people to use.
+          description: 'Email address not found.'    
 
   /logout:
     post:
@@ -406,30 +384,6 @@ components:
           description: 'Unauthorized. User is not logged in.'
         '500':
           description: 'Server error during logout process.'
-
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-  schemas:
-    ErrorResponse:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-      example:
-        error: 'Unauthorized'
-        message: 'User is not logged in or token is invalid.'
-
-# US16  
-# Create events
-# As a member, I want to create events so that I can organize gatherings or meetings and share the details with participants 
-# in one place.
 
   /events:
       post:
@@ -518,29 +472,6 @@ components:
           '500':
             description: 'Server error during event creation.'
 
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-  schemas:
-    ErrorResponse:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-      example:
-        error: 'BadRequest'
-        message: 'The provided data is invalid.'
-
-# US17 - 
-# Invite users
-# As a member, I want to invite my friends to events so that I can share experiences and encourage them to join me in attending.
-
   /events/{event_id}/invite:
     post:
       operationId: US17
@@ -626,29 +557,6 @@ components:
         '500':
           description: 'Server error while sending invitations.'
 
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-  schemas:
-    ErrorResponse:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-      example:
-        error: 'NotFound'
-        message: 'The specified event or user was not found.'
-
-# US18 - 
-# Reset password
-# As a member, I want to reset the password for my account, so that I can regain access to my account.
-
   /reset-password/request:
     post:
       operationId: US18_Request
@@ -732,23 +640,6 @@ components:
           description: 'Token not found or expired.'
         '500':
           description: 'Server error while updating the password.'
-
-components:
-  schemas:
-    ErrorResponse:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-      example:
-        error: 'InvalidToken'
-        message: 'The provided token is invalid or has expired.'
-
-# US19 - 
-# Join/leave events
-# As a member, I want to join and leave events so that organizers are aware of the number of people that will show up.
 
   /events/{event_id}/join:
     post:
@@ -842,23 +733,4 @@ components:
         '404':
           description: 'Event not found or user not a participant.'
         '500':
-          description: 'Server error during leave process.'
-
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-  schemas:
-    ErrorResponse:
-      type: object
-      properties:
-        error:
-          type: string
-        message:
-          type: string
-      example:
-        error: 'NotFound'
-        message: 'The specified event or participant was not found.'  
+          description: 'Server error during leave process.' 
