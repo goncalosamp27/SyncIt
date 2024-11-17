@@ -315,185 +315,185 @@ paths:
 ######################################USERS###########################################
 
 ##VIEW PROFILE
-/users/{id}:
-  get:
-    operationId: R201
-    summary: 'R201: View user profile'
-    description: 'Show the individual user profile. Access: VST, MBR, OWN, ART, ADM'
-    tags:
-      - 'M02: Users'
-    parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        required: true
-    responses:
-      '200':
-        description: 'Ok. Show view profile UI'
-      '302':
-        description: 'Redirect if user is not logged in or other user doesn’t exist'
-        headers:
-          Location:
-            schema:
-              type: string
-            example:
-              302Failure:
-                description: 'Failure.'
+  /users/{id}:
+    get:
+      operationId: R201
+      summary: 'R201: View user profile'
+      description: 'Show the individual user profile. Access: VST, MBR, OWN, ART, ADM'
+      tags:
+        - 'M02: Users'
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: 'Ok. Show view profile UI'
+        '302':
+          description: 'Redirect if user is not logged in or other user doesn’t exist'
+          headers:
+            Location:
+              schema:
+                type: string
+              example:
+                302Failure:
+                  description: 'Failure.'
 
-##VIEW FUTURE EVENTS
-/users/{id}/tickets:
-  get:
-    operationId: R202
-    summary: 'R202: View user tickets'
-    description: 'Show a list of tickets purchased by the user. Access: OWN, ADM'
-    tags:
-      - 'M02: Users'
-      - 'M03: Events and Tickets'
-    parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        required: true
-        description: 'Unique identifier of the user'
-      - in: query
-        name: offset
-        schema:
-          type: integer
-        required: false
-        description: 'Optional offset for pagination'
-    responses:
-      '200':
-        description: 'List of tickets retrieved successfully.'
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: object
-                properties:
-                  ticket_id:
-                    type: integer
-                    description: 'Unique identifier of the ticket'
-                  event_id:
-                    type: integer
-                    description: 'Unique identifier of the event'
-                  event_title:
-                    type: string
-                    description: 'Title of the event'
-                  event_date:
-                    type: string
-                    format: date-time
-                    description: 'Date and time of the event'
-                  seat:
-                    type: string
-                    description: 'Seat information (if applicable)'
-                  price:
-                    type: number
-                    format: float
-                    description: 'Price of the ticket'
-                  purchase_date:
-                    type: string
-                    format: date-time
-                    description: 'Date and time the ticket was purchased'
-                example:
-                  - ticket_id: 1001
-                    event_id: 301
-                    event_title: 'Classical Strings Night'
-                    event_date: '2024-05-12T19:00:00Z'
-                    seat: 'A15'
-                    price: 45.00
-                    purchase_date: '2024-04-01T14:30:00Z'
-                  - ticket_id: 1002
-                    event_id: 302
-                    event_title: 'Samba Dance Gala'
-                    event_date: '2024-06-20T21:00:00Z'
-                    seat: 'VIP2'
-                    price: 120.00
-                    purchase_date: '2024-05-10T16:45:00Z'
-      '400':
-        description: 'Invalid input data.'
-      '401':
-        description: 'Unauthorized. User is not logged in.'
-      '404':
-        description: 'User not found or no tickets found.'
-      '500':
-        description: 'Server error during retrieval of tickets.'
+  ##VIEW FUTURE EVENTS
+  /users/{id}/tickets:
+    get:
+      operationId: R202
+      summary: 'R202: View user tickets'
+      description: 'Show a list of tickets purchased by the user. Access: OWN, ADM'
+      tags:
+        - 'M02: Users'
+        - 'M03: Events and Tickets'
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: 'Unique identifier of the user'
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          required: false
+          description: 'Optional offset for pagination'
+      responses:
+        '200':
+          description: 'List of tickets retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    ticket_id:
+                      type: integer
+                      description: 'Unique identifier of the ticket'
+                    event_id:
+                      type: integer
+                      description: 'Unique identifier of the event'
+                    event_title:
+                      type: string
+                      description: 'Title of the event'
+                    event_date:
+                      type: string
+                      format: date-time
+                      description: 'Date and time of the event'
+                    seat:
+                      type: string
+                      description: 'Seat information (if applicable)'
+                    price:
+                      type: number
+                      format: float
+                      description: 'Price of the ticket'
+                    purchase_date:
+                      type: string
+                      format: date-time
+                      description: 'Date and time the ticket was purchased'
+                  example:
+                    - ticket_id: 1001
+                      event_id: 301
+                      event_title: 'Classical Strings Night'
+                      event_date: '2024-05-12T19:00:00Z'
+                      seat: 'A15'
+                      price: 45.00
+                      purchase_date: '2024-04-01T14:30:00Z'
+                    - ticket_id: 1002
+                      event_id: 302
+                      event_title: 'Samba Dance Gala'
+                      event_date: '2024-06-20T21:00:00Z'
+                      seat: 'VIP2'
+                      price: 120.00
+                      purchase_date: '2024-05-10T16:45:00Z'
+        '400':
+          description: 'Invalid input data.'
+        '401':
+          description: 'Unauthorized. User is not logged in.'
+        '404':
+          description: 'User not found or no tickets found.'
+        '500':
+          description: 'Server error during retrieval of tickets.'
 
-##VIEW PAST EVENTS
-/users/{id}/events/past:
-  get:
-    operationId: R203
-    summary: 'R203: View user past events'
-    description: 'Show a list of past events attended or created by the user. Access: OWN, ADM'
-    tags:
-      - 'M02: Users'
-      - 'M03: Events and Tickets'
-    parameters:
-      - in: path
-        name: id
-        schema:
-          type: integer
-        required: true
-        description: 'Unique identifier of the user'
-      - in: query
-        name: offset
-        schema:
-          type: integer
-        required: false
-        description: 'Optional offset for pagination'
-    responses:
-      '200':
-        description: 'List of past events retrieved successfully.'
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    description: 'Unique identifier of the event'
-                  title:
-                    type: string
-                    description: 'Title of the event'
-                  category:
-                    type: string
-                    description: 'Category of the event'
-                  date:
-                    type: string
-                    format: date-time
-                    description: 'Date and time of the event'
-                  location:
-                    type: string
-                    description: 'Location of the event'
-                  role:
-                    type: string
-                    enum: ['creator', 'participant']
-                    description: 'User’s role in the event'
-                example:
-                  - id: 201
-                    title: 'Jazz Blues Night'
-                    category: 'Music'
-                    date: '2023-11-15T20:00:00Z'
-                    location: 'Blue Note Club, New York, USA'
-                    role: 'creator'
-                  - id: 202
-                    title: 'Tango in the Park'
-                    category: 'Dance'
-                    date: '2023-10-01T18:30:00Z'
-                    location: 'Central Park, New York, USA'
-                    role: 'participant'
-      '400':
-        description: 'Invalid input data.'
-      '401':
-        description: 'Unauthorized. User is not logged in.'
-      '404':
-        description: 'User not found.'
-      '500':
-        description: 'Server error during retrieval of past events.'
+  ##VIEW PAST EVENTS
+  /users/{id}/events/past:
+    get:
+      operationId: R203
+      summary: 'R203: View user past events'
+      description: 'Show a list of past events attended or created by the user. Access: OWN, ADM'
+      tags:
+        - 'M02: Users'
+        - 'M03: Events and Tickets'
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: 'Unique identifier of the user'
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          required: false
+          description: 'Optional offset for pagination'
+      responses:
+        '200':
+          description: 'List of past events retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: 'Unique identifier of the event'
+                    title:
+                      type: string
+                      description: 'Title of the event'
+                    category:
+                      type: string
+                      description: 'Category of the event'
+                    date:
+                      type: string
+                      format: date-time
+                      description: 'Date and time of the event'
+                    location:
+                      type: string
+                      description: 'Location of the event'
+                    role:
+                      type: string
+                      enum: ['creator', 'participant']
+                      description: 'User’s role in the event'
+                  example:
+                    - id: 201
+                      title: 'Jazz Blues Night'
+                      category: 'Music'
+                      date: '2023-11-15T20:00:00Z'
+                      location: 'Blue Note Club, New York, USA'
+                      role: 'creator'
+                    - id: 202
+                      title: 'Tango in the Park'
+                      category: 'Dance'
+                      date: '2023-10-01T18:30:00Z'
+                      location: 'Central Park, New York, USA'
+                      role: 'participant'
+        '400':
+          description: 'Invalid input data.'
+        '401':
+          description: 'Unauthorized. User is not logged in.'
+        '404':
+          description: 'User not found.'
+        '500':
+          description: 'Server error during retrieval of past events.'
 
 
 
