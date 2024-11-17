@@ -194,19 +194,19 @@ paths:
       parameters:
         - in: query
           name: search
-          description: String to use for full-text search
+          description: 'String to use for full-text search'
           schema:
             type: string
           required: false
         - in: query
           name: category
-          description: Category of the event
+          description: 'Category of the event'
           schema:
             type: string
           required: false
         - in: query
           name: tag
-          description: Tag of the event
+          description: 'Tag of the event'
           schema:
             type: string
           required: false
