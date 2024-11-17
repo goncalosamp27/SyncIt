@@ -629,8 +629,8 @@ paths:
         
   /events/{event_id}/leave:
     post:
-      operationId: R205
-      summary: 'R205: Leave Event'
+      operationId: R206
+      summary: 'R206: Leave Event'
       description: 'Allows a member to leave an event and be removed as a participant. Access: MBR'
       tags:
         - 'M03: Events'
