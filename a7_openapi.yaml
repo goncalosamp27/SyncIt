@@ -146,6 +146,174 @@ paths:
                   description: 'Failed authentication. Redirect to login form.'
                   value: '/login'
 
+###VERIFY EMAIL
+/verify_email/send:
+  get:
+    operationId: R106
+    summary: 'R106: Send Verification Email'
+    description: 'Sends a verification email with a confirmation link to the user. Access: VST'
+    tags:
+      - 'M01: Authentication'
+    parameters:
+      - in: query
+        name: email
+        schema:
+          type: string
+        required: true
+        description: 'The email address to send the verification link'
+    responses:
+      '200':
+        description: 'Verification email sent successfully.'
+      '400':
+        description: 'Invalid email address or request error.'
+      '404':
+        description: 'Email address not found.'
+
+/verify-email/confirm:
+    get:
+      operationId: R107
+      summary: 'R107: Confirm Email Address'
+      description: 'Confirms the users email when they click the confirmation link. Access: VST'
+      tags:
+        - 'M01: Authentication'
+      parameters:
+        - in: query
+          name: token
+          schema:
+            type: string
+          required: true
+          description: 'Unique token for email confirmation'
+      responses:
+        '302':
+          description: 'Redirects based on the result of the confirmation.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Email confirmed successfully. Redirect to home page.'
+                  value: '/homepage'
+                302Error:
+                  description: 'Invalid or expired token. Redirect to error page.'
+                  value: '/verify-email/error'
+
+/verify-email/status:
+  get:
+    operationId: R108
+    summary: 'R108: Check Email Confirmation Status'
+    description: 'Checks if the users email is confirmed. Access: VST'
+    tags:
+      - 'M01: Authentication'
+    parameters:
+      - in: query
+        name: email
+        schema:
+          type: string
+        required: true
+        description: 'Email address to check confirmation status'
+    responses:
+      '200':
+        description: 'Returns the email confirmation status.'
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                confirmed:
+                  type: boolean
+              example:
+                email: 'user@example.com'
+                confirmed: true
+      '404':
+        description: 'Email address not found.'    
+
+## RESET PASSWORD
+/reset-password/request:
+  post:
+    operationId: R109
+    summary: 'R109: Request Password Reset'
+    description: 'Allows a member to request a password reset using their username. Access: PUB'
+    tags:
+      - 'M01: Authentication'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                description: 'Username of the member requesting the password reset'
+            required:
+              - username
+    responses:
+      '200':
+        description: 'Password reset request received. Verification token sent.'
+      '404':
+        description: 'User not found.'
+      '500':
+        description: 'Server error while processing the password reset request.'
+
+/reset-password/verify:
+  get:
+    operationId: R110
+    summary: 'R110: Verify Password Reset Token'
+    description: 'Verifies the password reset token sent to the user. Access: PUB'
+    tags:
+      - 'M01: Authentication'
+    parameters:
+      - in: query
+        name: token
+        schema:
+          type: string
+        required: true
+        description: 'Unique token for password reset verification'
+    responses:
+      '200':
+        description: 'Token is valid. Proceed to reset password.'
+      '400':
+        description: 'Invalid or expired token.'
+      '404':
+        description: 'Token not found.'
+      '500':
+        description: 'Server error during token verification.'
+
+/reset-password/update:
+  post:
+    operationId: R111
+    summary: 'R111: Update Password'
+    description: 'Allows a member to set a new password after verification. Access: PUB'
+    tags:
+      - 'M01: Authentication'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                description: 'Verification token for password reset'
+              new_password:
+                type: string
+                description: 'The new password for the user account'
+            required:
+              - token
+              - new_password
+    responses:
+      '200':
+        description: 'Password updated successfully.'
+      '400':
+        description: 'Invalid input (e.g., weak password).'
+      '404':
+        description: 'Token not found or expired.'
+      '500':
+        description: 'Server error while updating the password.'        
 
 ######################################USERS###########################################
 
@@ -182,7 +350,7 @@ paths:
 #################################EVENTS AND TICKETS####################################
 
 ##SEARCH EVENTS
-  /api/events:
+  /events:
     get:
       operationId: R202
       summary: 'R202: Search Events API'
@@ -245,125 +413,10 @@ paths:
                     tag: "Salsa"
                     owner: "Carlos Rivera"
 
-
-###############################POLLS AND COMMENTS####################################
-
-
-###############################ADMINISTRATION####################################
-
-
-###############################NOTIFICATIONS####################################
-
-##SEE NOTIFICATIONS
-  /home/notifications:
-
-    get:
-      operationId: R601
-      summary: 'R601: User notifications page.'
-      description: 'Show user notifications page. Access: MBR, ADM'
-      tags:
-        - 'M06: Notifications'
-
-      responses:
-        '200':
-          description: 'OK. Show the user notifications page.'
-        '302':
-          description: 'Redirect if user is not logged in'
-          headers:
-            Location:
-              schema:
-                type: string
-              example:
-                302Failure:
-                  description: 'Failure. User not logged in.'
-
-  /verify_email/send:
-    get:
-      operationId: E201
-      summary: 'E201: Send Verification Email'
-      description: 'Sends a verification email with a confirmation link to the user. Access: VST'
-      tags:
-        - 'M01: Authentication'
-      parameters:
-        - in: query
-          name: email
-          schema:
-            type: string
-          required: true
-          description: 'The email address to send the verification link'
-      responses:
-        '200':
-          description: 'Verification email sent successfully.'
-        '400':
-          description: 'Invalid email address or request error.'
-        '404':
-          description: 'Email address not found.'
-
-  /verify-email/confirm:
-      get:
-        operationId: E202
-        summary: 'Confirm Email Address'
-        description: 'Confirms the users email when they click the confirmation link. Access: VST'
-        tags:
-          - 'M01: Authentication'
-        parameters:
-          - in: query
-            name: token
-            schema:
-              type: string
-            required: true
-            description: 'Unique token for email confirmation'
-        responses:
-          '302':
-            description: 'Redirects based on the result of the confirmation.'
-            headers:
-              Location:
-                schema:
-                  type: string
-                examples:
-                  302Success:
-                    description: 'Email confirmed successfully. Redirect to home page.'
-                    value: '/homepage'
-                  302Error:
-                    description: 'Invalid or expired token. Redirect to error page.'
-                    value: '/verify-email/error'
-
-  /verify-email/status:
-    get:
-      operationId: E203
-      summary: 'Check Email Confirmation Status'
-      description: 'Checks if the users email is confirmed. Access: VST'
-      tags:
-        - 'M01: Authentication'
-      parameters:
-        - in: query
-          name: email
-          schema:
-            type: string
-          required: true
-          description: 'Email address to check confirmation status'
-      responses:
-        '200':
-          description: 'Returns the email confirmation status.'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  email:
-                    type: string
-                  confirmed:
-                    type: boolean
-                example:
-                  email: 'user@example.com'
-                  confirmed: true
-        '404':
-          description: 'Email address not found.'    
-
-  /events:
+/events:
       post:
-        operationId: US16
-        summary: 'Create Event with Media'
+        operationId: R203
+        summary: 'R203: Create Event with Media'
         description: 'Allows a member to create a new event with optional media uploads (images). Access: MBR'
         tags:
           - 'M03: Events and Tickets'
@@ -447,8 +500,8 @@ paths:
 
   /events/{event_id}/invite:
     post:
-      operationId: US17
-      summary: 'Invite Users to Event by Username'
+      operationId: R204
+      summary: 'R204: Invite Users to Event by Username'
       description: 'Allows an artist to invite friends to their event using their usernames. The invite is sent as an in-app notification. Access: OWN'
       tags:
         - 'M03: Events and Tickets'
@@ -527,177 +580,127 @@ paths:
           description: 'Event not found or username not found.'
         '500':
           description: 'Server error while sending invitations.'
-
-  /reset-password/request:
-    post:
-      operationId: US18_Request
-      summary: 'Request Password Reset'
-      description: 'Allows a member to request a password reset using their username. Access: PUB'
-      tags:
-        - 'M01: Authentication'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                  description: 'Username of the member requesting the password reset'
-              required:
-                - username
-      responses:
-        '200':
-          description: 'Password reset request received. Verification token sent.'
-        '404':
-          description: 'User not found.'
-        '500':
-          description: 'Server error while processing the password reset request.'
-
-  /reset-password/verify:
-    get:
-      operationId: US18_Verify
-      summary: 'Verify Password Reset Token'
-      description: 'Verifies the password reset token sent to the user. Access: PUB'
-      tags:
-        - 'M01: Authentication'
-      parameters:
-        - in: query
-          name: token
-          schema:
-            type: string
-          required: true
-          description: 'Unique token for password reset verification'
-      responses:
-        '200':
-          description: 'Token is valid. Proceed to reset password.'
-        '400':
-          description: 'Invalid or expired token.'
-        '404':
-          description: 'Token not found.'
-        '500':
-          description: 'Server error during token verification.'
-
-  /reset-password/update:
-    post:
-      operationId: US18_Update
-      summary: 'Update Password'
-      description: 'Allows a member to set a new password after verification. Access: PUB'
-      tags:
-        - 'M01: Authentication'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                token:
-                  type: string
-                  description: 'Verification token for password reset'
-                new_password:
-                  type: string
-                  description: 'The new password for the user account'
-              required:
-                - token
-                - new_password
-      responses:
-        '200':
-          description: 'Password updated successfully.'
-        '400':
-          description: 'Invalid input (e.g., weak password).'
-        '404':
-          description: 'Token not found or expired.'
-        '500':
-          description: 'Server error while updating the password.'
-
+          
   /events/{event_id}/join:
     post:
-      operationId: US19_Join
-      summary: 'Join Event'
-      description: 'Allows a member to join an event and be added as a participant. Access: MBR'
-      tags:
-        - 'M03: Events and Tickets'
-      parameters:
-        - in: path
-          name: event_id
-          schema:
-            type: integer
-          required: true
-          description: 'Unique identifier of the event'
-      responses:
-        '200':
-          description: 'Successfully joined the event. Member is added as a participant.'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  event_id:
+      operationId: R205
+        summary: 'R205: Join Event'
+        description: 'Allows a member to join an event and be added as a participant. Access: MBR'
+              tags:
+                - 'M03: Events and Tickets'
+              parameters:
+                - in: path
+                  name: event_id
+                  schema:
                     type: integer
-                    description: 'ID of the event'
-                  username:
-                    type: string
-                    description: 'Username of the participant'
-                  status:
-                    type: string
-                    description: 'Participation status (e.g., joined)'
-              example:
-                event_id: 101
-                username: 'john_doe'
-                status: 'joined'
-        '400':
-          description: 'Invalid input data.'
-        '401':
-          description: 'Unauthorized. User is not logged in.'
-        '404':
-          description: 'Event not found.'
-        '409':
-          description: 'User is already a participant.'
-        '500':
-          description: 'Server error during participation process.'
-
+                  required: true
+                  description: 'Unique identifier of the event'
+              responses:
+                '200':
+                  description: 'Successfully joined the event. Member is added as a participant.'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          event_id:
+                            type: integer
+                            description: 'ID of the event'
+                          username:
+                            type: string
+                            description: 'Username of the participant'
+                          status:
+                            type: string
+                            description: 'Participation status (e.g., joined)'
+                      example:
+                        event_id: 101
+                        username: 'john_doe'
+                        status: 'joined'
+                '400':
+                  description: 'Invalid input data.'
+                '401':
+                  description: 'Unauthorized. User is not logged in.'
+                '404':
+                  description: 'Event not found.'
+                '409':
+                  description: 'User is already a participant.'
+                '500':
+                  description: 'Server error during participation process.'
+        
   /events/{event_id}/leave:
     post:
-      operationId: US19_Leave
-      summary: 'Leave Event'
-      description: 'Allows a member to leave an event and be removed as a participant. Access: MBR'
+              operationId: R205
+              summary: 'R205: Leave Event'
+              description: 'Allows a member to leave an event and be removed as a participant. Access: MBR'
+              tags:
+                - 'M03: Events'
+              parameters:
+                - in: path
+                  name: event_id
+                  schema:
+                    type: integer
+                  required: true
+                  description: 'Unique identifier of the event'
+              responses:
+                '200':
+                  description: 'Successfully left the event. Member is removed from the participant list.'
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          event_id:
+                            type: integer
+                            description: 'ID of the event'
+                          username:
+                            type: string
+                            description: 'Username of the participant'
+                          status:
+                            type: string
+                            description: 'Participation status (e.g., left)'
+                      example:
+                        event_id: 101
+                        username: 'john_doe'
+                        status: 'left'
+                '400':
+                  description: 'Invalid input data.'
+                '401':
+                  description: 'Unauthorized. User is not logged in.'
+                '404':
+                  description: 'Event not found or user not a participant.'
+                '500':
+                  description: 'Server error during leave process.'          
+
+###############################POLLS AND COMMENTS####################################
+
+
+###############################ADMINISTRATION####################################
+
+
+###############################NOTIFICATIONS####################################
+
+##SEE NOTIFICATIONS
+  /home/notifications:
+
+    get:
+      operationId: R601
+      summary: 'R601: User notifications page.'
+      description: 'Show user notifications page. Access: MBR, ADM'
       tags:
-        - 'M03: Events'
-      parameters:
-        - in: path
-          name: event_id
-          schema:
-            type: integer
-          required: true
-          description: 'Unique identifier of the event'
+        - 'M06: Notifications'
+
       responses:
         '200':
-          description: 'Successfully left the event. Member is removed from the participant list.'
-          content:
-            application/json:
+          description: 'OK. Show the user notifications page.'
+        '302':
+          description: 'Redirect if user is not logged in'
+          headers:
+            Location:
               schema:
-                type: object
-                properties:
-                  event_id:
-                    type: integer
-                    description: 'ID of the event'
-                  username:
-                    type: string
-                    description: 'Username of the participant'
-                  status:
-                    type: string
-                    description: 'Participation status (e.g., left)'
+                type: string
               example:
-                event_id: 101
-                username: 'john_doe'
-                status: 'left'
-        '400':
-          description: 'Invalid input data.'
-        '401':
-          description: 'Unauthorized. User is not logged in.'
-        '404':
-          description: 'Event not found or user not a participant.'
-        '500':
-          description: 'Server error during leave process.' 
+                302Failure:
+                  description: 'Failure. User not logged in.'
+
+
+ 
