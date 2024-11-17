@@ -413,7 +413,7 @@ paths:
                     tag: "Salsa"
                     owner: "Carlos Rivera"
 
-/events/creation:
+  /events/creation:
       post:
         operationId: R203
         summary: 'R203: Create Event with Media'
@@ -633,43 +633,44 @@ paths:
       summary: 'R205: Leave Event'
       description: 'Allows a member to leave an event and be removed as a participant. Access: MBR'
       tags:
-      - 'M03: Events'
+        - 'M03: Events'
       parameters:
-                - in: path
-                  name: event_id
-                  schema:
+        - in: path
+          name: event_id
+          schema:
+            type: integer
+          required: true
+          description: 'Unique identifier of the event'
+      responses:
+        '200':
+          description: 'Successfully left the event. Member is removed from the participant list.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  event_id:
                     type: integer
-                  required: true
-                  description: 'Unique identifier of the event'
-              responses:
-                '200':
-                  description: 'Successfully left the event. Member is removed from the participant list.'
-                  content:
-                    application/json:
-                      schema:
-                        type: object
-                        properties:
-                          event_id:
-                            type: integer
-                            description: 'ID of the event'
-                          username:
-                            type: string
-                            description: 'Username of the participant'
-                          status:
-                            type: string
-                            description: 'Participation status (e.g., left)'
-                      example:
-                        event_id: 101
-                        username: 'john_doe'
-                        status: 'left'
-                '400':
-                  description: 'Invalid input data.'
-                '401':
-                  description: 'Unauthorized. User is not logged in.'
-                '404':
-                  description: 'Event not found or user not a participant.'
-                '500':
-                  description: 'Server error during leave process.'          
+                    description: 'ID of the event'
+                  username:
+                    type: string
+                    description: 'Username of the participant'
+                  status:
+                    type: string
+                    description: 'Participation status (e.g., left)'
+              example:
+                event_id: 101
+                username: 'john_doe'
+                status: 'left'
+        '400':
+          description: 'Invalid input data.'
+        '401':
+          description: 'Unauthorized. User is not logged in.'
+        '404':
+          description: 'Event not found or user not a participant.'
+        '500':
+          description: 'Server error during leave process.'
+    
 
 ###############################POLLS AND COMMENTS####################################
 
