@@ -170,33 +170,33 @@ paths:
           description: 'Email address not found.'
 
   /verify-email/confirm:
-      get:
-        operationId: R107
-        summary: 'R107: Confirm Email Address'
-        description: 'Confirms the users email when they click the confirmation link. Access: VST'
-        tags:
-          - 'M01: Authentication'
-        parameters:
-          - in: query
-            name: token
-            schema:
-              type: string
-            required: true
-            description: 'Unique token for email confirmation'
-        responses:
-          '302':
-            description: 'Redirects based on the result of the confirmation.'
-            headers:
-              Location:
-                schema:
-                  type: string
-                examples:
-                  302Success:
-                    description: 'Email confirmed successfully. Redirect to home page.'
-                    value: '/homepage'
-                  302Error:
-                    description: 'Invalid or expired token. Redirect to error page.'
-                    value: '/verify-email/error'
+    get:
+      operationId: R107
+      summary: 'R107: Confirm Email Address'
+      description: 'Confirms the users email when they click the confirmation link. Access: VST'
+      tags:
+        - 'M01: Authentication'
+      parameters:
+        - in: query
+          name: token
+          schema:
+            type: string
+          required: true
+          description: 'Unique token for email confirmation'
+      responses:
+        '302':
+          description: 'Redirects based on the result of the confirmation.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                success:
+                  description: 'Email confirmed successfully. Redirect to home page.'
+                  value: '/homepage'
+                error:
+                  description: 'Invalid or expired token. Redirect to error page.'
+                  value: '/verify-email/error'
 
   /verify-email/status:
     get:
