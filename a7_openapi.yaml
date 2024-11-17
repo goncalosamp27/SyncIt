@@ -367,8 +367,6 @@ paths:
         description: 'Allows a member to create a new event with optional media uploads (images). Access: MBR'
         tags:
           - 'M03: Events and Tickets'
-        security:
-          - bearerAuth: []
         requestBody:
           required: true
           content:
@@ -455,8 +453,6 @@ paths:
       tags:
         - 'M03: Events and Tickets'
         - 'M06: Notifications'
-      security:
-        - bearerAuth: []
       parameters:
         - in: path
           name: event_id
@@ -623,8 +619,6 @@ paths:
       description: 'Allows a member to join an event and be added as a participant. Access: MBR'
       tags:
         - 'M03: Events and Tickets'
-      security:
-        - bearerAuth: []
       parameters:
         - in: path
           name: event_id
@@ -671,8 +665,6 @@ paths:
       description: 'Allows a member to leave an event and be removed as a participant. Access: MBR'
       tags:
         - 'M03: Events'
-      security:
-        - bearerAuth: []
       parameters:
         - in: path
           name: event_id
