@@ -347,7 +347,7 @@ paths:
 #################################EVENTS AND TICKETS####################################
 
 ##SEARCH EVENTS
-  /events:
+  /events/search:
     get:
       operationId: R301
       summary: 'R301: Search Events API'
@@ -408,6 +408,7 @@ paths:
                     tag: "Salsa"
                     owner: "Carlos Rivera"
 
+##CREATE EVENT
   /events/creation:
       post:
         operationId: R302
@@ -493,6 +494,7 @@ paths:
           '500':
             description: 'Server error during event creation.'
 
+##INVITE TO EVENT
   /events/{event_id}/invite:
     post:
       operationId: R303
@@ -575,7 +577,9 @@ paths:
           description: 'Event not found or username not found.'
         '500':
           description: 'Server error while sending invitations.'
-          
+
+
+##JOIN EVENT
   /events/{event_id}/join:
     post:
       operationId: R304
@@ -621,7 +625,8 @@ paths:
               description: 'User is already a participant.'
             '500':
               description: 'Server error during participation process.'
-        
+
+##LEAVE EVENT     
   /events/{event_id}/leave:
     post:
       operationId: R305
@@ -665,6 +670,103 @@ paths:
           description: 'Event not found or user not a participant.'
         '500':
           description: 'Server error during leave process.'
+
+##VIEW EVENT
+    /events/{event_id}:
+    get:
+      operationId: R306
+      summary: 'R306: View Event Details'
+      description: 'Retrieves detailed information about a specific event, including media, ratings, and other necessary data. Access: MBR, ADM'
+      tags:
+        - 'M03: Events and Tickets'
+      parameters:
+        - in: path
+          name: event_id
+          schema:
+            type: integer
+          required: true
+          description: 'Unique identifier of the event'
+      responses:
+        '200':
+          description: 'Event details retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: 'Unique identifier of the event'
+                  title:
+                    type: string
+                    description: 'Title of the event'
+                  description:
+                    type: string
+                    description: 'Detailed description of the event'
+                  category:
+                    type: string
+                    description: 'Category of the event'
+                  tags:
+                    type: array
+                    items:
+                      type: string
+                    description: 'Tags associated with the event'
+                  date:
+                    type: string
+                    format: date-time
+                    description: 'Date and time of the event in ISO 8601 format'
+              
+                  location:
+                    type: string
+                    description: 'Location of the event'
+                  owner:
+                    type: string
+                    description: 'Username of the event owner'
+                  is_public:
+                    type: boolean
+                    description: 'Indicates if the event is public or private'
+                  media_urls:
+                    type: array
+                    items:
+                      type: string
+                    description: 'List of URLs for event media files'
+                  rating:
+                    type: object
+                    properties:
+                      average:
+                        type: number
+                        format: float
+                        description: 'Average rating of the event'
+                      count:
+                        type: integer
+                        description: 'Number of ratings received'
+                  example:
+                    id: 101
+                    title: 'Tropical Salsa Night'
+                    description: 'An energetic salsa dancing event under the stars with live music.'
+                    category: 'Dance'
+                    tags:
+                      - 'Salsa'
+                      - 'Live Music'
+                    date: '2024-12-15T20:00:00Z'
+                    location: 'Havana Club, Miami, USA'
+                    owner: 'carlos_rivera'
+                    is_public: true
+                    media_urls:
+                      - 'https://placeholder.com/media/event101/image1.jpg'
+                      - 'https://placeholder.com/media/event101/image2.png'
+                    rating:
+                      average: 4.9
+                      count: 50
+        '400':
+          description: 'Invalid input data.'
+        '401':
+          description: 'Unauthorized. User is not logged in.'
+        '404':
+          description: 'Event not found.'
+        '500':
+          description: 'Server error during event retrieval.'
+
     
 
 ###############################POLLS AND COMMENTS####################################
