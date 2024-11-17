@@ -182,69 +182,6 @@ paths:
 #################################EVENTS AND TICKETS####################################
 
 ##SEARCH EVENTS
-  /api/events:
-    get:
-      operationId: R202
-      summary: 'R202: Search Events API'
-      description: 'Searches for events and returns the results as JSON. Access: MBR, ADM'
-
-      tags: 
-        - 'M03: Events and Tickets'
-
-      parameters:
-        - in: query
-          name: search
-          description: 'String to use for full-text search'
-          schema:
-            type: string
-          required: false
-        - in: query
-          name: category
-          description: 'Category of the event'
-          schema:
-            type: string
-          required: false
-        - in: query
-          name: tag
-          description: 'Tag of the event'
-          schema:
-            type: string
-          required: false
-
-
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    title:
-                      type: string
-                    category:
-                      type: string
-                    tag:
-                      type: string
-                    owner:
-                      type: string
-                example:
-                  - id: "123"
-                    title: "Jazz Nights Festival"
-                    category: "Music"
-                    tag: "Jazz"
-                    owner: "Emily Davis"
-
-                  - id: "456"
-                    title: "Salsa Under the Stars"
-                    category: "Dance"
-                    tag: "Salsa"
-                    owner: "Carlos Rivera"
-
 
 ###############################POLLS AND COMMENTS####################################
 
