@@ -590,37 +590,37 @@ paths:
             type: integer
           required: true
           description: 'Unique identifier of the event'
-        responses:
-          '200':
-            description: 'Successfully joined the event. Member is added as a participant.'
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    event_id:
-                      type: integer
-                      description: 'ID of the event'
-                    username:
-                      type: string
-                      description: 'Username of the participant'
-                    status:
-                      type: string
-                      description: 'Participation status (e.g., joined)'
-                    example:
-                      event_id: 101
-                      username: 'john_doe'
-                      status: 'joined'
-          '400':
-            description: 'Invalid input data.'
-          '401':
-            description: 'Unauthorized. User is not logged in.'
-          '404':
-            description: 'Event not found.'
-          '409':
-            description: 'User is already a participant.'
-          '500':
-            description: 'Server error during participation process.'
+          responses:
+            '200':
+              description: 'Successfully joined the event. Member is added as a participant.'
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      event_id:
+                        type: integer
+                        description: 'ID of the event'
+                      username:
+                        type: string
+                        description: 'Username of the participant'
+                      status:
+                        type: string
+                        description: 'Participation status (e.g., joined)'
+                      example:
+                        event_id: 101
+                        username: 'john_doe'
+                        status: 'joined'
+            '400':
+              description: 'Invalid input data.'
+            '401':
+              description: 'Unauthorized. User is not logged in.'
+            '404':
+              description: 'Event not found.'
+            '409':
+              description: 'User is already a participant.'
+            '500':
+              description: 'Server error during participation process.'
         
   /events/{event_id}/leave:
     post:
