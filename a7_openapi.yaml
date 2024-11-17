@@ -672,7 +672,7 @@ paths:
           description: 'Server error during leave process.'
 
 ##VIEW EVENT
-    /events/{event_id}:
+  /events/{event_id}/view:
     get:
       operationId: R306
       summary: 'R306: View Event Details'
