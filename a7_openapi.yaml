@@ -927,6 +927,194 @@ paths:
 
 ###############################ADMINISTRATION####################################
 
+ ##CREATE USER ACCOUNTS
+
+  /admin/user:
+    post:
+      operationId: R501
+      summary: 'R501: Create User Account'
+      description: 'Creates a new user account with specified details. Access: ADM'
+      tags:
+        - 'M05: Administration'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              parameters:
+                name:
+                  type: string
+                email:
+                  type: string
+                picture:
+                  type: string
+                  format: binary
+              required:
+                - email
+                - password
+
+      responses:
+        '302':
+          description: 'Redirect after processing the new user information.'
+          headers:
+            Location:
+              schema:
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful authentication. Redirect to user profile.'
+                  value: '/users/{id}'
+                302Failure:
+                  description: 'Failed authentication. Redirect to login form.'
+                  value: '/login'
+        '400':
+          description: 'Bad Request. Invalid input.'
+        '401':
+          description: 'Unauthorized. Admin access required.'
+
+ ##SEARCH FOR USERS
+
+  /admin/search:
+    get:
+      operationId: R502
+      summary: 'R502: Search for Users'
+      description: 'Search for users based on query parameters. Access: ADM'
+      tags:
+        - 'M05: Administration'
+      parameters:
+        - in: query
+          name: username
+          schema:
+            type: string
+          required: false
+          description: 'Filter users by username'
+        - in: query
+          name: name
+          schema:
+            type: string
+          required: false
+          description: 'Filter users by name'
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          required: false
+          description: 'Limit the number of results returned'
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          required: false
+          description: 'Page number for pagination'
+      responses:
+        '200':
+          description: 'Ok. Return a list of users matching the search criteria.'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      format: int64
+                    username:
+                      type: string
+                    email:
+                      type: string
+                      format: email
+                    name:
+                      type: string
+                  example:
+                    id: 1
+                    username: 'john_doe'
+                    email: 'johndoe@gmail.com'
+                    name: 'John Doe'
+        '400':
+          description: 'Bad Request. Invalid query parameters.'
+        '401':
+          description: 'Unauthorized. Admin access required.'
+        '500':
+          description: 'Internal Server Error. An unexpected error occurred.'
+
+
+ ##EDIT USER ACCOUNTS
+
+  /admin/users/{userId}:
+    put:
+      operationId: R503
+      summary: 'R503: Edit User Account'
+      description: 'Edit user account information. Access: ADM'
+      tags:
+        - 'M05: Administration'
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: 'ID of the user to update'
+        - in: body
+          name: data
+          required: true
+          description: 'User data to be updated'
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                description: 'New username for the user'
+              email:
+                type: string
+                format: email
+                description: 'New email address for the user'
+              name:
+                type: string
+                description: 'Full name of the user'
+            required:
+              - username
+              - email
+      responses:
+        '200':
+          description: 'User updated successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                  username:
+                    type: string
+                  email:
+                    type: string
+                    format: email
+                  name:
+                    type: string
+                  message:
+                    type: string
+                    example: 'User updated successfully'
+              example:
+                id: 123
+                username: "new_username"
+                email: "new_email@example.com"
+                name: "New Name"
+                message: "User updated successfully"
+        '400':
+          description: 'Bad Request. Invalid input data or missing required fields.'
+        '401':
+          description: 'Unauthorized. Admin access required.'
+        '404':
+          description: 'Not Found. User with the specified ID does not exist.'
+        '500':
+          description: 'Internal Server Error. An unexpected error occurred.'
+
 
 ###############################NOTIFICATIONS####################################
 
