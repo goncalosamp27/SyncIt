@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\InvitationNotification;
+use App\Models\Notifications\InvitationNotification;
 
 class InvitationNotificationController extends Controller
 {
