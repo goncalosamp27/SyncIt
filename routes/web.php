@@ -1,13 +1,25 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 
+/* REMOVE LATER */
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\ItemController;
-use App\Http\Controllers\HomeController;
+/* REMOVE LATER */
+
+use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\EventTagController;
+use App\Http\Controllers\MemberController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+
+use App\Http\Controllers\Notifications\NotificationController;
+use App\Http\Controllers\Notifications\CommentNotificationController;
+use App\Http\Controllers\Notifications\FollowNotificationController;
+use App\Http\Controllers\Notifications\InvitationNotificationController;
+use App\Http\Controllers\Notifications\PollNotificationController;
+use App\Http\Controllers\Notifications\RestrictionNotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,9 +31,6 @@ use App\Http\Controllers\Auth\RegisterController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
-// Home
-Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Login
 Route::redirect('/', '/login');
