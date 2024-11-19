@@ -1343,7 +1343,7 @@ paths:
     delete:
       operationId: R310
       summary: "R310: Remove a member from an event's participant list"
-      description: "Allows an artist to remove a member from the event's participants by deleting their ticket."
+      description: "Allows an artist to remove a member from the event's participants by deleting their ticket. Access "
       tags:
         - 'M03: Events and Tickets'
       parameters:
