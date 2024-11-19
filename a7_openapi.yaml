@@ -314,8 +314,8 @@ paths:
 
 ######################################USERS###########################################
 
-##VIEW PROFILE
   /users/{id}:
+  ##VIEW PROFILE
     get:
       operationId: R201
       summary: 'R201: View user profile'
@@ -341,11 +341,108 @@ paths:
                 302Failure:
                   description: 'Failure.'
 
+    ## EDIT PROFILE   
+    put:
+      operationId: R202
+      summary: 'R202: Edit Profile'
+      description: 'Allows a member to edit their profile information.'
+      tags:
+        - 'M02: Users'
+      requestBody:
+        required: true
+        description: 'Member profile details to be updated.'
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: 'Username of the member'
+                  required: 'false'   
+                bio:
+                  type: string
+                  description: 'Biography of the member'
+                  required: 'false'   
+                image:
+                  type: string
+                  format: uri
+                  description: 'URL pointing to the profile picture of the member'
+                  required: 'false'   
+                name:
+                  type: string
+                  description: 'Full name of the member'
+                  required: 'false'
+                email:
+                  type: string
+                  format: email
+                  description: 'Email address of the member'
+                  required: 'false'
+                phone:
+                  type: string
+                  description: 'Phone number of the member'
+                  required: 'false'
+                address:
+                  type: string
+                  description: 'Physical address of the member'
+                  required: 'false'
+      responses:
+        '200':
+          description: 'Profile updated successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: 'Unique identifier of the member'
+                  username:
+                    type: string
+                    description: 'Username of the member'
+                    required: 'false'   
+                  bio:
+                    type: string
+                    description: 'Biography of the member'
+                    required: 'false'   
+                  image:
+                    type: string
+                    format: uri
+                    description: 'URL pointing to the profile picture of the member'
+                    required: 'false'   
+                  name:
+                    type: string
+                    description: 'Full name of the member'
+                    required: 'false'
+                  email:
+                    type: string
+                    format: email
+                    description: 'Email address of the member'
+                    required: 'false'
+                  phone:
+                    type: string
+                    description: 'Phone number of the member'
+                    required: 'false'
+                  address:
+                    type: string
+                    description: 'Physical address of the member'
+                    required: 'false'
+                  message:
+                    type: string
+                    example: 'Profile updated successfully.'
+        '400':
+          description: 'Bad Request. Invalid input data or missing required fields.'
+        '401':
+          description: 'Unauthorized. Member authentication required.'
+        '500':
+          description: 'Internal Server Error. An unexpected error occurred.'
+
   ##VIEW FUTURE EVENTS
   /users/{id}/tickets:
     get:
-      operationId: R202
-      summary: 'R202: View user tickets'
+      operationId: R203
+      summary: 'R203: View user tickets'
       description: 'Show a list of tickets purchased by the user. Access: OWN, ADM'
       tags:
         - 'M02: Users'
@@ -424,8 +521,8 @@ paths:
   ##VIEW PAST EVENTS
   /users/{id}/events/past:
     get:
-      operationId: R203
-      summary: 'R203: View user past events'
+      operationId: R204
+      summary: 'R204: View user past events'
       description: 'Show a list of past events attended or created by the user. Access: OWN, ADM'
       tags:
         - 'M02: Users'
@@ -824,8 +921,9 @@ paths:
         '500':
           description: 'Server error during leave process.'
 
-##VIEW EVENT
   /events/{event_id}/view:
+
+  ##VIEW EVENT
     get:
       operationId: R306
       summary: 'R306: View Event Details'
@@ -920,7 +1018,6 @@ paths:
         '500':
           description: 'Server error during event retrieval.'
 
-    
 
 ###############################POLLS AND COMMENTS####################################
 
