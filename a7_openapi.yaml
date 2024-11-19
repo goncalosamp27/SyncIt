@@ -1280,6 +1280,98 @@ paths:
         '500':
           description: 'Internal Server Error. An unexpected error occurred while updating the event.'
 
+## MANAGE EVENT PARTICIPANTS
+
+  # Add participant to event
+  /events/{event_id}/participants:
+    post:
+      operationId: R309
+      summary: "R309: Add a member to an event's participant list"
+      description: "Allows an artist to add a member to the event's participants by assigning them a ticket."
+      tags:
+        - 'M03: Events and Tickets'
+      parameters:
+        - in: path
+          name: event_id
+          schema:
+            type: integer
+          required: true
+          description: "Unique identifier of the event"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                member_id:
+                  type: integer
+                  description: "The unique identifier of the member being added to the event"
+                  required: true
+      responses:
+        '200':
+          description: "Member successfully added to the event."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ticket_id:
+                    type: integer
+                    description: "Unique identifier of the created ticket"
+                  member_id:
+                    type: integer
+                    description: "Unique identifier of the member added"
+                  event_id:
+                    type: integer
+                    description: "The event to which the member was added"
+                  ticket_date:
+                    type: string
+                    format: date-time
+                    description: "The date and time the ticket was assigned"
+        '400':
+          description: "Bad request. Invalid member ID or event ID."
+        '401':
+          description: "Unauthorized. Only event owner (artist) can add participants."
+        '404':
+          description: "Event or member not found."
+        '409':
+          description: "Conflict. The member is already registered for this event."
+  
+  # Remove participant from event
+  /events/{event_id}/participants/{ticket_id}:
+    delete:
+      operationId: R310
+      summary: "R310: Remove a member from an event's participant list"
+      description: "Allows an artist to remove a member from the event's participants by deleting their ticket."
+      tags:
+        - 'M03: Events and Tickets'
+      parameters:
+        - in: path
+          name: event_id
+          schema:
+            type: integer
+          required: true
+          description: "Unique identifier of the event"
+        - in: path
+          name: ticket_id
+          schema:
+            type: integer
+          required: true
+          description: "Unique identifier of the ticket for the participant to be removed"
+      responses:
+        '200':
+          description: "Member successfully removed from the event."
+        '400':
+          description: "Bad request. Invalid ticket ID or event ID."
+        '401':
+          description: "Unauthorized. Only event owner (artist) can remove participants."
+        '404':
+          description: "Event or ticket not found."
+        '409':
+          description: "Conflict. The member is not registered for this event."
+
+
 ###############################POLLS AND COMMENTS####################################
 
 
