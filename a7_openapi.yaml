@@ -1086,6 +1086,199 @@ paths:
         '500':
           description: 'Internal Server Error. An unexpected error occurred during the purchase.'
 
+  ## EDIT EVENT
+  /events/{event_id}/edit:
+    put:
+      operationId: R308
+      summary: 'R308: Edit Event Details'
+      description: 'Allows an artist to edit the details of their event, such as title, description, date, location, etc. Access: ART, ADM'
+      tags:
+        - 'M03: Events and Tickets'
+      parameters:
+        - in: path
+          name: event_id
+          schema:
+            type: integer
+          required: true
+          description: 'Unique identifier of the event to be edited'
+      requestBody:
+        required: true
+        description: 'Updated event details to be applied.'
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: 'Title of the event'
+                  required: 'false'
+                  #example: 'Salsa Night with Live Music'
+                description:
+                  type: string
+                  description: 'Detailed description of the event'
+                  #example: 'Join us for an evening of vibrant salsa dancing and live music under the stars.'
+                  required: 'false'
+                type:
+                  type: string
+                  description: 'Category of the event (e.g., Dance, Music, Workshop, etc.)'
+                  #example: 'Dance'
+                  required: 'false'
+                date:
+                  type: string
+                  format: date-time
+                  description: 'Date and time of the event in ISO 8601 format'
+                  #example: '2024-12-15T20:00:00Z'
+                  required: 'false'
+                location:
+                  type: string
+                  description: 'Location of the event'
+                  #example: 'Havana Club, Miami, USA'
+                  required: 'false'
+                media_urls:
+                  type: array
+                  items:
+                    type: string
+                    format: uri
+                  description: 'URLs for event media (e.g., images, videos)'
+                  #example:
+                   # - 'https://example.com/media/event101/image1.jpg'
+                    #- 'https://example.com/media/event101/image2.png'
+                  required: 'false'
+                is_public:
+                  type: boolean
+                  description: 'Indicates whether the event is public or private'
+                  #example: true
+                  required: 'false'
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  description: 'Tags related to the event'
+                  #example:
+                   # - 'Salsa'
+                    #- 'Live Music'
+                  required: 'false'
+                price:
+                  type: number
+                  format: float
+                  description: 'Price of the event, if applicable (e.g., ticket price)'
+                  #example: 20.00
+                  required: 'false'
+                ticket_limit:
+                  type: integer
+                  description: 'The maximum number of tickets available for this event'
+                  #example: 500
+                  required: 'false'
+                refund_policy:
+                  type: string
+                  description: 'Refund policy of the event'
+                  required: 'false'
+      responses:
+        '200':
+          description: 'Event details updated successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: 'Unique identifier of the event'
+                    example: 101
+                  title:
+                    type: string
+                    description: 'Title of the event'
+                    required: false
+                    example: 'Salsa Night with Live Music'
+                  description:
+                    type: string
+                    description: 'Detailed description of the event'
+                    required: false
+                    example: 'Join us for an evening of vibrant salsa dancing and live music under the stars.'
+                  category:
+                    type: string
+                    description: 'Category of the event (e.g., Dance, Music, Workshop, etc.)'
+                    required: false
+                    example: 'Dance'
+                  date:
+                    type: string
+                    format: date-time
+                    description: 'Date and time of the event in ISO 8601 format'
+                    required: false
+                    example: '2024-12-15T20:00:00Z'
+                  location:
+                    type: string
+                    description: 'Location of the event'
+                    required: false
+                    example: 'Havana Club, Miami, USA'
+                  media_urls:
+                    type: array
+                    items:
+                      type: string
+                      format: uri
+                    description: 'URLs for event media (e.g., images, videos)'
+                    required: false
+                    example:
+                      - 'https://example.com/media/event101/image1.jpg'
+                      - 'https://example.com/media/event101/image2.png'
+                  is_public:
+                    type: boolean
+                    description: 'Indicates whether the event is public or private'
+                    required: false
+                    example: true
+                  tags:
+                    type: array
+                    items:
+                      type: string
+                    description: 'Tags related to the event'
+                    required: false
+                    example:
+                      - 'Salsa'
+                      - 'Live Music'
+                  price:
+                    type: number
+                    format: float
+                    description: 'Price of the event, if applicable (e.g., ticket price)'
+                    required: false
+                    example: 20.00
+                  ticket_limit:
+                    type: integer
+                    description: 'The maximum number of tickets available for this event'
+                    required: false
+                    example: 500
+                  refund_policy:
+                    type: string
+                    description: 'Refund policy of the event'
+                    required: false
+                    example: 'No refunds within 48 hours of the event.'
+                #example:
+                 # id: 101
+               #   title: 'Salsa Night with Live Music'
+                #  description: 'Join us for an evening of vibrant salsa dancing and live music under the stars.'
+                #  category: 'Dance'
+                #  date: '2024-12-15T20:00:00Z'
+                #  location: 'Havana Club, Miami, USA'
+                #  media_urls:
+                #    - 'https://example.com/media/event101/image1.jpg'
+                #    - 'https://example.com/media/event101/image2.png'
+                #  is_public: true
+                #  tags:
+                #    - 'Salsa'
+                #    - 'Live Music'
+                #  price: 20.00
+                #  ticket_limit: 500
+        '400':
+          description: 'Bad Request. Invalid input data or missing required fields.'
+        '401':
+          description: 'Unauthorized. Artist authentication required.'
+        '403':
+          description: 'Forbidden. You are not authorized to edit this event.'
+        '404':
+          description: 'Event not found. The event with the provided ID does not exist.'
+        '500':
+          description: 'Internal Server Error. An unexpected error occurred while updating the event.'
 
 ###############################POLLS AND COMMENTS####################################
 
