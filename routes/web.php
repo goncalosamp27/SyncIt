@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\HomeController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -20,6 +21,9 @@ use App\Http\Controllers\Auth\RegisterController;
 */
 
 // Home
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Login
 Route::redirect('/', '/login');
 
 // Cards
