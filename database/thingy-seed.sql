@@ -1813,6 +1813,3 @@ FOR EACH ROW EXECUTE FUNCTION event_fts_trigger();
 
 CREATE INDEX event_fts_name_idx ON event USING GIN (fts_name);
 CREATE INDEX event_fts_location_idx ON event USING GIN (fts_location);
-
-
->>>>>>> 2709175 (changed db)
