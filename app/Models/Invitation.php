@@ -27,15 +27,24 @@ class Invitation extends Model
 
         return $validator;
     }
+    //Relationships 
+    // Many Invitations belongs to one Event
     public function event()
     {
         return $this->belongsTo(Event::class, 'event_id', 'event_id');
     }
 
+    // 1 Invitation has many InvitationNotifications
+    public function invitationNotifications()
+    {
+        return $this->hasMany(InvitationNotification::class, 'invitation_id', 'invitation_id');
+    }
 
+    
+    // Many Invitations belong to 2 Members
     public function member()
     {
-        return $this->belongsTo(Member::class, 'member_id', 'member_id');
+
     }
 
 }

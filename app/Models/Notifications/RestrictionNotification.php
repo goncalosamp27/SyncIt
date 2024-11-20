@@ -31,13 +31,12 @@ class RestrictionNotification extends Model
 
         return $validator;
     }
-    
+    //Relationships
     public function notification()
     {
         return $this->belongsTo(Notification::class, 'notification_id');
     }
 
-    
     public function restriction()
     {
         return $this->belongsTo(Restriction::class, 'restriction_id');

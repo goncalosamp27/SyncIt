@@ -32,9 +32,29 @@ class Event extends Model
 
         return $validator;
     }
-    //association
+    //Relationships
+    // 1 Event has many Tickets
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'event_id', 'event_id');
+    }
+
+    // Many Events belong to 1 Artist
+    public function artist()
+    {
+        return $this->belongsTo(Artist::class, 'artist_id', 'artist_id');
+    }
+
+    // 1 Event belongs to 1 Member
+    public function member()
+    {
+        return $this->belongsTo(Member::class, 'member_id', 'member_id');
+    }
+
     public function tags()
     {
-        return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id');
+        return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id')
+                ->withTimestamps(); // This assumes the pivot table has created_at and updated_at timestamps
     }
+    
 }
