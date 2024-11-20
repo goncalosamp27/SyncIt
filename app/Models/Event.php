@@ -55,6 +55,5 @@ class Event extends Model
     {
         return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id')
                 ->withTimestamps(); // This assumes the pivot table has created_at and updated_at timestamps
-    }
-    
+    }   
 }
