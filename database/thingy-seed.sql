@@ -119,13 +119,20 @@ CREATE TABLE event (
     type_of_event event_type_domain NOT NULL,
     rating rating_domain NOT NULL,
     artist_id INT NOT NULL,
+    capacity INT NOT NULL,
     FOREIGN KEY (artist_id) REFERENCES artist(artist_id)
 );
+
 CREATE INDEX event_date_idx ON event (event_date);
 CREATE INDEX event_name_idx ON event (event_name);
 CREATE INDEX event_rating_idx ON event (rating);
 CREATE INDEX event_artist_id_idx ON event (artist_id);
 
+CREATE TABLE event_image (
+    event_id INT NOT NULL,
+    image_url VARCHAR(200) PRIMARY KEY,
+    FOREIGN KEY (event_id) REFERENCES event(event_id)
+);
 
 CREATE TABLE comment (
     comment_id SERIAL PRIMARY KEY,
