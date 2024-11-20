@@ -22,6 +22,7 @@ DROP TABLE IF EXISTS following CASCADE;
 DROP TABLE IF EXISTS rating CASCADE;
 DROP TABLE IF EXISTS restriction CASCADE;
 DROP TABLE IF EXISTS restriction_notification CASCADE;
+DROP TABLE IF EXISTS event_image;
 
 DROP DOMAIN IF EXISTS email_domain CASCADE;
 DROP DOMAIN IF EXISTS price_domain CASCADE;
@@ -119,6 +120,7 @@ CREATE TABLE event (
     type_of_event event_type_domain NOT NULL,
     rating rating_domain NOT NULL,
     artist_id INT NOT NULL,
+    --capacity INT NOT NULL,
     --capacity INT NOT NULL,
     FOREIGN KEY (artist_id) REFERENCES artist(artist_id)
 );
