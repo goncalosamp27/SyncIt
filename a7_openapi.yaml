@@ -37,6 +37,8 @@ paths:
       responses:
         '200':
           description: 'Ok. Show log-in UI'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
     post:
       operationId: R102
       summary: 'R102: Login Action'
@@ -73,6 +75,8 @@ paths:
                 302Error:
                   description: 'Failed authentication. Redirect to login form.'
                   value: '/login'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
  
 ##LOGOUT
   /logout:
@@ -93,6 +97,8 @@ paths:
                 302Success:
                   description: 'Successful logout. Redirect to login form.'
                   value: '/login'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
 ##REGISTER
   /register:
@@ -105,6 +111,8 @@ paths:
       responses:
         '200':
           description: 'Ok. Show sign-up UI'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
     post:
       operationId: R105
@@ -229,7 +237,9 @@ paths:
                   email: 'user@example.com'
                   confirmed: true
         '404':
-          description: 'Email address not found.'    
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'   
 
 ## RESET PASSWORD
   /reset-password/request:
@@ -254,10 +264,10 @@ paths:
       responses:
         '200':
           description: 'Password reset request received. Verification token sent.'
-        '404':
-          description: 'User not found.'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: 'Server error while processing the password reset request.'
+          $ref: '#/components/responses/InternalServerError'
 
   /reset-password/verify:
     get:
