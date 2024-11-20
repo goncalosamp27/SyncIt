@@ -314,8 +314,8 @@ paths:
 
 ######################################USERS###########################################
 
-##VIEW PROFILE
   /users/{id}:
+  ##VIEW PROFILE
     get:
       operationId: R201
       summary: 'R201: View user profile'
@@ -341,11 +341,108 @@ paths:
                 302Failure:
                   description: 'Failure.'
 
+    ## EDIT PROFILE   
+    put:
+      operationId: R202
+      summary: 'R202: Edit Profile'
+      description: 'Allows a member to edit their profile information. Access: OWN.'
+      tags:
+        - 'M02: Users'
+      requestBody:
+        required: true
+        description: 'Member profile details to be updated.'
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: 'Username of the member'
+                  required: 'false'   
+                bio:
+                  type: string
+                  description: 'Biography of the member'
+                  required: 'false'   
+                image:
+                  type: string
+                  format: uri
+                  description: 'URL pointing to the profile picture of the member'
+                  required: 'false'   
+                name:
+                  type: string
+                  description: 'Full name of the member'
+                  required: 'false'
+                email:
+                  type: string
+                  format: email
+                  description: 'Email address of the member'
+                  required: 'false'
+                phone:
+                  type: string
+                  description: 'Phone number of the member'
+                  required: 'false'
+                address:
+                  type: string
+                  description: 'Physical address of the member'
+                  required: 'false'
+      responses:
+        '200':
+          description: 'Profile updated successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: 'Unique identifier of the member'
+                  username:
+                    type: string
+                    description: 'Username of the member'
+                    required: 'false'   
+                  bio:
+                    type: string
+                    description: 'Biography of the member'
+                    required: 'false'   
+                  image:
+                    type: string
+                    format: uri
+                    description: 'URL pointing to the profile picture of the member'
+                    required: 'false'   
+                  name:
+                    type: string
+                    description: 'Full name of the member'
+                    required: 'false'
+                  email:
+                    type: string
+                    format: email
+                    description: 'Email address of the member'
+                    required: 'false'
+                  phone:
+                    type: string
+                    description: 'Phone number of the member'
+                    required: 'false'
+                  address:
+                    type: string
+                    description: 'Physical address of the member'
+                    required: 'false'
+                  message:
+                    type: string
+                    example: 'Profile updated successfully.'
+        '400':
+          description: 'Bad Request. Invalid input data or missing required fields.'
+        '401':
+          description: 'Unauthorized. Member authentication required.'
+        '500':
+          description: 'Internal Server Error. An unexpected error occurred.'
+
   ##VIEW FUTURE EVENTS
   /users/{id}/tickets:
     get:
-      operationId: R202
-      summary: 'R202: View user tickets'
+      operationId: R203
+      summary: 'R203: View user tickets'
       description: 'Show a list of tickets purchased by the user. Access: OWN, ADM'
       tags:
         - 'M02: Users'
@@ -424,8 +521,8 @@ paths:
   ##VIEW PAST EVENTS
   /users/{id}/events/past:
     get:
-      operationId: R203
-      summary: 'R203: View user past events'
+      operationId: R204
+      summary: 'R204: View user past events'
       description: 'Show a list of past events attended or created by the user. Access: OWN, ADM'
       tags:
         - 'M02: Users'
@@ -824,8 +921,9 @@ paths:
         '500':
           description: 'Server error during leave process.'
 
-##VIEW EVENT
   /events/{event_id}/view:
+
+  ##VIEW EVENT
     get:
       operationId: R306
       summary: 'R306: View Event Details'
@@ -919,8 +1017,360 @@ paths:
           description: 'Event not found.'
         '500':
           description: 'Server error during event retrieval.'
+ 
+  ## PURCHASE TICKET
+  /events/{event_id}/purchase:
+    post:
+      operationId: R307
+      summary: 'R307: Purchase Tickets for an Event'
+      description: 'Allows a member to purchase tickets for a specific event. Access: MBR, ART.'
+      tags:
+        - 'M03: Events and Tickets'
+      parameters:
+        - in: path
+          name: event_id
+          schema:
+            type: integer
+          required: true
+          description: 'Unique identifier of the event'
+        - in: query
+          name: quantity
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 1
+          required: true
+          description: 'Number of tickets to purchase. Maximum is 10 tickets per order.'
+        - in: query
+          name: payment_method
+          schema:
+            type: string
+            enum:
+              - 'credit_card'
+              - 'paypal'
+              - 'mbway'
+            description: 'Payment method to be used for the purchase'
+          required: true
+          description: 'The payment method chosen for purchasing tickets.'
+      responses:
+        '200':
+          description: 'Tickets purchased successfully.'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    ticket_id:
+                      type: integer
+                      description: 'Unique identifier for the ticket'
+                    event_id:
+                      type: integer
+                      description: 'The event for which the ticket was purchased'
+                    purchase_time:
+                      type: string
+                      format: date-time
+                      description: 'Timestamp of when the ticket was purchased'
+        '400':
+          description: 'Bad Request. Invalid input data or missing required fields.'
+        '401':
+          description: 'Unauthorized. User is not logged in.'
+        '403':
+          description: 'Forbidden. You cannot purchase tickets for this event.'
+        '404':
+          description: 'Event not found. The event with the provided ID does not exist.'
+        '409':
+          description: 'Conflict. There are not enough tickets available or you have requested more tickets than the maximum allowed.'
+        '500':
+          description: 'Internal Server Error. An unexpected error occurred during the purchase.'
 
-    
+  ## EDIT EVENT
+  /events/{event_id}/edit:
+    put:
+      operationId: R308
+      summary: 'R308: Edit Event Details'
+      description: 'Allows an artist to edit the details of their event, such as title, description, date, location, etc. Access: ART, ADM'
+      tags:
+        - 'M03: Events and Tickets'
+      parameters:
+        - in: path
+          name: event_id
+          schema:
+            type: integer
+          required: true
+          description: 'Unique identifier of the event to be edited'
+      requestBody:
+        required: true
+        description: 'Updated event details to be applied.'
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: 'Title of the event'
+                  required: 'false'
+                  #example: 'Salsa Night with Live Music'
+                description:
+                  type: string
+                  description: 'Detailed description of the event'
+                  #example: 'Join us for an evening of vibrant salsa dancing and live music under the stars.'
+                  required: 'false'
+                type:
+                  type: string
+                  description: 'Category of the event (e.g., Dance, Music, Workshop, etc.)'
+                  #example: 'Dance'
+                  required: 'false'
+                date:
+                  type: string
+                  format: date-time
+                  description: 'Date and time of the event in ISO 8601 format'
+                  #example: '2024-12-15T20:00:00Z'
+                  required: 'false'
+                location:
+                  type: string
+                  description: 'Location of the event'
+                  #example: 'Havana Club, Miami, USA'
+                  required: 'false'
+                media_urls:
+                  type: array
+                  items:
+                    type: string
+                    format: uri
+                  description: 'URLs for event media (e.g., images, videos)'
+                  #example:
+                   # - 'https://example.com/media/event101/image1.jpg'
+                    #- 'https://example.com/media/event101/image2.png'
+                  required: 'false'
+                is_public:
+                  type: boolean
+                  description: 'Indicates whether the event is public or private'
+                  #example: true
+                  required: 'false'
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  description: 'Tags related to the event'
+                  #example:
+                   # - 'Salsa'
+                    #- 'Live Music'
+                  required: 'false'
+                price:
+                  type: number
+                  format: float
+                  description: 'Price of the event, if applicable (e.g., ticket price)'
+                  #example: 20.00
+                  required: 'false'
+                ticket_limit:
+                  type: integer
+                  description: 'The maximum number of tickets available for this event'
+                  #example: 500
+                  required: 'false'
+                refund_policy:
+                  type: string
+                  description: 'Refund policy of the event'
+                  required: 'false'
+      responses:
+        '200':
+          description: 'Event details updated successfully.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: 'Unique identifier of the event'
+                    example: 101
+                  title:
+                    type: string
+                    description: 'Title of the event'
+                    required: false
+                    example: 'Salsa Night with Live Music'
+                  description:
+                    type: string
+                    description: 'Detailed description of the event'
+                    required: false
+                    example: 'Join us for an evening of vibrant salsa dancing and live music under the stars.'
+                  category:
+                    type: string
+                    description: 'Category of the event (e.g., Dance, Music, Workshop, etc.)'
+                    required: false
+                    example: 'Dance'
+                  date:
+                    type: string
+                    format: date-time
+                    description: 'Date and time of the event in ISO 8601 format'
+                    required: false
+                    example: '2024-12-15T20:00:00Z'
+                  location:
+                    type: string
+                    description: 'Location of the event'
+                    required: false
+                    example: 'Havana Club, Miami, USA'
+                  media_urls:
+                    type: array
+                    items:
+                      type: string
+                      format: uri
+                    description: 'URLs for event media (e.g., images, videos)'
+                    required: false
+                    example:
+                      - 'https://example.com/media/event101/image1.jpg'
+                      - 'https://example.com/media/event101/image2.png'
+                  is_public:
+                    type: boolean
+                    description: 'Indicates whether the event is public or private'
+                    required: false
+                    example: true
+                  tags:
+                    type: array
+                    items:
+                      type: string
+                    description: 'Tags related to the event'
+                    required: false
+                    example:
+                      - 'Salsa'
+                      - 'Live Music'
+                  price:
+                    type: number
+                    format: float
+                    description: 'Price of the event, if applicable (e.g., ticket price)'
+                    required: false
+                    example: 20.00
+                  ticket_limit:
+                    type: integer
+                    description: 'The maximum number of tickets available for this event'
+                    required: false
+                    example: 500
+                  refund_policy:
+                    type: string
+                    description: 'Refund policy of the event'
+                    required: false
+                    example: 'No refunds within 48 hours of the event.'
+                #example:
+                 # id: 101
+               #   title: 'Salsa Night with Live Music'
+                #  description: 'Join us for an evening of vibrant salsa dancing and live music under the stars.'
+                #  category: 'Dance'
+                #  date: '2024-12-15T20:00:00Z'
+                #  location: 'Havana Club, Miami, USA'
+                #  media_urls:
+                #    - 'https://example.com/media/event101/image1.jpg'
+                #    - 'https://example.com/media/event101/image2.png'
+                #  is_public: true
+                #  tags:
+                #    - 'Salsa'
+                #    - 'Live Music'
+                #  price: 20.00
+                #  ticket_limit: 500
+        '400':
+          description: 'Bad Request. Invalid input data or missing required fields.'
+        '401':
+          description: 'Unauthorized. Artist authentication required.'
+        '403':
+          description: 'Forbidden. You are not authorized to edit this event.'
+        '404':
+          description: 'Event not found. The event with the provided ID does not exist.'
+        '500':
+          description: 'Internal Server Error. An unexpected error occurred while updating the event.'
+
+## MANAGE EVENT PARTICIPANTS
+
+  # Add participant to event
+  /events/{event_id}/participants:
+    post:
+      operationId: R309
+      summary: "R309: Add a member to an event's participant list"
+      description: "Allows an artist to add a member to the event's participants by assigning them a ticket."
+      tags:
+        - 'M03: Events and Tickets'
+      parameters:
+        - in: path
+          name: event_id
+          schema:
+            type: integer
+          required: true
+          description: "Unique identifier of the event"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                member_id:
+                  type: integer
+                  description: "The unique identifier of the member being added to the event"
+                  required: true
+      responses:
+        '200':
+          description: "Member successfully added to the event."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ticket_id:
+                    type: integer
+                    description: "Unique identifier of the created ticket"
+                  member_id:
+                    type: integer
+                    description: "Unique identifier of the member added"
+                  event_id:
+                    type: integer
+                    description: "The event to which the member was added"
+                  ticket_date:
+                    type: string
+                    format: date-time
+                    description: "The date and time the ticket was assigned"
+        '400':
+          description: "Bad request. Invalid member ID or event ID."
+        '401':
+          description: "Unauthorized. Only event owner (artist) can add participants."
+        '404':
+          description: "Event or member not found."
+        '409':
+          description: "Conflict. The member is already registered for this event."
+  
+  # Remove participant from event
+  /events/{event_id}/participants/{ticket_id}:
+    delete:
+      operationId: R310
+      summary: "R310: Remove a member from an event's participant list"
+      description: "Allows an artist to remove a member from the event's participants by deleting their ticket. Access "
+      tags:
+        - 'M03: Events and Tickets'
+      parameters:
+        - in: path
+          name: event_id
+          schema:
+            type: integer
+          required: true
+          description: "Unique identifier of the event"
+        - in: path
+          name: ticket_id
+          schema:
+            type: integer
+          required: true
+          description: "Unique identifier of the ticket for the participant to be removed"
+      responses:
+        '200':
+          description: "Member successfully removed from the event."
+        '400':
+          description: "Bad request. Invalid ticket ID or event ID."
+        '401':
+          description: "Unauthorized. Only event owner (artist) can remove participants."
+        '404':
+          description: "Event or ticket not found."
+        '409':
+          description: "Conflict. The member is not registered for this event."
+
 
 ###############################POLLS AND COMMENTS####################################
 
