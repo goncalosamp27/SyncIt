@@ -1,7 +1,6 @@
 <header class="navbar">
 	<div class="navbar-left">
-		<button class="menu-icon">
-		</button>
+		<button class="menu-icon">☰</button>
 		<div class="logo">
 			<a href = "{{ url('/app')}}">
 				<span class="logo-icon">🎵</span>
@@ -10,19 +9,25 @@
 		</div>
 	</div>
 
-	<div class="search-bar">
-		<input type="text" placeholder="Search for events, artists, genres, cities..." />
-		<span class="search-icon">🔍</span>
-	</div>
+	<div class="navbar-center">
+		<div class="search-bar">
+			<span class="search-icon">🔍</span>
+			<input type="text" placeholder="Search for events, artists, genres, cities..." />
+		</div>
+		<button class="explore-btn">Explore</button>
+	</div>	
 
 	<div class="navbar-right">
-		<button class="explore-btn">Explore</button>
-		@if (Auth::check())
-        	<a class="button" href="{{ url('/logout') }}">Logout</a>
-        	<span>{{ Auth::user()->name }}</span>
-        @else
-        	<a class="button" href="{{ url('/login') }}">Login / Register</a>
-        @endif
+		<div class="login-register-logout">
+			@if (Auth::check())
+				<a class="button" href="{{ url('/logout') }}">Logout</a>
+				<!-- add user options here like pfp or smth -->
+			@else
+				<a class="button" href="{{ url('/login') }}">Login</a>
+				<span> / </span>
+				<a class="button" href="{{ url('/register') }}"> Register</a>
+			@endif
+		</div>	
 	</div>
 </header>
 

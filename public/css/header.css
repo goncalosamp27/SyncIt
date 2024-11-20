@@ -1,1 +1,145 @@
 @import url('variables.css');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    background-color: var(--black-color);
+    color: #fff;
+    border-bottom: 0.4rem solid var(--primary-color);
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+	padding-left: 3rem;
+	padding-right: 3rem;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.menu-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 2rem;
+    height: 1rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+	font-size: 2em;
+	margin-left: -0.20em;
+	margin-top: -1em;
+	color: #FFFFFF;
+}
+
+.menu-icon span {
+    display: block;
+    height: 0.125rem;
+    background: #FFFFFF;
+}
+
+.menu-icon:hover {
+	color: var(--hover-color)
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    margin-left: 1.5rem;
+	font-size: 1.5rem;
+}
+
+.logo-icon {
+    font-size: 1.5rem;
+    color: #a64eff;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    margin-left: 0.3125rem;
+    color: #FFFFFF;
+}
+
+.logo-text:hover {
+	color: var(--hover-color);
+}
+
+.navbar-center {
+	display: flex;
+	font-size: 1.5rem;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+	justify-content: flex-start;
+    background-color: var(--gray-color);
+    border-radius: 2em;
+	width: 28em;
+    padding: 0.5rem 1rem;
+    flex: 1;
+    margin: 0 1rem;
+	text-align: left;
+	font-size: 1.5rem;
+}
+
+.search-bar input {
+    border: none;
+    background: none;
+    color: var(--black-color);
+    flex-grow: 1;
+    outline: none;
+    padding: 0rem;
+	font-size: 1.5rem;
+}
+
+.search-bar .search-icon {
+    margin-right: 0.5rem;
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.explore-btn {
+    background-color: var(--primary-color);
+    border: none;
+	font-size: 1.5rem;
+    border-radius: 1.25em;
+    color: #FFFFFF;
+    padding: 0.3125rem 0.9375rem;
+    cursor: pointer;
+    margin-right: 0.9375rem;
+}
+
+.explore-btn:hover {
+    background-color: var(--hover-color);
+}
+
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+	font-size: 1.5rem;
+}
+
+.login-register-logout a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.login-register-logout a:hover {
+    color: var(--hover-color);
+    text-decoration: none; /* Ensure underline is removed on hover */
+}
+
