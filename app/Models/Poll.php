@@ -32,4 +32,22 @@ class Poll extends Model
 
         return $validator;
     }
+    //Relationships
+    // Many Polls to One Event 
+    public function event()
+    {
+        return $this->belongsTo(Event::class, 'event_id', 'event_id');
+    }
+
+    // One Poll has many Notifications 
+    public function notifications()
+    {
+        return $this->hasMany(PollNotification::class, 'poll_id', 'poll_id');
+    }
+
+    // One Poll has many Options 
+    public function options()
+    {
+        return $this->hasMany(Option::class, 'poll_id', 'poll_id');
+    }
 }

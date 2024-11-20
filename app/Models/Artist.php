@@ -23,12 +23,11 @@ class Artist extends Model
     public static function validate($data)
     {
         $validator = Validator::make($data, [
-            'rating' => 'required|numeric|between:0,5',  // rating_domain: DECIMAL(2,1) between 0.0 and 5.0
+            'rating' => 'required|numeric|between:0,5', 
         ]);
 
         return $validator;
     }
-
     
     public static function createArtist($data)
     {
@@ -40,10 +39,22 @@ class Artist extends Model
 
         return self::create($data);
     }
-    //association 
-
+    //Relationships
+    // Artist is a Member 
     public function member()
     {
         return $this->belongsTo(Member::class, 'artist_id', 'member_id');
+    }
+
+    // 1 Artist has many Events
+    public function events()
+    {
+        return $this->hasMany(Event::class, 'artist_id', 'artist_id');
+    }
+
+    // Many Artists to Many Tags
+    public function tags()
+    {
+        
     }
 }

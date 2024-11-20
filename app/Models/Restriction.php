@@ -39,15 +39,23 @@ class Restriction extends Model
 
         return $validator;
     }
+    //Relationships
+    // 1 Restriction belongs to 1 Member (many restrictions to one member)
     public function member()
     {
-        return $this->belongsTo(Member::class, 'member_id');
+        return $this->belongsTo(Member::class, 'member_id', 'member_id');
     }
 
-    
+    // 1 Restriction belongs to 1 Admin (many restrictions to one admin)
     public function admin()
     {
-        return $this->belongsTo(Admin::class, 'admin_id');
+        return $this->belongsTo(Admin::class, 'admin_id', 'admin_id');
+    }
+
+    // 1 Restriction has many RestrictionNotifications (one restriction can have many notifications)
+    public function notifications()
+    {
+        return $this->hasMany(RestrictionNotification::class, 'restriction_id', 'restriction_id');
     }
 
    
