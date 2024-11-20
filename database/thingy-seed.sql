@@ -119,7 +119,7 @@ CREATE TABLE event (
     type_of_event event_type_domain NOT NULL,
     rating rating_domain NOT NULL,
     artist_id INT NOT NULL,
-    capacity INT NOT NULL,
+    --capacity INT NOT NULL,
     FOREIGN KEY (artist_id) REFERENCES artist(artist_id)
 );
 
@@ -1308,4 +1308,3 @@ VALUES
     (15, INTERVAL '0 days', 1, NOW()),      -- Member 15 banned by Admin 1
     (20, INTERVAL '0 days', 2, NOW()),      -- Member 20 banned by Admin 2
     (25, INTERVAL '0 days', 3, NOW());      -- Member 25 banned by Admin 3
-
