@@ -55,6 +55,8 @@ class Artist extends Model
     // Many Artists to Many Tags
     public function tags()
     {
-        
+        return $this->belongsToMany(Tag::class, 'artist_tag', 'artist_id', 'tag_id')
+                    ->withTimestamps();
     }
+    
 }

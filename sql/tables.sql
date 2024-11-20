@@ -159,6 +159,14 @@ CREATE TABLE event_tag (
     FOREIGN KEY (tag_id) REFERENCES tag(tag_id)
 );
 
+CREATE TABLE artist_tag (
+    artist_id INT NOT NULL,
+    tag_id INT NOT NULL,
+    PRIMARY KEY (artist_id, tag_id),
+    FOREIGN KEY (artist_id) REFERENCES artist(artist_id),
+    FOREIGN KEY (tag_id) REFERENCES tag(tag_id)
+);
+
 CREATE TABLE ticket (
     ticket_id SERIAL PRIMARY KEY,
     event_id INT NOT NULL,

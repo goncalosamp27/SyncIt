@@ -95,10 +95,5 @@ class Member extends Model
         return $this->hasMany(FollowNotification::class, 'follower_id', 'member_id');
     }
 
-    // Inheritance for Artist being a Member
-    public function artist()
-    {
-        return $this->hasOne(Artist::class, 'member_id', 'member_id');
-    }
 
 }
