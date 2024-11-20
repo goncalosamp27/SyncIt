@@ -1,24 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" href="{{ asset('css/header.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SyncIt!</title>
+    <link rel="stylesheet" href="{{ asset('css/header.css') }}"> 
 </head>
-<header class="navbar">
-    <div class="navbar-left">
-        <button class="menu-icon">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <div class="logo">
-            <a href="{{ url('/cards') }}" class="logo-text">SyncIt!</a>
-        </div>
+<body>
+    @include('partials.header')
+
+    <div class="content">
+        @yield('content')
     </div>
-    <div class="navbar-right">
-        @if (Auth::check())
-            <a class="button" href="{{ url('/logout') }}">Logout</a>
-            <span>{{ Auth::user()->name }}</span>
-        @else
-            <a class="button" href="{{ url('/login') }}">Login / </a>
-            <a class="button" href="{{ url('/login') }}">Register</a>
-        @endif
-    </div>
-</header>
+</body>
+</html>
