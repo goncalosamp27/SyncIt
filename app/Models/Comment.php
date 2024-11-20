@@ -28,29 +28,35 @@ class Comment extends Model
 
         return $validator;
     }
-    //associations
-    public function member()
-    {
-        return $this->belongsTo(Member::class, 'member_id', 'member_id');
-    }
-
-
+    //Relatiosnhips
+    // Many comments to one event (each comment belongs to one event)
     public function event()
     {
         return $this->belongsTo(Event::class, 'event_id', 'event_id');
     }
 
-    
+    // Many comments to one member (each comment belongs to one member)
+    public function member()
+    {
+        return $this->belongsTo(Member::class, 'member_id', 'member_id');
+    }
+
+    // Self association: a comment may have a parent comment (one comment can respond to another)
     public function parentComment()
     {
         return $this->belongsTo(Comment::class, 'response_comment_id', 'comment_id');
     }
 
-    
+    // Self association: a comment can have many replies (children)
     public function replies()
     {
         return $this->hasMany(Comment::class, 'response_comment_id', 'comment_id');
     }
 
+    // One comment to many Poll notifications 
+    public function commentNotifications()
+    {
+        return $this->hasMany(CommentNotification::class, 'comment_id', 'comment_id');
+    }
     
 }

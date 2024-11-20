@@ -19,6 +19,11 @@ class Admin extends Model
         'email',
         'password',
     ];
-    //association
+    //Relationships
+    // Association: 1 Admin has many Restrictions
+    public function restrictions()
+    {
+        return $this->hasMany(Restriction::class, 'admin_id', 'admin_id');
+    }
 
 }
