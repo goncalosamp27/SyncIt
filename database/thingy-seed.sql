@@ -99,16 +99,6 @@ CREATE TABLE admin (
     password VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE join_request (
-    request_id SERIAL PRIMARY KEY,
-    event_id INT NOT NULL,
-    member_id INT NO NULL,
-    request_date TIMESTAMP CHECK (event_date >= CURRENT_DATE),
-    status request_status_domain NOT NULL,
-    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
-    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
-);
-
 CREATE TABLE following (
     artist_id INT NOT NULL,
     member_id INT NOT NULL,
@@ -148,6 +138,16 @@ CREATE TABLE event_image (
     FOREIGN KEY (event_id) REFERENCES event(event_id)
 );
 
+CREATE TABLE join_request (
+    request_id SERIAL PRIMARY KEY,
+    event_id INT NOT NULL,
+    member_id INT NOT NULL,
+    request_date TIMESTAMP CHECK (request_date >= CURRENT_DATE),
+    status request_status_domain NOT NULL,
+    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
+);
+
 CREATE TABLE comment (
     comment_id SERIAL PRIMARY KEY,
     text TEXT NOT NULL,
@@ -163,6 +163,14 @@ CREATE INDEX comment_event_id_idx ON comment (event_id);
 CREATE INDEX comment_member_id_idx ON comment (member_id);
 CREATE INDEX comment_date_idx ON comment (comment_date);
 
+CREATE TABLE vote_comment (
+    vote_comment_id SERIAL PRIMARY KEY,
+    comment_id INT NOT NULL,
+    member_id INT NOT NULL,
+    vote BOOLEAN NOT NULL, -- true = upvote, false = downvote
+    FOREIGN KEY (member_id) REFERENCES member(member_id),
+    FOREIGN KEY (comment_id) REFERENCES comment(comment_id)
+);
 
 CREATE TABLE tag (
     tag_id SERIAL PRIMARY KEY,
@@ -793,10 +801,7 @@ VALUES
     (65, 61),  -- Pianist Pro follows Rock God
     (75, 72);  -- Soul Queen follows Swing Pro
 
-INSERT INTO event (event_name, event_date, location, description, refund, price, type_of_event, rating, artist_id, capacity)
-VALUES 
-INSERT INTO Events 
-    (event_name, event_date, location, description, ticket_price, discount_price, accessibility, rating, category_id, event_code) 
+INSERT INTO event (event_name, event_date, location, description, refund, price, type_of_event, rating, artist_id, capacity) 
 VALUES
     ('Salsa Night Fever', NOW() + INTERVAL '5 days', 'Downtown Dance Hall', 'A night filled with salsa music and dance performances.', 50.00, 20.00, 'Public', 4.5, 2, 50),
     ('Tech Beats Bash', NOW() + INTERVAL '7 days', 'City Club', 'An electrifying night with top techno beats and live DJs.', 40.00, 25.00, 'Public', 4.0, 3, 100),
@@ -1333,5 +1338,8 @@ VALUES
     (3, 3, NOW() + INTERVAL '3 days', 'Approved'),
     (4, 4, NOW() + INTERVAL '4 days', 'Approved'),
     (5, 5, NOW() + INTERVAL '5 days', 'Rejected'),
-    (6, 6, NOW() + INTERVAL '6 days', 'Rejected');
-
+    (6, 6, NOW() + INTERVAL '6 days', 'Rejected'),
+    (7, 7, NOW() + INTERVAL '2 days', 'Pending'),
+    (8, 8, NOW() + INTERVAL '2 days', 'Pending'),
+    (9, 9, NOW() + INTERVAL '2 days', 'Pending'),
+    (10, 10, NOW() + INTERVAL '2 days', 'Pending');
