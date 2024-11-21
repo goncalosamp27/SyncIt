@@ -1,5 +1,9 @@
 @import url('variables.css');
 
+footer {
+    width: 100%;
+}
+
 .footer {
     display: flex;
     flex-direction: column;

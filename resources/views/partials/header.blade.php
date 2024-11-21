@@ -2,7 +2,7 @@
 	<div class="navbar-left">
 		<button class="menu-icon">☰</button>
 		<div class="logo">
-			<a href = "{{ url('/app')}}">
+			<a href = "{{ url('/home')}}">
 				<span class="logo-icon">🎵</span>
 				<span class="logo-text">SyncIt!</span>
 			</a>	

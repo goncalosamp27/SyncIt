@@ -2,6 +2,7 @@
 @import url('header.css');
 @import url('footer.css');
 @import url('home.css');
+@import url('event.css');
 
 html, body {
 	background-color: var(--background-color);
@@ -12,6 +13,7 @@ html, body {
 }
 
 .content{
+  margin-top: 7.5rem;
   flex: 1;
   display: 1;
   flex-direction: column;
