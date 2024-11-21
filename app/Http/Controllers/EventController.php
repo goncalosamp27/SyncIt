@@ -23,7 +23,6 @@ class EventController extends Controller
     {
         $pastEvents = Event::where('event_date', '<', now())
 		->orderBy('event_date', 'desc')
-		->where('type_of_event', 'Public')
 		->get();
 
         return view('pages.past_events', [
@@ -35,7 +34,6 @@ class EventController extends Controller
     {
         $futureEvents = Event::where('event_date', '>=', now())
 		->orderBy('event_date', 'desc')
-		->where('type_of_event', 'Public')
 		->get();
 
         return view('pages.future_events', [
@@ -43,29 +41,27 @@ class EventController extends Controller
 		]);
     }
 	
-	public function list_user_past_events($userId)
+	public function list_artist_past_events($artistId)
 	{
-		$userPastEvents = Event::where('user_id', $userId)
+		$userPastEvents = Event::where('user_id', $artistId)
         ->where('event_date', '<', now())
-		->where('type_of_event', 'Public')
         ->orderBy('event_date', 'desc')
         ->get();
 
 		return view('pages.user_events', [
-			'userPastEvents' => $userPastEvents
+			'userPastEvents' => $artistPastEvents
 		]);
 	}
 
-	public function list_user_future_events($userId)
+	public function list_artist_future_events($artistId)
 	{
-		$userPastEvents = Event::where('user_id', $userId)
+		$userPastEvents = Event::where('user_id', $artistId)
         ->where('event_date', '>=', now())
-		->where('type_of_event', 'Public')
         ->orderBy('event_date', 'desc')
         ->get();
 
 		return view('pages.user_events', [
-			'userFutureEvents' => $userFutureEvents
+			'userFutureEvents' => $artistFutureEvents
 		]);
 	}
 
@@ -73,12 +69,10 @@ class EventController extends Controller
 	public function list_all_events() 
 	{
 		$pastEvents = Event::where('event_date', '<', now())
-		->where('type_of_event', 'Public')
 		->orderBy('event_date', 'desc')
 		->get();
 
 		$futureEvents = Event::where('event_date', '>=', now())
-		->where('type_of_event', 'Public')
 		->orderBy('event_date', 'desc')
 		->get();
 
