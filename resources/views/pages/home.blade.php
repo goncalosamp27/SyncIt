@@ -16,7 +16,7 @@
 		<div class="slogan-container-image">
 			<img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Placeholder">
 		</div>
-	</div>
+	</div> 
 
 	<div class="home-page-bottom">
 		<div class="purple-line"></div>

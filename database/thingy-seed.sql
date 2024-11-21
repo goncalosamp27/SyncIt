@@ -24,6 +24,7 @@ DROP TABLE IF EXISTS restriction CASCADE;
 DROP TABLE IF EXISTS restriction_notification CASCADE;
 DROP TABLE IF EXISTS event_image CASCADE;
 DROP TABLE IF EXISTS join_request CASCADE;
+DROP TABLE IF EXISTS vote_comment CASCADE;
 
 DROP DOMAIN IF EXISTS email_domain CASCADE;
 DROP DOMAIN IF EXISTS price_domain CASCADE;
@@ -1343,3 +1344,27 @@ VALUES
     (8, 8, NOW() + INTERVAL '2 days', 'Pending'),
     (9, 9, NOW() + INTERVAL '2 days', 'Pending'),
     (10, 10, NOW() + INTERVAL '2 days', 'Pending');
+
+
+INSERT INTO vote_comment (comment_id, member_id, vote) 
+VALUES
+        (1, 1, true),
+        (2, 2, false),
+        (3, 3, true),
+        (4, 4, false),
+        (5, 5, true),
+        (6, 6, true),
+        (7, 7, false),
+        (8, 8, true),
+        (9, 9, false),
+        (10, 10, true),
+        (11, 11, false),
+        (12, 12, true),
+        (13, 13, false),
+        (14, 14, true),
+        (15, 15, true),
+        (16, 16, false),
+        (17, 17, true),
+        (18, 18, false),
+        (19, 19, true),
+        (20, 20, false);
