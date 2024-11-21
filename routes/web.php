@@ -41,6 +41,10 @@ Route::get('/home', function () {
     return view('pages.home');
 });
 
+Route::get('/artist',function() {
+    return view('pages.artist');
+});
+
 // Cards
 Route::controller(CardController::class)->group(function () {
     Route::get('/cards', 'list')->name('cards');
