@@ -32,8 +32,14 @@ use App\Http\Controllers\Notifications\RestrictionNotificationController;
 |
 */
 
-// Login
-Route::redirect('/', '/login');
+// Redirect root URL to home
+Route::redirect('/', '/home');
+
+// Add this to render the home view
+// MIGHT NEED TO CREATE HOME CONTROLLER
+Route::get('/home', function () {
+    return view('pages.home');
+});
 
 // Cards
 Route::controller(CardController::class)->group(function () {

@@ -14,7 +14,7 @@
 			<span class="search-icon">🔍</span>
 			<input type="text" placeholder="Search for events, artists, genres, cities..." />
 		</div>
-		<button class="explore-btn">Explore</button>
+		<button class="explore-btn">Create Event</button>
 	</div>	
 
 	<div class="navbar-right">
