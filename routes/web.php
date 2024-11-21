@@ -45,6 +45,10 @@ Route::get('/artist',function() {
     return view('pages.artist');
 });
 
+Route::get('/event',function() {
+    return view('pages.event');
+});
+
 // Cards
 Route::controller(CardController::class)->group(function () {
     Route::get('/cards', 'list')->name('cards');
