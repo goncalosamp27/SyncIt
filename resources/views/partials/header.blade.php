@@ -20,11 +20,11 @@
 	<div class="navbar-right">
 		<div class="login-register-logout">
 			@if (Auth::check())
-				<a class="button" href="{{ url('/logout') }}">Logout</a>
 				<!-- add user options here like pfp or smth -->
+				<a class="button" href="{{ url('/logout') }}">Logout</a>
 			@else
 				<a class="button" href="{{ url('/login') }}">Login</a>
-				<span> / </span>
+				<span>/</span>
 				<a class="button" href="{{ url('/register') }}"> Register</a>
 			@endif
 		</div>	
