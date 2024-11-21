@@ -1,0 +1,84 @@
+@import url('variables.css');
+
+.purple-line{
+	background-color: var(--primary-color);
+	width: 90%;
+	height: 0.08em;
+	margin: auto;
+}
+
+.slogan-container {
+	margin-top: 2em;
+	margin-bottom: 4em;
+	margin-left: auto;
+	margin-right: auto;
+    display: grid;
+	align-items: center;
+	text-align: center;
+	grid-template-columns: repeat(2, 1fr);
+    align-items: center;
+    justify-content: space-between;
+    background: var(--black-color);
+    color: var(--white-color);
+    padding: 2rem;
+    overflow: hidden;
+	width:70rem;
+	border-radius: 3em;
+	box-shadow: 0em 0em 2em rgb(0,0,0,0.8);
+}
+
+.slogan-container-text {
+    flex: 1;
+    min-width: 15rem;
+    max-width: 100%;
+}
+
+.slogan-container-text h1 {
+	font-size: 2.5em;
+	margin-bottom: 1.5rem;
+	color: var(--white-color);
+}
+
+.slogan-container-text h2 {
+	font-size: 2.5rem;
+	margin-bottom: 1rem;
+	color: var(--white-color);
+}
+
+.slogan-container-text p {
+	font-size: 1.5rem;
+	line-height: 1.5;
+	color: var(--white-color);
+}
+
+.highlighter {
+    color: var(--primary-color);
+}
+
+.take-me-button {
+    display: inline-block;
+    text-decoration: none;
+    background: var(--primary-color);
+    color: var(--text-color);
+    padding: 1rem 6rem; /* 10px 20px equivalent */
+    font-size: 3rem;
+    border-radius: 1em;
+	box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
+	transition: all 0.3s ease-in-out;
+	margin-top: 0.5rem;
+}
+
+.take-me-button:hover {
+    background: var(--hover-color);
+}
+
+.slogan-container-image {
+    flex: 1;
+    text-align: center;
+}
+
+.slogan-container-image img {
+    width: 30rem;
+    height: 20rem;
+    border-radius: 2.5em;
+}	
