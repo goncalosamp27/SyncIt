@@ -1,5 +1,5 @@
 --show search_path;
---SET search_path TO lbaw24115;
+SET search_path TO thingy;
 
 DROP TABLE IF EXISTS member CASCADE;
 DROP TABLE IF EXISTS artist CASCADE;

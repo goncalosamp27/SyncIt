@@ -28,17 +28,18 @@ class Member extends Model
     public static function validate($data)
     {
         $validator = Validator::make($data, [
-            'username' => 'required|alpha_num|min:3|max:50',  
-            'display_name' => 'required|regex:/^[A-Za-z0-9_ ]+$/|min:3|max:50',  
-            'email' => 'required|email|unique:member,email',  
-            'password' => 'required|min:8|max:100',  
-            'member_status' => 'required|in:Active,Suspended,Banned',  
-            'bio' => 'nullable|max:200',
+            'username' => 'required|alpha_num|min:3|max:50',
+            'display_name' => 'required|regex:/^[A-Za-z0-9_ ]+$/|min:3|max:50',
+            'email' => 'required|email|unique:member,email',
+            'password' => 'required|min:8|max:100',
+            'member_status' => 'required|in:Active,Suspended,Banned',
+            'bio' => 'nullable|regex:/^[A-Za-z0-9_.,?!\s]*$/|max:200',
             'profile_pic_url' => 'nullable|url|max:200',
         ]);
 
         return $validator;
     }
+
 
     public static function createMember($data)
     {
@@ -50,6 +51,23 @@ class Member extends Model
 
         return self::create($data);
     }
+    //email verification
+    public static function checkIfEmailExists($email)
+    {
+        $user = self::where('email', $email)->first();
+        return $user !== null;
+    }
+    //passwor verification
+    public static function checkCredentials($email, $password)
+    {
+        $user = self::where('email', $email)->first();
+        if ($user && $user->password === $password) {
+            return true;
+        }
+
+        return false;
+    }
+
     // Relationships
 
     // 1 Member to many Notifications
@@ -86,7 +104,7 @@ class Member extends Model
     //How to track invited_membres by an invintator with (member_id)
     public function invitations()
     {
-        
+
     }
 
     // 1 Member to many Follow Notifications
