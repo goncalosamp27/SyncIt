@@ -22,7 +22,8 @@ DROP TABLE IF EXISTS following CASCADE;
 DROP TABLE IF EXISTS rating CASCADE;
 DROP TABLE IF EXISTS restriction CASCADE;
 DROP TABLE IF EXISTS restriction_notification CASCADE;
-DROP TABLE IF EXISTS event_image;
+DROP TABLE IF EXISTS event_image CASCADE;
+DROP TABLE IF EXISTS join_request CASCADE;
 
 DROP DOMAIN IF EXISTS email_domain CASCADE;
 DROP DOMAIN IF EXISTS price_domain CASCADE;
@@ -33,6 +34,7 @@ DROP DOMAIN IF EXISTS username_domain CASCADE;
 DROP DOMAIN IF EXISTS name_domain CASCADE;
 DROP DOMAIN IF EXISTS password_domain CASCADE;
 DROP DOMAIN IF EXISTS rating_domain CASCADE;
+DROP DOMAIN IF EXISTS request_status_domain CASCADE;
 
 CREATE DOMAIN email_domain AS VARCHAR(255)
 CHECK (POSITION('@' IN VALUE) > 1);
@@ -67,6 +69,8 @@ CHECK (CHAR_LENGTH(VALUE) BETWEEN 8 AND 100);
 CREATE DOMAIN rating_domain AS DECIMAL(2, 1)
 CHECK (VALUE >= 0.0 AND VALUE <= 5.0);
 
+CREATE DOMAIN request_status_domain AS VARCHAR(10)
+CHECK (VALUE IN ('Approved', 'Rejected', 'Pending'));
 
 CREATE TABLE member (
     member_id SERIAL PRIMARY KEY,
@@ -95,6 +99,15 @@ CREATE TABLE admin (
     password VARCHAR(100) NOT NULL
 );
 
+CREATE TABLE join_request (
+    request_id SERIAL PRIMARY KEY,
+    event_id INT NOT NULL,
+    member_id INT NO NULL,
+    request_date TIMESTAMP CHECK (event_date >= CURRENT_DATE),
+    status request_status_domain NOT NULL,
+    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
+);
 
 CREATE TABLE following (
     artist_id INT NOT NULL,
@@ -120,8 +133,7 @@ CREATE TABLE event (
     type_of_event event_type_domain NOT NULL,
     rating rating_domain NOT NULL,
     artist_id INT NOT NULL,
-    --capacity INT NOT NULL,
-    --capacity INT NOT NULL,
+    capacity INT NOT NULL,
     FOREIGN KEY (artist_id) REFERENCES artist(artist_id)
 );
 
@@ -781,58 +793,61 @@ VALUES
     (65, 61),  -- Pianist Pro follows Rock God
     (75, 72);  -- Soul Queen follows Swing Pro
 
-INSERT INTO event (event_name, event_date, location, description, refund, price, type_of_event, rating, artist_id)
+INSERT INTO event (event_name, event_date, location, description, refund, price, type_of_event, rating, artist_id, capacity)
 VALUES 
-    ('Salsa Night Fever', NOW() + INTERVAL '5 days', 'Downtown Dance Hall', 'A night filled with salsa music and dance performances.', 50.00, 20.00, 'Public', 4.5, 2),
-    ('Tech Beats Bash', NOW() + INTERVAL '7 days', 'City Club', 'An electrifying night with top techno beats and live DJs.', 40.00, 25.00, 'Public', 4.0, 3),
-    ('Classical Harmony', NOW() + INTERVAL '10 days', 'Grand Symphony Hall', 'An evening of classical music with renowned violinists and orchestras.', 60.00, 50.00, 'Public', 4.8, 11),
-    ('DJ Night Live', NOW() + INTERVAL '8 days', 'Nightlife Arena', 'A high-energy DJ night with top music hits from various genres.', 50.00, 30.00, 'Public', 4.7, 7),
-    ('Reggae Beach Party', NOW() + INTERVAL '12 days', 'Beachside Stage', 'Chill out with reggae vibes by the beach, featuring local artists.', 35.00, 15.00, 'Public', 4.4, 8),
-    ('Swing Dance Gala', NOW() + INTERVAL '15 days', 'Swing Studio', 'A gala event celebrating swing dance with live music.', 70.00, 35.00, 'Private', 4.6, 9),
-    ('Metal Madness', NOW() + INTERVAL '20 days', 'Underground Club', 'An intense metal music experience with top bands and performers.', 50.00, 20.00, 'Public', 2.9, 14),
-    ('Violin Virtuoso', NOW() + INTERVAL '18 days', 'Concert Hall', 'Experience a night of beautiful violin performances.', 65.00, 45.00, 'Public', 4.7, 11),
-    ('Jazz Night', NOW() + INTERVAL '13 days', 'Riverside Amphitheater', 'A smooth night of jazz under the stars.', 55.00, 25.00, 'Public', 3.8, 15),
-    ('Pop Fiesta', NOW() + INTERVAL '25 days', 'City Park', 'A colorful pop music festival with live performances.', 70.00, 40.00, 'Public', 5.0, 16),
-    ('Latin Dance Extravaganza', NOW() + INTERVAL '22 days', 'Latin Lounge', 'A celebration of Latin dance with performances and open floor dancing.', 60.00, 30.00, 'Public', 4.5, 20),
-    ('EDM Explosion', NOW() + INTERVAL '27 days', 'Electric Arena', 'Top EDM DJs performing live for an unforgettable night.', 80.00, 45.00, 'Public', 4.9, 35),
-    ('Bollywood Bash', NOW() + INTERVAL '30 days', 'Bollywood Palace', 'An energetic Bollywood night with live performances.', 50.00, 20.00, 'Private', 4.1, 32),
-    ('Soul and Funk Groove', NOW() + INTERVAL '17 days', 'Groove Station', 'Get down with the best in soul and funk music.', 45.00, 20.00, 'Public', 3.6, 28),
-    ('Country Night Out', NOW() + INTERVAL '10 days', 'Country Barn', 'Enjoy a night of country music with local bands.', 40.00, 25.00, 'Public', 4.4, 45),
-    ('Urban Dance Fest', NOW() + INTERVAL '19 days', 'Urban Arena', 'A festival of urban dance styles with battles and performances.', 55.00, 30.00, 'Public', 4.2, 37),
-    ('Disco Fever', NOW() + INTERVAL '24 days', 'Disco Lounge', 'Dance the night away with groovy disco music.', 35.00, 15.00, 'Private', 4.0, 60),
-    ('Piano Serenade', NOW() + INTERVAL '11 days', 'Piano Hall', 'A serene evening of classical piano music.', 65.00, 35.00, 'Public', 4.3, 61),
-    ('Rock Fest', NOW() + INTERVAL '9 days', 'Rock Arena', 'A thrilling rock music festival with live bands.', 50.00, 30.00, 'Public', 4.8, 65),
-    ('Swing Soiree', NOW() + INTERVAL '14 days', 'Swing Hall', 'A refined swing dance soiree with live jazz music.', 45.00, 20.00, 'Private', 4.6, 75),
-    ('Afrobeat Summer Jam', NOW() + INTERVAL '16 days', 'Sunset Beach', 'A high-energy Afrobeat festival by the beach.', 60.00, 25.00, 'Public', 4.5, 75),
-    ('Folk Fest', NOW() + INTERVAL '18 days', 'Green Field', 'An outdoor festival celebrating folk music traditions.', 50.00, 20.00, 'Public', 3.9, 28),
-    ('Dubstep Underground', NOW() + INTERVAL '21 days', 'Warehouse District', 'An intense night of dubstep with top DJs from around the world.', 70.00, 35.00, 'Public', 4.7, 75),
-    ('Classical Morning Bliss', NOW() + INTERVAL '23 days', 'Open Garden Theater', 'A morning of classical music to start the day on a peaceful note.', 45.00, 20.00, 'Public', 4.8, 61),
-    ('Latin Fiesta', NOW() + INTERVAL '26 days', 'Latin City Lounge', 'A lively Latin dance party with salsa, bachata, and merengue.', 55.00, 30.00, 'Public', 4.2, 20),
-    ('Jazz Fusion Nights', NOW() + INTERVAL '29 days', 'Downtown Jazz Club', 'A night of jazz fusion featuring the latest sounds and trends.', 50.00, 25.00, 'Private', 3.8, 15),
-    ('Blues on the Bayou', NOW() + INTERVAL '20 days', 'Bayou Stage', 'An evening of blues by the bayou, with the finest blues bands.', 40.00, 20.00, 'Public', 4.3, 55),
-    ('Bollywood Beats', NOW() + INTERVAL '32 days', 'Bollywood Hall', 'Celebrate Bollywood music and dance with live performances.', 50.00, 20.00, 'Private', 4.1, 32),
-    ('Electric Wave', NOW() + INTERVAL '34 days', 'Electro Dome', 'An electrifying EDM night with top artists and stunning visuals.', 80.00, 45.00, 'Public', 4.9, 35),
-    ('Hip Hop Showcase', NOW() + INTERVAL '15 days', 'Urban Block', 'A showcase of hip hop talent with breakdancers and rap battles.', 30.00, 15.00, 'Public', 3.5, 14),
-    ('Neo Soul Groove', NOW() + INTERVAL '10 days', 'The Groove Lounge', 'A soulful evening featuring neo-soul music and R&B vibes.', 50.00, 25.00, 'Public', 4.6, 28),
-    ('Tribal Beats Night', NOW() + INTERVAL '14 days', 'Jungle Stage', 'Experience tribal rhythms and percussion like never before.', 60.00, 30.00, 'Public', 4.4, 60),
-    ('Opera Under the Stars', NOW() + INTERVAL '22 days', 'Open-Air Opera House', 'An enchanting night of opera performances under the night sky.', 75.00, 50.00, 'Public', 4.9, 61),
-    ('Country Fair', NOW() + INTERVAL '28 days', 'Rustic Barn', 'Enjoy country music, line dancing, and delicious barbecue.', 45.00, 20.00, 'Public', 4.2, 45),
-    ('Rock and Roll Revival', NOW() + INTERVAL '12 days', 'Retro Arena', 'Step back in time with classic rock and roll hits.', 40.00, 15.00, 'Public', 4.3, 65),
-    ('Ambient Chill', NOW() + INTERVAL '16 days', 'The Zen Garden', 'A relaxing ambient music experience in a tranquil setting.', 30.00, 10.00, 'Private', 4.5, 70),
-    ('World Music Fest', NOW() + INTERVAL '31 days', 'Global Stage', 'A celebration of world music, with artists from various cultures.', 55.00, 30.00, 'Public', 4.7, 75),
-    ('Ska Skank', NOW() + INTERVAL '25 days', 'City Center Stage', 'An upbeat night of ska music and lively dancing.', 35.00, 15.00, 'Public', 4.0, 9),
-    ('Electronic Sunrise', NOW() + INTERVAL '27 days', 'Oceanfront Club', 'Dance through the night and watch the sunrise to electronic beats.', 65.00, 35.00, 'Public', 4.6, 35),
-    ('Zumba Fiesta', NOW() + INTERVAL '20 days', 'Fitness Arena', 'A Zumba dance party with energetic Latin beats.', 30.00, 15.00, 'Private', 4.3, 20),
-    ('Psytrance Universe', NOW() + INTERVAL '35 days', 'Cosmic Hall', 'A night of psychedelic trance music and mesmerizing visuals.', 70.00, 40.00, 'Public', 4.8, 75),
-    ('Soulful Sunday', NOW() + INTERVAL '13 days', 'Soulful Sounds Studio', 'Spend a relaxed Sunday with smooth and soulful tunes.', 25.00, 15.00, 'Public', 4.4, 16),
-    ('Reggaeton Rumble', NOW() + INTERVAL '19 days', 'Dance Block', 'Dance to the hottest reggaeton beats with live DJs.', 45.00, 20.00, 'Public', 4.5, 37),
-    ('Indie Acoustic Evening', NOW() + INTERVAL '24 days', 'Indie Café', 'An intimate acoustic performance by top indie artists.', 35.00, 15.00, 'Private', 4.1, 32),
-    ('Flamenco Fire', NOW() + INTERVAL '11 days', 'Flamenco Lounge', 'Feel the passion of flamenco with live performances.', 50.00, 25.00, 'Public', 4.7, 33),
-    ('Electronic Symphony', NOW() + INTERVAL '26 days', 'Symphony Hall', 'A fusion of electronic music and classical instruments.', 75.00, 40.00, 'Public', 4.9, 61),
-    ('Afro-Cuban Salsa Night', NOW() + INTERVAL '29 days', 'Cuban Lounge', 'A night dedicated to Afro-Cuban salsa and rhythmic beats.', 55.00, 25.00, 'Public', 4.6, 2),
-    ('Lo-Fi Chillout', NOW() + INTERVAL '17 days', 'Downtown Café', 'Relax with mellow lo-fi beats in a cozy café setting.', 20.00, 10.00, 'Private', 4.3, 70),
-    ('Bluegrass Bonanza', NOW() + INTERVAL '21 days', 'Country Barn', 'A fun-filled evening of bluegrass music and dance.', 40.00, 15.00, 'Public', 4.2, 45),
-    ('Hard Rock Havoc', NOW() + INTERVAL '33 days', 'Rock City Arena', 'A powerful night of hard rock music with top bands.', 60.00, 35.00, 'Public', 4.5, 65);
+INSERT INTO Events 
+    (event_name, event_date, location, description, ticket_price, discount_price, accessibility, rating, category_id, event_code) 
+VALUES
+    ('Salsa Night Fever', NOW() + INTERVAL '5 days', 'Downtown Dance Hall', 'A night filled with salsa music and dance performances.', 50.00, 20.00, 'Public', 4.5, 2, 50),
+    ('Tech Beats Bash', NOW() + INTERVAL '7 days', 'City Club', 'An electrifying night with top techno beats and live DJs.', 40.00, 25.00, 'Public', 4.0, 3, 100),
+    ('Classical Harmony', NOW() + INTERVAL '10 days', 'Grand Symphony Hall', 'An evening of classical music with renowned violinists and orchestras.', 60.00, 50.00, 'Public', 4.8, 11, 150),
+    ('DJ Night Live', NOW() + INTERVAL '8 days', 'Nightlife Arena', 'A high-energy DJ night with top music hits from various genres.', 50.00, 30.00, 'Public', 4.7, 7, 200),
+    ('Reggae Beach Party', NOW() + INTERVAL '12 days', 'Beachside Stage', 'Chill out with reggae vibes by the beach, featuring local artists.', 35.00, 15.00, 'Public', 4.4, 8, 250),
+    ('Swing Dance Gala', NOW() + INTERVAL '15 days', 'Swing Studio', 'A gala event celebrating swing dance with live music.', 70.00, 35.00, 'Private', 4.6, 9, 300),
+    ('Metal Madness', NOW() + INTERVAL '20 days', 'Underground Club', 'An intense metal music experience with top bands and performers.', 50.00, 20.00, 'Public', 2.9, 14, 350),
+    ('Violin Virtuoso', NOW() + INTERVAL '18 days', 'Concert Hall', 'Experience a night of beautiful violin performances.', 65.00, 45.00, 'Public', 4.7, 11, 400),
+    ('Jazz Night', NOW() + INTERVAL '13 days', 'Riverside Amphitheater', 'A smooth night of jazz under the stars.', 55.00, 25.00, 'Public', 3.8, 15, 450),
+    ('Pop Fiesta', NOW() + INTERVAL '25 days', 'City Park', 'A colorful pop music festival with live performances.', 70.00, 40.00, 'Public', 5.0, 16, 500),
+    ('Latin Dance Extravaganza', NOW() + INTERVAL '22 days', 'Latin Lounge', 'A celebration of Latin dance with performances and open floor dancing.', 60.00, 30.00, 'Public', 4.5, 20, 550),
+    ('EDM Explosion', NOW() + INTERVAL '27 days', 'Electric Arena', 'Top EDM DJs performing live for an unforgettable night.', 80.00, 45.00, 'Public', 4.9, 35, 600),
+    ('Bollywood Bash', NOW() + INTERVAL '30 days', 'Bollywood Palace', 'An energetic Bollywood night with live performances.', 50.00, 20.00, 'Private', 4.1, 32, 650),
+    ('Soul and Funk Groove', NOW() + INTERVAL '17 days', 'Groove Station', 'Get down with the best in soul and funk music.', 45.00, 20.00, 'Public', 3.6, 28, 700),
+    ('Country Night Out', NOW() + INTERVAL '10 days', 'Country Barn', 'Enjoy a night of country music with local bands.', 40.00, 25.00, 'Public', 4.4, 45, 750),
+    ('Urban Dance Fest', NOW() + INTERVAL '19 days', 'Urban Arena', 'A festival of urban dance styles with battles and performances.', 55.00, 30.00, 'Public', 4.2, 37, 800),
+    ('Disco Fever', NOW() + INTERVAL '24 days', 'Disco Lounge', 'Dance the night away with groovy disco music.', 35.00, 15.00, 'Private', 4.0, 60, 850),
+    ('Piano Serenade', NOW() + INTERVAL '11 days', 'Piano Hall', 'A serene evening of classical piano music.', 65.00, 35.00, 'Public', 4.3, 61, 900),
+    ('Rock Fest', NOW() + INTERVAL '9 days', 'Rock Arena', 'A thrilling rock music festival with live bands.', 50.00, 30.00, 'Public', 4.8, 65, 950),
+    ('Swing Soiree', NOW() + INTERVAL '14 days', 'Swing Hall', 'A refined swing dance soiree with live jazz music.', 45.00, 20.00, 'Private', 4.6, 75, 1000),
+    ('Afrobeat Summer Jam', NOW() + INTERVAL '16 days', 'Sunset Beach', 'A high-energy Afrobeat festival by the beach.', 60.00, 25.00, 'Public', 4.5, 75, 1050),
+    ('Folk Fest', NOW() + INTERVAL '18 days', 'Green Field', 'An outdoor festival celebrating folk music traditions.', 50.00, 20.00, 'Public', 3.9, 28, 1100),
+    ('Dubstep Underground', NOW() + INTERVAL '21 days', 'Warehouse District', 'An intense night of dubstep with top DJs from around the world.', 70.00, 35.00, 'Public', 4.7, 75, 1150),
+    ('Classical Morning Bliss', NOW() + INTERVAL '23 days', 'Open Garden Theater', 'A morning of classical music to start the day on a peaceful note.', 45.00, 20.00, 'Public', 4.8, 61, 1200),
+    ('Latin Fiesta', NOW() + INTERVAL '26 days', 'Latin City Lounge', 'A lively Latin dance party with salsa, bachata, and merengue.', 55.00, 30.00, 'Public', 4.2, 20, 1250),
+    ('Jazz Fusion Nights', NOW() + INTERVAL '29 days', 'Downtown Jazz Club', 'A night of jazz fusion featuring the latest sounds and trends.', 50.00, 25.00, 'Private', 3.8, 15, 1300),
+    ('Blues on the Bayou', NOW() + INTERVAL '20 days', 'Bayou Stage', 'An evening of blues by the bayou, with the finest blues bands.', 40.00, 20.00, 'Public', 4.3, 55, 1350),
+    ('Bollywood Beats', NOW() + INTERVAL '32 days', 'Bollywood Hall', 'Celebrate Bollywood music and dance with live performances.', 50.00, 20.00, 'Private', 4.1, 32, 1400),
+    ('Electronic Wave', NOW() + INTERVAL '34 days', 'Electro Dome', 'An electrifying EDM night with top artists and stunning visuals.', 80.00, 45.00, 'Public', 4.9, 35, 1450),
+    ('Hip Hop Showcase', NOW() + INTERVAL '15 days', 'Urban Block', 'A showcase of hip hop talent with breakdancers and rap battles.', 30.00, 15.00, 'Public', 3.5, 14, 1500),
+    ('Neo Soul Groove', NOW() + INTERVAL '10 days', 'The Groove Lounge', 'A soulful evening featuring neo-soul music and R&B vibes.', 50.00, 25.00, 'Public', 4.6, 28, 1550),
+    ('Tribal Beats Night', NOW() + INTERVAL '14 days', 'Jungle Stage', 'Experience tribal rhythms and percussion like never before.', 60.00, 30.00, 'Public', 4.4, 60, 1600),
+    ('Opera Under the Stars', NOW() + INTERVAL '22 days', 'Open-Air Opera House', 'An enchanting night of opera performances under the night sky.', 75.00, 50.00, 'Public', 4.9, 61, 1650),
+    ('Country Fair', NOW() + INTERVAL '28 days', 'Rustic Barn', 'Enjoy country music, line dancing, and delicious barbecue.', 45.00, 20.00, 'Public', 4.2, 45, 1700),
+    ('Rock and Roll Revival', NOW() + INTERVAL '12 days', 'Retro Arena', 'Step back in time with classic rock and roll hits.', 40.00, 15.00, 'Public', 4.3, 65, 1750),
+    ('Ambient Chill', NOW() + INTERVAL '16 days', 'The Zen Garden', 'A relaxing ambient music experience in a tranquil setting.', 30.00, 10.00, 'Private', 4.5, 70, 1800),
+    ('World Music Fest', NOW() + INTERVAL '31 days', 'Global Stage', 'A celebration of world music, with artists from various cultures.', 55.00, 30.00, 'Public', 4.7, 75, 1850),
+    ('Ska Skank', NOW() + INTERVAL '25 days', 'City Center Stage', 'An upbeat night of ska music and lively dancing.', 35.00, 15.00, 'Public', 4.0, 9, 1900),
+    ('Electronic Sunrise', NOW() + INTERVAL '27 days', 'Oceanfront Club', 'Dance through the night and watch the sunrise to electronic beats.', 65.00, 35.00, 'Public', 4.6, 35, 1950),
+    ('Zumba Fiesta', NOW() + INTERVAL '20 days', 'Fitness Arena', 'A Zumba dance party with energetic Latin beats.', 30.00, 15.00, 'Private', 4.3, 20, 2000),
+    ('Psytrance Universe', NOW() + INTERVAL '35 days', 'Cosmic Hall', 'A night of psychedelic trance music and mesmerizing visuals.', 70.00, 40.00, 'Public', 4.8, 75, 2050),
+    ('Soulful Sunday', NOW() + INTERVAL '13 days', 'Soulful Sounds Studio', 'Spend a relaxed Sunday with smooth and soulful tunes.', 25.00, 15.00, 'Public', 4.4, 16, 2100),
+    ('Reggaeton Rumble', NOW() + INTERVAL '19 days', 'Dance Block', 'Dance to the hottest reggaeton beats with live DJs.', 45.00, 20.00, 'Public', 4.5, 37, 2150),
+    ('Indie Acoustic Evening', NOW() + INTERVAL '24 days', 'Indie Café', 'An intimate acoustic performance by top indie artists.', 35.00, 15.00, 'Private', 4.1, 32, 2200),
+    ('Flamenco Fire', NOW() + INTERVAL '11 days', 'Flamenco Lounge', 'Feel the passion of flamenco with live performances.', 50.00, 25.00, 'Public', 4.7, 33, 2250),
+    ('Electronic Symphony', NOW() + INTERVAL '26 days', 'Symphony Hall', 'A fusion of electronic music and classical instruments.', 75.00, 40.00, 'Public', 4.9, 61, 2300),
+    ('Afro-Cuban Salsa Night', NOW() + INTERVAL '29 days', 'Cuban Lounge', 'A night dedicated to Afro-Cuban salsa and rhythmic beats.', 55.00, 25.00, 'Public', 4.6, 2, 2350),
+    ('Lo-Fi Chillout', NOW() + INTERVAL '17 days', 'Downtown Café', 'Relax with mellow lo-fi beats in a cozy café setting.', 20.00, 10.00, 'Private', 4.3, 70, 2400),
+    ('Bluegrass Bonanza', NOW() + INTERVAL '21 days', 'Country Barn', 'A fun-filled evening of bluegrass music and dance.', 40.00, 15.00, 'Public', 4.2, 45, 2450),
+    ('Hard Rock Havoc', NOW() + INTERVAL '33 days', 'Rock City Arena', 'A powerful night of hard rock music with top bands.', 60.00, 35.00, 'Public', 4.5, 65, 2500);
 
 INSERT INTO comment (text, comment_date, event_id, member_id, response_comment_id)
 VALUES 
@@ -1310,4 +1325,13 @@ VALUES
     (15, INTERVAL '0 days', 1, NOW()),      -- Member 15 banned by Admin 1
     (20, INTERVAL '0 days', 2, NOW()),      -- Member 20 banned by Admin 2
     (25, INTERVAL '0 days', 3, NOW());      -- Member 25 banned by Admin 3
+
+INSERT INTO join_request(event_id, member_id, request_date, status)
+VALUES 
+    (1, 1, NOW() + INTERVAL '1 days', 'Pending'),
+    (2, 2, NOW() + INTERVAL '2 days', 'Pending'),
+    (3, 3, NOW() + INTERVAL '3 days', 'Approved'),
+    (4, 4, NOW() + INTERVAL '4 days', 'Approved'),
+    (5, 5, NOW() + INTERVAL '5 days', 'Rejected'),
+    (6, 6, NOW() + INTERVAL '6 days', 'Rejected');
 
