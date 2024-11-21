@@ -156,31 +156,43 @@ paths:
 
 ###VERIFY EMAIL
   /verify-email/send:
-    get:
+    post: 
       operationId: R106
       summary: 'R106: Send Verification Email'
       description: 'Sends a verification email with a confirmation link to the user. Access: VST'
       tags:
         - 'M01: Authentication'
-      parameters:
-        - in: query
-          name: email
-          schema:
-            type: string
-          required: true
-          description: 'The email address to send the verification link'
-      responses:
-        '200':
-          description: 'Verification email sent successfully.'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: 'The email address to send the verification link'
+        responses:
+          '302':
+            description: 'Redirect to success or error page.'
+            headers:
+              Location:
+                schema:
+                  type: string
+                examples:
+                  success:
+                    value: '/verify-email/confirm' 
+                  error:
+                    value: '/verify-email/error'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
 
   /verify-email/confirm:
     get:
@@ -455,41 +467,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      description: 'Unique identifier of the event'
-                    title:
-                      type: string
-                      description: 'Title of the event'
-                    category:
-                      type: string
-                      description: 'Category of the event'
-                    date:
-                      type: string
-                      format: date-time
-                      description: 'Date and time of the event'
-                    location:
-                      type: string
-                      description: 'Location of the event'
-                    role:
-                      type: string
-                      enum: ['creator', 'participant']
-                      description: 'User’s role in the event'
-                  example:
-                    - id: 201
-                      title: 'Jazz Blues Night'
-                      category: 'Music'
-                      date: '2023-11-15T20:00:00Z'
-                      location: 'Blue Note Club, New York, USA'
-                      role: 'creator'
-                    - id: 202
-                      title: 'Tango in the Park'
-                      category: 'Dance'
-                      date: '2023-10-01T18:30:00Z'
-                      location: 'Central Park, New York, USA'
-                      role: 'participant'
+                  $ref: '#/components/schemas/Event'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -540,30 +518,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    title:
-                      type: string
-                    category:
-                      type: string
-                    tag:
-                      type: string
-                    owner:
-                      type: string
-                example:
-                  - id: "123"
-                    title: "Jazz Nights Festival"
-                    category: "Music"
-                    tag: "Jazz"
-                    owner: "Emily Davis"
-
-                  - id: "456"
-                    title: "Salsa Under the Stars"
-                    category: "Dance"
-                    tag: "Salsa"
-                    owner: "Carlos Rivera"
+                  $ref: '#/components/schemas/Event'
 
 ##CREATE EVENT
   /events/creation:
