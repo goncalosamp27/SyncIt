@@ -41,8 +41,8 @@ Route::get('/home', function () {
     return view('pages.home');
 });
 
-Route::get('/event',function() {
-    return view('pages.event');
+Route::get('/artist',function() {
+    return view('pages.artist');
 });
 
 // Cards
