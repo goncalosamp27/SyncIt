@@ -18,7 +18,7 @@ class Event extends Model
     protected $primaryKey = 'event_id';
 
     public static function validate($data)
-    {
+    {   
         $validator = Validator::make($data, [
             'event_name' => 'required|string|max:100',
             'event_date' => 'required|date|after_or_equal:tomorrow',  
@@ -29,6 +29,8 @@ class Event extends Model
             'type_of_event' => 'required|in:Public,Private',  
             'rating' => 'required|numeric|between:0,5',  
             'artist_id' => 'required|exists:artist,artist_id',  
+            'event_files' => 'nullable|array|max:3',
+            'event_files.*' => 'file|max:10240|mimes:jpeg,png,jpg,gif,mp4,webm,ogg',
         ]);
 
         return $validator;
