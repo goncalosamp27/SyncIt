@@ -79,7 +79,7 @@
 
         <!-- Genre -->
         <div class="create-event-input">
-            <label for="genre" class="form-label">Genre</label>
+            <label for="genre" class="form-label">Main Tag</label>
             <select id="genre" name="genre" class="form-control" required>
                 <option value="" disabled selected>Select a genre</option>
                 <option value="Music">Music</option>
@@ -90,33 +90,32 @@
             @enderror
         </div>
 
+        <!-- Subgenres -->
+        <div class="create-event-input">
+            <label for="subgenres" class="form-label">Tags</label>
+            <select id="subgenres" name="subgenres[]" class="form-control" multiple required>
+                <!-- Options will be dynamically populated -->
+            </select>
+            @error('subgenres')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
+        </div>
+
                 <!-- File Upload -->
         <div class="create-event-input">
             <label for="event_files" class="form-label">Upload Media</label>
             <input type="file" id="event_files" name="event_files[]" class="form-control" multiple 
                 accept="image/*,video/*">
             <small class="form-text text-muted">
-                You can upload up to 3 files (images or videos only).
+                You can upload up to 3 files (images only).
             </small>
             <div id="file-error" class="text-danger" style="display: none;">
-                You can upload a maximum of 3 files and only images/videos are allowed.
+                You can upload a maximum of 3 files and only images are allowed.
             </div>
             @error('event_files')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
             @error('event_files.*')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
-
-
-        <!-- Subgenres -->
-        <div class="create-event-input">
-            <label for="subgenres" class="form-label">Subgenres</label>
-            <select id="subgenres" name="subgenres[]" class="form-control" multiple required>
-                <!-- Options will be dynamically populated -->
-            </select>
-            @error('subgenres')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
