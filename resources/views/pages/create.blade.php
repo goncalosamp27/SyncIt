@@ -5,7 +5,7 @@
 		<div class="create-event-title">
 			<h1>Create your own Event: </h1>
 		</div>
-		<div class="purple-line"></div>
+		<div class="purple-line2"></div>
 	</div>
 
 <div class="create-event-form">
@@ -43,6 +43,15 @@
             <label for="description" class="form-label">Description</label>
             <textarea id="description" name="description" placeholder="Enter a description for your event:" class="form-control" required>{{ old('description') }}</textarea>
             @error('description')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
+        </div>
+
+         <!-- Capacity -->
+         <div class="create-event-input">
+            <label for="capacity" class="form-label">Capacity</label>
+            <input type="number" id="price" name="capacity" placeholder="Enter a capacity for your event:" class="form-control" value="{{ old('price') }}" min="0" required>
+            @error('price')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
