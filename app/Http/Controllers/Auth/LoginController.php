@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -9,6 +10,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\View\View;
+use App\Models\Member;
+
 
 class LoginController extends Controller
 {
@@ -28,8 +31,9 @@ class LoginController extends Controller
     /**
      * Handle an authentication attempt.
      */
-    public function authenticate(Request $request): RedirectResponse
+    public function authenticate(Request $request)
     {
+        // Validate incoming request
         $credentials = $request->validate([
             'login' => ['required', 'string'],
             'password' => ['required', 'string'],
@@ -43,10 +47,13 @@ class LoginController extends Controller
             return redirect()->intended('/loginRedirection');
         }
 
+
         return back()->withErrors([
             'login' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
     }
+
+
 
     /**
      * Log out the user from application.
@@ -59,4 +66,5 @@ class LoginController extends Controller
         return redirect()->route('login')
             ->withSuccess('You have logged out successfully!');
     }
+    
 }

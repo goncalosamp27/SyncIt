@@ -1,0 +1,20 @@
+@import url('variables.css');
+
+.create-event{
+	margin-left: 13rem;
+	margin-right: 13rem;
+}
+
+.create-event h1 {
+	margin-top: 1rem;
+	margin-bottom: 2rem;
+	color: var(--white-color);
+}
+
+.create-event-form{
+	margin-top: 1rem;
+	margin-left: 13rem;
+	margin-right: 13rem;
+}
+
+

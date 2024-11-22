@@ -1,0 +1,86 @@
+@import url('variables.css');
+
+.event-comment-div {
+    margin-top: 3rem;
+    font-size: clamp(1rem, 2.5vw, 1.5rem); /* Dynamically adjust font size */
+    line-height: 1.6; /* Adjust line height for readability */
+    word-wrap: break-word; /* Ensure long words or URLs break nicely */
+    max-width: 100%; /* Keep within container bounds */
+    background-color: var(--black-color);
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+    box-sizing: border-box; /* Include padding and border in size calculations */
+}
+
+.event-comment {
+    display: flex;
+    gap: 1rem; /* Add spacing between image and text */
+    margin: 1rem;
+    max-width: 100%; /* Prevent it from growing too wide on larger screens */
+    box-sizing: border-box; /* Ensure padding doesn't affect dimensions */
+}
+
+
+.comment-highlighter{
+	margin-top: -1rem;
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: var(--hover-color);
+}
+
+.comment-highlighter2{
+	margin-top: -1rem;
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: var(--primary-color);
+}
+
+.event-comment-text {
+	font-size: clamp(1rem, 2.5vw, 1.5rem); /* Dynamically adjust font size */
+    line-height: 1.6; /* Adjust line height for readability */
+    word-wrap: break-word; /* Ensure long words or URLs break nicely */
+    max-width: 100%; /* Keep within container bounds */
+	gap:1rem;
+	border-radius: 3rem;
+	width: 80%;
+	padding: 1rem;
+	color: var(--white-color)
+}
+
+.up-down-votes{
+	display: flex;
+	gap:1em;
+	margin-top: -1em;
+	margin-bottom: 2rem;
+	margin-left: 7rem;
+}
+
+.upvote-button,
+.downvote-button {
+	background-color: var(--primary-color);
+	border-style: none;
+	display: flex;
+	font-size: 1rem;
+	gap:0.5rem;
+	border-radius: 2em;
+	padding: 0.625rem 1.25rem; /* Padding in rem */
+    border: none;
+    background-color: var(--primary-color); /* Blue button */
+    color: white;
+    border-radius: 0.3125rem; /* Rounded corners in rem */
+    font-size: 1rem; /* Font size in rem */
+    cursor: pointer;
+}
+
+.upvote-button:hover{
+	background-color: rgb(81, 154, 250);;
+}
+
+.downvote-button:hover{
+	background-color: rgb(134, 58, 58);
+}
+
+.count{
+	color: var(--black-color);
+	font-weight: bold;
+}
