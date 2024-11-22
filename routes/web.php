@@ -49,6 +49,10 @@ Route::get('/event',function() {
     return view('pages.event');
 });
 
+Route::get('/events',function() {
+    return view('pages.events');
+});
+
 // Cards
 Route::controller(CardController::class)->group(function () {
     Route::get('/cards', 'list')->name('cards');
