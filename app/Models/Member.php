@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class Member extends Model
+class Member extends Authenticatable
 {
     use HasFactory;
 
@@ -24,7 +25,7 @@ class Member extends Model
         'member_status',
     ];
 
-    //constraints
+    // Constraints
     public static function validate($data)
     {
         $validator = Validator::make($data, [
@@ -40,7 +41,6 @@ class Member extends Model
         return $validator;
     }
 
-
     public static function createMember($data)
     {
         $validator = self::validate($data);
@@ -51,17 +51,19 @@ class Member extends Model
 
         return self::create($data);
     }
-    //email verification
+
+    // Email verification
     public static function checkIfEmailExists($email)
     {
         $user = self::where('email', $email)->first();
         return $user !== null;
     }
-    //passwor verification
+
+    // Password verification
     public static function checkCredentials($email, $password)
     {
         $user = self::where('email', $email)->first();
-        if ($user && $user->password === $password) {
+        if ($user && Hash::check($password, $user->password)) {
             return true;
         }
 
@@ -70,48 +72,38 @@ class Member extends Model
 
     // Relationships
 
-    // 1 Member to many Notifications
     public function notifications()
     {
         return $this->hasMany(Notification::class, 'member_id', 'member_id');
     }
 
-    // 1 Member to many Restrictions
     public function restrictions()
     {
         return $this->hasMany(Restriction::class, 'member_id', 'member_id');
     }
 
-    // 1 Member to 1 Event
     public function event()
     {
         return $this->hasOne(Event::class, 'member_id', 'member_id');
     }
 
-    // 1 Member to many Comments
     public function comments()
     {
         return $this->hasMany(Comment::class, 'member_id', 'member_id');
     }
 
-    // Many Members to 1 Option
-    public function options($pollId)
+    public function getOptionsByPollId($pollId)
     {
         return Option::where('poll_id', $pollId)->get();
     }
 
-    // 2 Members to many Invitations
-    //How to track invited_membres by an invintator with (member_id)
     public function invitations()
     {
-
+        return $this->hasMany(Invitation::class, 'inviter_id', 'member_id');
     }
 
-    // 1 Member to many Follow Notifications
     public function followNotifications()
     {
         return $this->hasMany(FollowNotification::class, 'follower_id', 'member_id');
     }
-
-
 }

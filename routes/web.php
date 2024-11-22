@@ -33,12 +33,7 @@ use App\Http\Controllers\Notifications\RestrictionNotificationController;
 */
 
 // Login
-Route::redirect('/', '/login');
-// Login Successful Redirection View
-Route::get('/loginRedirection', function () {
-    return view('pages.loginRedirection'); // Successful login page
-});
-
+Route::redirect('/', '/loginRedirection');
 // Cards
 Route::controller(CardController::class)->group(function () {
     Route::get('/cards', 'list')->name('cards');
@@ -72,3 +67,7 @@ Route::controller(RegisterController::class)->group(function () {
     Route::post('/register', 'register');
 });
 
+// Login Successful Redirection View
+Route::get('/loginRedirection', function () {
+    return view('pages.loginRedirection'); // Successful login page
+})->name('loginRedirection')->middleware('auth');
