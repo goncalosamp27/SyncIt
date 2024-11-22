@@ -81,4 +81,13 @@ class EventController extends Controller
 			'futureEvents' => $futureEvents
 		]);
 	}
+
+	public function display_events()
+    {
+        // Retrieve all events
+        $events = Event::all(); 
+
+        // Return the view and pass the events data to the view
+        return view('pages.events', ['events' => $events]);
+    }
 }

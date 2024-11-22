@@ -61,9 +61,7 @@ Route::get('/event',function() {
     return view('pages.event');
 });
 
-Route::get('/events',function() {
-    return view('pages.events');
-});
+Route::get('/events', [EventController::class, 'display_events']);
 
 // Cards
 Route::controller(CardController::class)->group(function () {
