@@ -131,4 +131,67 @@
 	margin-top: 2rem;
 	margin-bottom: 2rem;
 	color: var(--white-color);
+	display: block; /* Ensures the description section remains flexible */
+}
+
+.event-page-text{
+	margin-top: 1rem;
+	margin-left: 1rem;
+	margin-right: 1rem;
+	padding: 1rem;
+	font-size: clamp(1rem, 2.5vw, 1.5rem); /* Dynamically adjust font size */
+    line-height: 1.6; /* Adjust line height for readability */
+    word-wrap: break-word; /* Ensure long words or URLs break nicely */
+    max-width: 100%; /* Keep within container bounds */
+	background-color: var(--black-color);
+	border-radius: 0.5rem;
+	margin-bottom: 2rem;
+	box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
+}
+
+.add-your-own-comment {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* Space between elements */
+    margin: 1rem; /* Adjust margin using rem for scalability */
+}
+
+.profile-pic {
+    width: 4rem; /* Profile picture size in rem */
+    height: 4rem;
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover; /* Ensures the image scales properly */
+}
+
+.comment-input {
+    flex: 1; /* Allows the input to expand and fill available space */
+    border: none; /* Remove the default box border */
+    border-bottom: 1px solid #ccc; /* Add a line at the bottom */
+    outline: none; /* Remove the focus outline */
+    font-size: 1rem; /* Font size in rem */
+    padding: 0.5rem 0; /* Add some padding for spacing */
+    background-color: transparent; /* Make the background transparent */
+}
+
+.comment-input::placeholder {
+    color: var(--gray-color); /* Placeholder color for better contrast */
+    font-style: italic; /* Optional: Add a subtle style to placeholder text */
+}
+
+.comment-input:focus {
+    border-bottom: 1px solid var(--primary-color); /* Change bottom border color on focus */
+}
+
+.post-button {
+    padding: 0.625rem 1.25rem; /* Padding in rem */
+    border: none;
+    background-color: var(--primary-color); /* Blue button */
+    color: white;
+    border-radius: 0.3125rem; /* Rounded corners in rem */
+    font-size: 1rem; /* Font size in rem */
+    cursor: pointer;
+}
+
+.post-button:hover {
+    background-color: var(--hover-color); /* Darker blue on hover */
 }
