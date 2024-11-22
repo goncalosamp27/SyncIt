@@ -45,6 +45,7 @@
           <h2>Upcoming Events:</h2>
           <div class="events-list">
             @include('partials.event-card')
+
           </div>
           <div class="load-more-container">
           <button class="load-more">Show me more +</button>
