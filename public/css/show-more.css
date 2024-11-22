@@ -1,0 +1,18 @@
+.load-more-container {
+    display: flex;
+    justify-content: center;  /* Center the button horizontally */
+    margin-top: 20px;          /* Optional: Add space above the button */
+}
+
+.load-more {
+    background-color: #9b4dff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.load-more-container {
+    align-items: center;
+}
