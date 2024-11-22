@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 
-class Artist extends Model
+class Artist extends Model 
 {
     use HasFactory;
 
@@ -39,7 +39,7 @@ class Artist extends Model
 
         return self::create($data);
     }
-    //Relationships
+    // Relationships
     // Artist is a Member 
     public function member()
     {
@@ -59,4 +59,10 @@ class Artist extends Model
                     ->withTimestamps();
     }
     
+    // Artist has followers number associated
+    public function getFollowersCount()
+    {
+        return $this->hasMany(Following::class, 'artist_id', 'artist_id')->count();
+    }
+
 }
