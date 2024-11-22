@@ -30,11 +30,20 @@
 		
 		<div class="event-page-description">
 			<h1>Description:</h1>
-		</div>
+				<div class="event-page-text">
+					INSERT DESCRIPTION
+				</div>
 		<div class="purple-line"></div>
 		
 		<div class="event-page-comments">
-			<h1>Comments:</h1>
+			<h1>XXX Comments:</h1>
+			<div class="event-page-text">
+				<div class="add-your-own-comment">
+					<img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Profile Picture" class="profile-pic">
+    				<input type="text" placeholder="Add your comment..." class="comment-input">
+    				<button class="post-button">Post</button>
+				</div>
+			</div>
 		</div>
 	</div>	
 @endsection	
