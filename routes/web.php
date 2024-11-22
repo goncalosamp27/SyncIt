@@ -21,6 +21,9 @@ use App\Http\Controllers\Notifications\InvitationNotificationController;
 use App\Http\Controllers\Notifications\PollNotificationController;
 use App\Http\Controllers\Notifications\RestrictionNotificationController;
 
+use App\Models\Artist;
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -41,8 +44,17 @@ Route::get('/home', function () {
     return view('pages.home');
 });
 
-Route::get('/artist',function() {
-    return view('pages.artist');
+Route::get('/artist/{artistId}', function ($artistId) {
+    // Fetch the artist and its related events
+    $artist = Artist::with('events')->find($artistId);
+    
+    // Handle if the artist is not found
+    if (!$artist) {
+        abort(404, 'Artist not found');
+    }
+
+    $followersCount = $artist->getFollowersCount();
+    return view('pages.artist', ['artist' => $artist, 'followersCount' => $followersCount]);
 });
 
 Route::get('/event',function() {
