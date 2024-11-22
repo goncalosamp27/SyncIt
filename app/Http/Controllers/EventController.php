@@ -13,7 +13,7 @@ class EventController extends Controller
 	{
         // Get the event card.
         $event = Event::findOrFail($event_id);
-
+        
         return view('pages.event', [
             'event' => $event
         ]);
@@ -82,7 +82,7 @@ class EventController extends Controller
 			'userPastEvents' => $artistPastEvents
 		]);
 	}
-
+ 
 	public function list_artist_future_events($artistId)
 	{
 		$userPastEvents = Event::where('user_id', $artistId)

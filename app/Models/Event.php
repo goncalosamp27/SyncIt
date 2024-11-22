@@ -14,7 +14,7 @@ class Event extends Model
     protected $table = 'event';
 
     public $timestamps = false;
-
+ 
     protected $primaryKey = 'event_id';
 
     public static function validate($data)
