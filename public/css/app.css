@@ -5,6 +5,7 @@
 @import url('artist.css');
 @import url('event-card.css');
 @import url('event.css');
+@import url('create.css');
 
 html, body {
 	background-color: var(--background-color);
