@@ -1,5 +1,6 @@
 --show search_path;
-SET search_path TO thingy;
+ALTER ROLE postgres SET search_path TO thingy;
+
 
 DROP TABLE IF EXISTS member CASCADE;
 DROP TABLE IF EXISTS artist CASCADE;
