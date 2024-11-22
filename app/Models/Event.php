@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Carbon;
 
 class Event extends Model
 {
@@ -55,6 +56,25 @@ class Event extends Model
     {
         return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id')
                 ->withTimestamps(); // This assumes the pivot table has created_at and updated_at timestamps
+    }   
+
+
+    // Accessor for ticket count
+    public function getTicketCountAttribute()
+    {
+        return $this->tickets()->count();
     }
-    
+
+    // Scope for future events
+    public function scopeFuture($query)
+    {
+        return $query->where('event_date', '>', Carbon::now());
+    }
+
+    // Scope for past events
+    public function scopePast($query)
+    {
+        return $query->where('event_date', '<=', Carbon::now());
+    }
+
 }

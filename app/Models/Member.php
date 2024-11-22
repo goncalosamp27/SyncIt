@@ -22,7 +22,7 @@ class Member extends Authenticatable
         'password',
         'bio',
         'profile_pic_url',
-        'member_status',
+        'member_status', 
     ];
 
     // Constraints
