@@ -1,5 +1,5 @@
 <?php
- 
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -31,18 +31,20 @@ class LoginController extends Controller
     public function authenticate(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
+            'login' => ['required', 'string'],
+            'password' => ['required', 'string'],
         ]);
- 
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
+
+        $loginField = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        if (Auth::attempt([$loginField => $credentials['login'], 'password' => $credentials['password']], $request->filled('remember'))) {
             $request->session()->regenerate();
+
             return redirect()->intended('/loginRedirection');
-            
         }
- 
+
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'login' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
     }
 
@@ -56,5 +58,5 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
         return redirect()->route('login')
             ->withSuccess('You have logged out successfully!');
-    } 
+    }
 }
