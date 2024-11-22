@@ -42,23 +42,21 @@
         <div class="events-section">
           <h2>Upcoming Events:</h2>
           <div class="events-list">
-          @foreach ($artist->events as $event)
+          @foreach ($artist->events->take(2) as $event)
             @if (\Carbon\Carbon::parse($event->event_date)->isFuture())
                 @include('partials.event-card', ['event' => $event])
             @endif
           @endforeach
 
           </div>
-          <div class="load-more-container">
-            @include('partials.show-more')
-          </div>
+          @include('partials.show-more')
         </div>
 
         <!-- Past Events -->
         <div class="events-section">
           <h2>Past Events:</h2>
           <div class="events-list">
-            @foreach ($artist->events as $event)
+            @foreach ($artist->events->take(2) as $event)
               @if (\Carbon\Carbon::parse($event->event_date)->isPast())
                   @include('partials.event-card', ['event' => $event])
               @endif

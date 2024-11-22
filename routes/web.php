@@ -10,6 +10,7 @@ use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventTagController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\HomeController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -39,10 +40,7 @@ use App\Models\Artist;
 Route::redirect('/', '/home');
 
 // Add this to render the home view
-// MIGHT NEED TO CREATE HOME CONTROLLER
-Route::get('/home', function () {
-    return view('pages.home');
-});
+Route::get('/home', [HomeController::class, 'index']);
 
 Route::get('/artist/{artistId}', function ($artistId) {
     // Fetch the artist and its related events

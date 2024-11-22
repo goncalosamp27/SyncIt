@@ -95,3 +95,28 @@
 	margin-bottom: 2rem;
 	color: var(--white-color);
 }
+
+.home-page-bottom .artist-row {
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping if needed */
+    gap: 20px; /* Space between cards */
+}
+
+.home-page-bottom .artist-card {
+    flex: 1 1 calc(20% - 20px); /* Adjust width for 5 in a row */
+    max-width: calc(20% - 20px); /* Ensure cards don't exceed this width */
+    box-sizing: border-box; /* Include padding and border in width */
+}
+
+.home-page-bottom .event-row {
+    display: flex;
+    flex-wrap: wrap; /* Wrap items to the next line if necessary */
+    gap: 20px; /* Space between items */
+}
+
+.home-page-bottom .event-card {
+    flex: 1 1 calc(33.33% - 20px); /* 3 items per row, subtracting space for the gap */
+    max-width: calc(33.33% - 20px); /* Ensure cards don't exceed this width */
+    box-sizing: border-box; /* Include padding and borders within the width */
+}
+
