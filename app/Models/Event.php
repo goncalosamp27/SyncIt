@@ -27,7 +27,8 @@ class Event extends Model
             'refund' => 'required|numeric|between:0,100',  
             'price' => 'required|numeric|min:0',  
             'type_of_event' => 'required|in:Public,Private',  
-            'rating' => 'required|numeric|between:0,5',    
+            'rating' => 'required|numeric|between:0,5',
+            'media_url' => 'required|string|max:100'    
         ]);
 
         return $validator;

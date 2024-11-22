@@ -113,10 +113,9 @@
                 <!-- File Upload -->
         <div class="create-event-input">
             <label for="event_files" class="form-label">Upload Media</label>
-            <input type="file" id="event_files" name="event_files[]" class="form-control" multiple 
-                accept="image/*,video/*">
+            <input type="file" id="event_files" name="event_files[]" class="form-control" multiple accept="image/*">
             <small class="form-text text-muted">
-                You can upload up to 3 files (images only).
+                You can upload up to 1 image.
             </small>
             <div id="file-error" class="text-danger" style="display: none;">
                 You can upload a maximum of 3 files and only images are allowed.
