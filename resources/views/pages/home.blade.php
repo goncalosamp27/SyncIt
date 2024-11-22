@@ -23,22 +23,36 @@
 
 		<div class="future-events">
 			<h1>Future Events: </h1>
-			@include('partials.event-card')
-
+			<div class="event-row">
+				@foreach ($futureEvents->take(3) as $event)
+					@include('partials.event-card', ['event' => $event])
+				@endforeach
+			</div>
+			@include('partials.show-more')
 		</div>
 
 		<div class="purple-line"></div>
 
 		<div class="past-events">
 			<h1>Past Events: </h1>
-			@include('partials.event-card')
+			<div class="event-row">
+				@foreach ($pastEvents->take(3) as $event)
+					@include('partials.event-card', ['event' => $event])
+				@endforeach
+			</div>
+			@include('partials.show-more')
 		</div>
 
 		<div class="purple-line"></div>
 
 		<div class="artists">
-			<h1>Artists: </h1>
-			@include('partials.artist-card')
+		<h1>Artists: </h1>
+		<div class="artist-row">
+			@foreach ($artists->take(5) as $artist)
+				@include('partials.artist-card', ['artist' => $artist])
+			@endforeach
 		</div>
+		@include('partials.show-more')
+	</div>
 	</div>	
 @endsection	

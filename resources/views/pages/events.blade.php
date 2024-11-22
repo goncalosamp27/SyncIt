@@ -43,22 +43,9 @@
 
 
 <div class="events-grid">
-<div class="event-card">@include('partials.event-card')</div>
-<div class="event-card">@include('partials.event-card')</div>
-<div class="event-card">@include('partials.event-card')</div>
-<div class="event-card">@include('partials.event-card')</div>
-<div class="event-card">@include('partials.event-card')</div>
-<div class="event-card">@include('partials.event-card')</div>
-<div class="event-card">@include('partials.event-card')</div>
-<div class="event-card">@include('partials.event-card')</div>
-<div class="event-card">@include('partials.event-card')</div>
-<div class="event-card">@include('partials.event-card')</div>
-<div class="event-card">@include('partials.event-card')</div>
-<div class="event-card">@include('partials.event-card')</div>
-<div class="event-card">@include('partials.event-card')</div>
-<div class="event-card">@include('partials.event-card')</div>
-<div class="event-card">@include('partials.event-card')</div>
-<div class="event-card">@include('partials.event-card')</div>
+    @foreach ($events as $event)
+        @include('partials.event-card', ['event' => $event])
+    @endforeach
 </div>
 
 

@@ -10,6 +10,7 @@ use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventTagController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\HomeController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -20,6 +21,9 @@ use App\Http\Controllers\Notifications\FollowNotificationController;
 use App\Http\Controllers\Notifications\InvitationNotificationController;
 use App\Http\Controllers\Notifications\PollNotificationController;
 use App\Http\Controllers\Notifications\RestrictionNotificationController;
+
+use App\Models\Artist;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -36,13 +40,19 @@ use App\Http\Controllers\Notifications\RestrictionNotificationController;
 Route::redirect('/', '/home');
 
 // Add this to render the home view
-// MIGHT NEED TO CREATE HOME CONTROLLER
-Route::get('/home', function () {
-    return view('pages.home');
-});
+Route::get('/home', [HomeController::class, 'index']);
 
-Route::get('/artist',function() {
-    return view('pages.artist');
+Route::get('/artist/{artistId}', function ($artistId) {
+    // Fetch the artist and its related events
+    $artist = Artist::with('events')->find($artistId);
+    
+    // Handle if the artist is not found
+    if (!$artist) {
+        abort(404, 'Artist not found');
+    }
+
+    $followersCount = $artist->getFollowersCount();
+    return view('pages.artist', ['artist' => $artist, 'followersCount' => $followersCount]);
 });
 
 Route::get('/create', function () {
@@ -56,9 +66,7 @@ Route::get('/event',function() {
     return view('pages.event');
 });
 
-Route::get('/events',function() {
-    return view('pages.events');
-});
+Route::get('/events', [EventController::class, 'display_events']);
 
 // Cards
 Route::controller(CardController::class)->group(function () {
