@@ -22,7 +22,7 @@ class LoginController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return redirect('/loginRedirection');
+            return redirect('/login');
         } else {
             return view('auth.login');
         }
@@ -44,15 +44,13 @@ class LoginController extends Controller
         if (Auth::attempt([$loginField => $credentials['login'], 'password' => $credentials['password']], $request->filled('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended('/loginRedirection');
+            return redirect()->intended('/home');
         }
-
 
         return back()->withErrors([
             'login' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
     }
-
 
 
     /**
@@ -63,7 +61,7 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login')
+        return redirect()->route('home')
             ->withSuccess('You have logged out successfully!');
     }
     

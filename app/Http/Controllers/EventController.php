@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 use App\Models\Event;
+use App\Models\Tag;
 
 class EventController extends Controller
 {   
@@ -49,28 +50,18 @@ class EventController extends Controller
         return redirect()->route('events.index')->with('success', 'Event created successfully!');
     }
 
-	public function list_past_events()
+	// List past events
+    public function list_past_events()
     {
-        $pastEvents = Event::where('event_date', '<', now())
-		->orderBy('event_date', 'desc')
-		->get();
-
-        return view('pages.past_events', [
-			'pastEvents' => $pastEvents
-		]);
+        return Event::getPastEvents(); // Return the collection of past events
     }
 
-	public function list_future_events()
+    // Return future events data
+    public function list_future_events()
     {
-        $futureEvents = Event::where('event_date', '>=', now())
-		->orderBy('event_date', 'desc')
-		->get();
-
-        return view('pages.future_events', [
-			'futureEvents' => $futureEvents
-		]);
+        return Event::getFutureEvents(); // Return the collection of future events
     }
-	
+	/*
 	public function list_artist_past_events($artistId)
 	{
 		$userPastEvents = Event::where('user_id', $artistId)
@@ -94,6 +85,8 @@ class EventController extends Controller
 			'userFutureEvents' => $artistFutureEvents
 		]);
 	}
+        */
+    
 
 	// Might be useful, might not : //
 	public function list_all_events() 

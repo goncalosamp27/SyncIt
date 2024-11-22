@@ -55,22 +55,18 @@ class RegisterController extends Controller
         ];
 
         try {
-            // Attempt to create the member using the Member model's createMember method
             $result = Member::createMember($newMemberData);
 
-            // If createMember returns errors, it will be a MessageBag, not a created member
             if ($result instanceof \Illuminate\Support\MessageBag) {
                 return back()->withErrors($result)->withInput();
             }
 
-            // If member is successfully created, log them in
             Auth::attempt($request->only('email', 'password'));
             $request->session()->regenerate();
 
-            return redirect()->route('loginRedirection')->withSuccess('You have successfully registered & logged in!');
+            return redirect()->route('home')->withSuccess('You have successfully registered & logged in!');
 
         } catch (\Exception $e) {
-            \Log::error('Error during registration: ' . $e->getMessage());
             return back()->withErrors(['error' => 'Something went wrong. Please try again later.'])->withInput();
         }
     }
