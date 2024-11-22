@@ -128,14 +128,14 @@
 
 .event-page-description,
 .event-page-comments {
-	margin-top: 2rem;
+	margin-top: 4rem;
 	margin-bottom: 2rem;
 	color: var(--white-color);
 	display: block; /* Ensures the description section remains flexible */
 }
 
 .event-page-text{
-	margin-top: 1rem;
+	margin-top: 2rem;
 	margin-left: 1rem;
 	margin-right: 1rem;
 	padding: 1rem;

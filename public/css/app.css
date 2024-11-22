@@ -8,6 +8,7 @@
 @import url('events.css');
 @import url('artist-card.css');
 @import url('create.css');
+@import url('comment.css');
 
 html, body {
 	background-color: var(--background-color);
