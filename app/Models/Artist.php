@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 
-class Artist extends Model
+class Artist extends Model 
 {
     use HasFactory;
 
@@ -59,4 +59,11 @@ class Artist extends Model
                     ->withTimestamps();
     }
     
+
+    public function getFollowersCount()
+    {
+        return $this->hasMany(Following::class, 'artist_id', 'artist_id')->count();
+    }
+
+
 }

@@ -50,7 +50,7 @@
 }
 
 .profile-info {
-    max-width: 300px;
+    width: 90%;
     text-align: center;
     margin-top: 20px;
 }
@@ -105,21 +105,6 @@
 .events-section h2 {
     font-size: 20px;
     margin-bottom: 20px;
-}
-
-.load-more-container {
-    display: flex;
-    justify-content: center;  /* Center the button horizontally */
-    margin-top: 20px;          /* Optional: Add space above the button */
-}
-
-.load-more {
-    background-color: #9b4dff;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
 }
 
 .profile-tags {
