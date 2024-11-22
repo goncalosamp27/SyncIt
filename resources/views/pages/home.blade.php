@@ -23,18 +23,22 @@
 
 		<div class="future-events">
 			<h1>Future Events: </h1>
+			@include('partials.event-card')
+
 		</div>
 
 		<div class="purple-line"></div>
 
 		<div class="past-events">
 			<h1>Past Events: </h1>
+			@include('partials.event-card')
 		</div>
 
 		<div class="purple-line"></div>
 
 		<div class="artists">
 			<h1>Artists: </h1>
+			@include('partials.artist-card')
 		</div>
 	</div>	
 @endsection	
