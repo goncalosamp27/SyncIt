@@ -8,7 +8,7 @@
       <div class="left-column">
         <div class="profile-section">
           <div class="profile-picture">
-            <img src="https://media.gq.com/photos/5ad93798ceb93861adb912d8/16:9/w_2560%2Cc_limit/kanye-west-0814-GQ-FEKW01.01.jpg" alt="User Profile Picture">
+            <img src="{{ asset('storage/penguin.png') }}" alt="User Profile Picture">
           </div>
           <div class="profile-info">
             <h1>{{ $artist->member->display_name }}</h1>
