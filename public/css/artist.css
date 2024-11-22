@@ -1,0 +1,181 @@
+@import url('variables.css');
+
+* {
+    color: var(--text-color);
+}
+
+.event-title {
+    text-align: center;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.main-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* Left column (1) and Right column (2) */
+    gap: 30px;
+}
+
+.left-column {
+    background-color: #2a2a2a;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.event-free {
+    color: #FFD700;
+}
+
+.profile-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-picture {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info {
+    width: 90%;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.profile-info h1 {
+    font-size: 24px;
+}
+
+.profile-info .username {
+    color: #9b4dff;
+    margin-bottom: 10px;
+}
+
+.profile-info .followers {
+    margin: 10px 0;
+    font-size: 14px;
+    display: flex;
+    gap: 20px;
+}
+
+.profile-info .bio {
+    background-color: #333;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.tags .tag {
+    display: inline-block;
+    background-color: #444;
+    color: white;
+    padding: 5px 10px;
+    margin: 5px 5px 0 0;
+    border-radius: 20px;
+}
+
+.tag.music { background-color: #ff4d4d; }
+.tag.dance { background-color: #6a5acd; }
+
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.events-section {
+    background-color: #2a2a2a;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.events-section h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.profile-tags {
+    display: flex;
+    flex-direction: column;  /* Stack tags in rows */
+    gap: 10px;  /* Optional: space between rows */
+    width: 100%;  /* Ensure it fills the available width */
+}
+
+.profile-music-dance {
+    display: flex;
+    justify-content: space-between;  /* Space tags equally */
+    width: 100%;
+}
+
+.profile-other-tags {
+    display: flex;
+    justify-content: space-between;  /* Space tags equally */
+    width: 100%;
+}
+
+.tag {
+    background-color: #444;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    text-align: center;  /* Center text inside the tags */
+    flex: 1;  /* Ensure tags take equal width in the row */
+    margin: 0 5px;  /* Optional: spacing between tags */
+}
+
+
+.followers-rating {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px; /* Optional: adds space between the two rows */
+}
+
+.followers-rating span {
+    flex: 1;  /* Ensures both spans take equal space */
+    text-align: center;  /* Center text inside each span */
+}
+
+.followers-count, .rating-score {
+    font-size: 18px; /* Adjust as needed */
+}
+
+.followers-label, .rating-label {
+    font-size: 14px;  /* Adjust as needed */
+    color: #9b4dff;   /* Optional: set color for labels */
+    margin-bottom: 10px;
+}
+
+.events-section .events-list {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping of items to the next line */
+    gap: 20px; /* Add spacing between items */
+}
+
+.events-section .event-card {
+    flex: 1 1 calc(50% - 20px); /* Take up 50% of the container minus the gap */
+    max-width: calc(50% - 20px); /* Ensure no card exceeds 50% width */
+    box-sizing: border-box; /* Include padding and borders in the width */
+}
+
+@media (max-width: 768px) {
+    .events-section .event-card {
+        flex: 1 1 calc(100% - 20px); /* Stack items on smaller screens */
+        max-width: calc(100% - 20px); /* Ensure they don't exceed 100% width */
+    }
+}
+

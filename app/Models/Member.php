@@ -21,7 +21,7 @@ class Member extends Model
         'password',
         'bio',
         'profile_pic_url',
-        'member_status',
+        'member_status', 
     ];
 
     //constraints
