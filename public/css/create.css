@@ -1,20 +1,152 @@
 @import url('variables.css');
 
-.create-event{
-	margin-left: 13rem;
-	margin-right: 13rem;
+/* Container for the Event Form */
+.create-event {
+    margin: 0rem auto;
+    max-width: 70rem; /* Reduced width */
+    text-align: center;
 }
 
 .create-event h1 {
-	margin-top: 1rem;
-	margin-bottom: 2rem;
-	color: var(--white-color);
+    font-size: 1.8rem; /* Slightly smaller font */
+    margin-bottom: 1rem;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
-.create-event-form{
-	margin-top: 1rem;
-	margin-left: 13rem;
-	margin-right: 13rem;
+.purple-line {
+    width: 80%; /* Adjusted width to align with compact layout */
+    height: 4px;
+    background-color: var(--primary-color);
+    margin: 0.5rem auto; /* Reduced margin */
 }
 
+/* Form Wrapper */
+.create-event-form {
+    background-color: var(--black-color);
+    padding: 1.5rem; /* Reduced padding */
+    border-radius: 8px;
+    box-shadow: 0 0rem 0.5rem rgba(0, 0, 0, 0.8);
+    margin: 1.5rem auto; /* Adjusted margin */
+    max-width: 70rem; /* Same as the container */
+	margin-bottom: 5rem;
+}
 
+/* Input Fields */
+.create-event-input {
+    margin-bottom: 1.5rem; /* Reduced spacing */
+}
+
+.create-event-input label {
+    display: block;
+    font-size: 0.9rem; /* Slightly smaller labels */
+    margin-bottom: 0.4rem; /* Reduced margin */
+    color: var(--white-color);
+    font-weight: bold;
+}
+
+.create-event-input input,
+.create-event-input textarea,
+.create-event-input select {
+    width: 100%;
+    padding: 0.7rem; /* Reduced padding */
+    font-size: 1.5rem; /* Slightly smaller font size */
+    border: 1px solid var(--gray-color);
+    border-radius: 5px;
+    background-color: var(--background-color);
+    color: var(--white-color);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.create-event-input input:focus,
+.create-event-input textarea:focus,
+.create-event-input select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 4px var(--primary-color); /* Reduced shadow size */
+}
+
+/* Error Message */
+.text-danger {
+    color: var(--hover-color);
+    font-size: 0.85rem; /* Reduced font size */
+    margin-top: 0.3rem; /* Reduced spacing */
+}
+
+/* Button Styling */
+.btn-primary {
+	margin-top: 3rem;
+	margin-bottom: 1rem;
+    display: block;
+    width: 100%;
+    padding: 0.8rem; /* Reduced padding */
+    font-size: 1rem; /* Reduced font size */
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--white-color);
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--hover-color);
+    transform: scale(1.01); /* Slightly reduced hover effect */
+}
+
+/* Additional Styling */
+textarea {
+    resize: none;
+}
+
+select {
+    appearance: none; /* For consistent dropdown styling */
+}
+
+.create-event-input select {
+    background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"%3E%3Cpath fill="var(--gray-color)" d="M2 0L0 2h4z"/%3E%3C/svg%3E');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px;
+}
+
+.create-event-input select[multiple] {
+    height: auto; /* Adjust height for multiple select */
+    min-height: 120px;
+    background-color: var(--background-color);
+    border: 1px solid var(--gray-color);
+    color: var(--white-color);
+    padding: 0.5rem;
+    border-radius: 5px;
+    outline: none;
+}
+
+.create-event-input select[multiple]:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 4px var(--primary-color);
+}
+
+.create-event-input input[type="file"] {
+    padding: 0.5rem;
+    background-color: var(--background-color);
+    border: 1px solid var(--gray-color);
+    color: var(--white-color);
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.create-event-input input[type="file"]:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px var(--primary-color);
+}
+
+#create-event-input #file-error {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--hover-color);
+}
