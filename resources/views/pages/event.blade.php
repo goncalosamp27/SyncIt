@@ -43,6 +43,9 @@
     				<input type="text" placeholder="Add your comment..." class="comment-input">
     				<button class="post-button">Post</button>
 				</div>
+
+				@include('partials.comment')
+				@include('partials.reply-comment')
 			</div>
 		</div>
 	</div>	
