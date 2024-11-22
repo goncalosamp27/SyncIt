@@ -45,6 +45,14 @@ Route::get('/artist',function() {
     return view('pages.artist');
 });
 
+Route::get('/create', function () {
+    return view('pages.create');
+});
+
+Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
+Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
+
+
 Route::get('/event',function() {
     return view('pages.event');
 });
