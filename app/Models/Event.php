@@ -65,16 +65,14 @@ class Event extends Model
         return $this->tickets()->count();
     }
 
-    // Scope for future events
-    public function scopeFuture($query)
+    public static function upcomingEvents()
     {
-        return $query->where('event_date', '>', Carbon::now());
+        return self::where('event_date', '>', Carbon::now())->get();
     }
-
-    // Scope for past events
-    public function scopePast($query)
+    public static function pastEvents()
     {
-        return $query->where('event_date', '<=', Carbon::now());
+        return self::where('event_date', '<', Carbon::now())->get();
     }
+    
 
 }

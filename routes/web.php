@@ -40,7 +40,7 @@ use App\Models\Artist;
 Route::redirect('/', '/home');
 
 // Add this to render the home view
-Route::get('/home', [HomeController::class, 'index']);
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::get('/artist/{artistId}', function ($artistId) {
     // Fetch the artist and its related events
@@ -67,8 +67,10 @@ Route::get('/event',function() {
 });
 
 Route::get('/events', [EventController::class, 'display_events']);
-// Login
-Route::redirect('/', '/login');
+
+Route::get('/login',function() {
+    return view('pages.login');
+});
 
 // Cards
 Route::controller(CardController::class)->group(function () {
@@ -97,13 +99,8 @@ Route::controller(LoginController::class)->group(function () {
     Route::get('/logout', 'logout')->name('logout');
 });
 
-
 Route::controller(RegisterController::class)->group(function () {
     Route::get('/register', 'showRegistrationForm')->name('register');
     Route::post('/register', 'register');
 });
 
-// Login Successful Redirection View
-Route::get('/loginRedirection', function () {
-    return view('pages.loginRedirection'); // Successful login page
-})->name('loginRedirection')->middleware('auth');
