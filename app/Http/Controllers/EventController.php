@@ -48,4 +48,13 @@ class EventController extends Controller
 
         return redirect()->route('events.index')->with('success', 'Event created successfully!');
     }
+
+    public function display_events()
+    {
+        // Retrieve all events
+        $events = Event::all(); 
+
+        // Return the view and pass the events data to the view
+        return view('pages.events', ['events' => $events]);
+    }
 }
