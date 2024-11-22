@@ -56,4 +56,16 @@ class Event extends Model
         return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id')
                 ->withTimestamps(); // This assumes the pivot table has created_at and updated_at timestamps
     }   
+
+
+    // Accessor for ticket count
+    public function getTicketCountAttribute()
+    {
+        return $this->tickets()->count();
+    }
+
+    public static function getAllEvents()
+    {
+        return self::all();
+    }
 }

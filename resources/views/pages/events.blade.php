@@ -43,7 +43,9 @@
 
 
 <div class="events-grid">
-
+    @foreach ($events as $event)
+        @include('partials.event-card', ['event' => $event])
+    @endforeach
 </div>
 
 
