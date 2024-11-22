@@ -25,14 +25,16 @@
 		</div>
 	</div>
 	
-	<div class="purple-line"></div>
-	
-	<div class="event-page-description">
-		<h1>Description:</h1>
-	</div>
-	<div class="purple-line"></div>
-	
-	<div class="event-page-comments">
-		<h1>Comments:</h1>
-	</div>
+	<div class="description-comments">
+		<div class="purple-line"></div>
+		
+		<div class="event-page-description">
+			<h1>Description:</h1>
+		</div>
+		<div class="purple-line"></div>
+		
+		<div class="event-page-comments">
+			<h1>Comments:</h1>
+		</div>
+	</div>	
 @endsection	

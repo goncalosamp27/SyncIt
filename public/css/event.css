@@ -120,3 +120,15 @@
 	font-size: 1.3rem;
 	margin-right: 0.7rem;
 }
+
+.description-comments{
+	margin-left: 13rem;
+	margin-right: 13rem;	
+}
+
+.event-page-description,
+.event-page-comments {
+	margin-top: 2rem;
+	margin-bottom: 2rem;
+	color: var(--white-color);
+}
