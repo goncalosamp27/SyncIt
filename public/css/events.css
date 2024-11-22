@@ -1,6 +1,5 @@
 @import url('variables.css');
 
-
 .events-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Ensures cards are at least 300px wide */
