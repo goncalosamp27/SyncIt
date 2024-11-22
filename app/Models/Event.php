@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Carbon;
 
 class Event extends Model
 {
@@ -64,8 +65,16 @@ class Event extends Model
         return $this->tickets()->count();
     }
 
-    public static function getAllEvents()
+    // Scope for future events
+    public function scopeFuture($query)
     {
-        return self::all();
+        return $query->where('event_date', '>', Carbon::now());
     }
+
+    // Scope for past events
+    public function scopePast($query)
+    {
+        return $query->where('event_date', '<=', Carbon::now());
+    }
+
 }

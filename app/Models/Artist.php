@@ -65,5 +65,4 @@ class Artist extends Model
         return $this->hasMany(Following::class, 'artist_id', 'artist_id')->count();
     }
 
-
 }
