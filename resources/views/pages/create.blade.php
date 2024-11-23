@@ -1,20 +1,28 @@
 @extends('layouts.app')
 
 @section('content')
-	<div class = "create-event">
-		<div class="create-event-title">
-			<h1>Create your own Event: </h1>
-		</div>
-		<div class="purple-line2"></div>
-	</div>
+<script>
+    const musicTags = @json($musicTags);
+    const danceTags = @json($danceTags);
+</script>
+
+<!-- Include the JavaScript file -->
+<script src="{{ asset('js/createEvent.js') }}"></script>
+<div class="create-event">
+    <div class="create-event-title">
+        <h1>Create your own Event: </h1>
+    </div>
+    <div class="purple-line2"></div>
+</div>
 
 <div class="create-event-form">
-    <form action="{{ route('events.store') }}" method="POST">
+    <form  method="POST" action="{{ route('create.store') }}">
         @csrf
         <!-- Event Name -->
         <div class="create-event-input">
             <label for="event_name" class="form-label">Event Name</label>
-            <input type="text" id="event_name" name="event_name" placeholder="Enter a name for your event:"  class="form-control" value="{{ old('event_name') }}" required>
+            <input type="text" id="event_name" name="event_name" placeholder="Enter a name for your event:"
+                class="form-control" value="{{ old('event_name') }}" required>
             @error('event_name')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
@@ -23,7 +31,8 @@
         <!-- Event Date -->
         <div class="create-event-input">
             <label for="event_date" class="form-label">Event Date</label>
-            <input type="date" id="event_date" name="event_date" placeholder="Enter a date for your event:" class="form-control" value="{{ old('event_date') }}" required>
+            <input type="date" id="event_date" name="event_date" placeholder="Enter a date for your event:"
+                class="form-control" value="{{ old('event_date') }}" required>
             @error('event_date')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
@@ -32,7 +41,8 @@
         <!-- Location -->
         <div class="create-event-input">
             <label for="location" class="form-label">Location</label>
-            <input type="text" id="location" name="location" placeholder="Enter a location for your event:" class="form-control" value="{{ old('location') }}" required>
+            <input type="text" id="location" name="location" placeholder="Enter a location for your event:"
+                class="form-control" value="{{ old('location') }}" required>
             @error('location')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
@@ -41,25 +51,28 @@
         <!-- Description -->
         <div class="create-event-input">
             <label for="description" class="form-label">Description</label>
-            <textarea id="description" name="description" placeholder="Enter a description for your event:" class="form-control" required>{{ old('description') }}</textarea>
+            <textarea id="description" name="description" placeholder="Enter a description for your event:"
+                class="form-control" required>{{ old('description') }}</textarea>
             @error('description')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
 
-         <!-- Capacity -->
-         <div class="create-event-input">
+        <!-- Capacity -->
+        <div class="create-event-input">
             <label for="capacity" class="form-label">Capacity</label>
-            <input type="number" id="price" name="capacity" placeholder="Enter a capacity for your event:" class="form-control" value="{{ old('price') }}" min="0" required>
+            <input type="number" id="price" name="capacity" placeholder="Enter a capacity for your event:"
+                class="form-control" value="{{ old('price') }}" min="0" required>
             @error('price')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
 
-         <!-- Price -->
-         <div class="create-event-input">
+        <!-- Price -->
+        <div class="create-event-input">
             <label for="price" class="form-label">Price</label>
-            <input type="number" id="price" name="price" placeholder="Enter a Price for your event:" class="form-control" value="{{ old('price') }}" min="0" required>
+            <input type="number" id="price" name="price" placeholder="Enter a Price for your event:"
+                class="form-control" value="{{ old('price') }}" min="0" required>
             @error('price')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
@@ -68,7 +81,8 @@
         <!-- Refund -->
         <div class="create-event-input">
             <label for="refund" class="form-label">Refund (%)</label>
-            <input type="number" id="refund" name="refund" placeholder="Enter a refund % for your event:" class="form-control" value="{{ old('refund') }}" min="0" max="100" required>
+            <input type="number" id="refund" name="refund" placeholder="Enter a refund % for your event:"
+                class="form-control" value="{{ old('refund') }}" min="0" max="100" required>
             @error('refund')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
@@ -91,29 +105,59 @@
             <label for="genre" class="form-label">Main Tag</label>
             <select id="genre" name="genre" class="form-control" required>
                 <option value="" disabled selected>Select a genre</option>
-                <option value="Music">Music</option>
-                <option value="Dance">Dance</option>
+                <option value="Music" {{ old('genre') == 'Music' ? 'selected' : '' }}>Music</option>
+                <option value="Dance" {{ old('genre') == 'Dance' ? 'selected' : '' }}>Dance</option>
             </select>
             @error('genre')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
-
         <!-- Subgenres -->
-        <div class="create-event-input">
-            <label for="subgenres" class="form-label">Tags</label>
-            <select id="subgenres" name="subgenres[]" class="form-control" multiple required>
-                <!-- Options will be dynamically populated -->
-            </select>
-            @error('subgenres')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
-        </div>
+        <div class="create-event-input-inline">
+            <div class="create-event-input-inline">
+                <div>
+                    <label for="music-dance" id="music-dance-label" class="form-label">Select a Music/Dance</label>
+                    <select id="music-dance" name="music-dance" class="form-control" required>
+                        <option value="" disabled selected>Select a Music/Dance</option>
+                        <!-- Options will be dynamically populated via JavaScript -->
+                    </select>
+                    @error('music-dance')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            <!-- Mood Dropdown -->
+            <div>
+                <label for="mood" class="form-label">Mood</label>
+                <select id="mood" name="mood" class="form-control" required>
+                    <option value="" disabled selected>Select a Mood</option>
+                    @foreach ($moodTags as $tag)
+                        <option value="{{ $tag->tag_id }}">{{ $tag->tag_name }}</option>
+                    @endforeach
+                </select>
+                @error('mood')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
 
-                <!-- File Upload -->
+            <!-- Settings Dropdown -->
+            <div>
+                <label for="setting" class="form-label">Setting</label>
+                <select id="setting" name="setting" class="form-control" required>
+                    <option value="" disabled selected>Select a Setting</option>
+                    @foreach ($settingsTags as $tag)
+                        <option value="{{ $tag->tag_id }}">{{ $tag->tag_name }}</option>
+                    @endforeach
+                </select>
+                @error('setting')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+        <!-- File Upload -->
         <div class="create-event-input">
             <label for="event_files" class="form-label">Upload Media</label>
-            <input type="file" id="event_files" name="event_files[]" class="form-control" multiple accept="image/*">
+            <input type="file" id="event_files">
             <small class="form-text text-muted">
                 You can upload up to 1 image.
             </small>
@@ -123,13 +167,10 @@
             @error('event_files')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
-            @error('event_files.*')
-                <div class="text-danger">{{ $message }}</div>
-            @enderror
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary">Create Event</button>
+        <button type="submit" class="btn btn-primary" >Create Event</button>
     </form>
 </div>
 @endsection
