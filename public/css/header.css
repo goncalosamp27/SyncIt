@@ -125,6 +125,7 @@ body {
     cursor: pointer;
     margin-right: 1rem;
     font-size: 1.5rem;
+    text-decoration: none;
 }
 
 .explore-btn:hover {

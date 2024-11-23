@@ -4,14 +4,14 @@
 	<div class="event-page-content">
 		<div class="event-page-info">
 			<h1> {{ $event->event_name }} </h1>
-			<div class ="user-event-owner" style="display: flex; align-items: center; margin-top:1rem;">
+			<a class ="user-event-owner" href="{{ url('artist/' . $event->artist->artist_id) }}" style="display: flex; align-items: center; margin-top:1rem;">
 				<img 
 					src="{{ asset('storage/profiles/' . $event->artist->member->profile_pic_url) }}" alt="Event Picture"
 					alt="Profile Picture" 
 					style="width: 5rem; height: 5rem; object-fit: cover; border-radius: 50%; margin-right: 1rem; border: 0.15rem solid white; box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.8);"
 				>
 				<span class ="user-event-owner-by">by: </span><h2 style="margin: 0;"> {{'@' . $event->artist->member->username}}</h2>
-			</div>			
+			</a>			
 			<h3>📅 {{ \Carbon\Carbon::parse($event->event_date)->format('d/m/Y - h:i A') }}</h3>
 			<div class="small-line"></div>
 			<h4>📍 {{ $event->location }}</h4>
