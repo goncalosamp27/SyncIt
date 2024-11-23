@@ -55,6 +55,12 @@ Route::get('/create', function () {
     return view('pages.create');
 });
 
+Route::get('/admin', function () {
+    return view('pages.admin');
+});
+
+Route::get('/admin', [MemberController::class, 'display_members']);
+
 Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
 

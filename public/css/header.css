@@ -89,7 +89,7 @@ body {
     justify-content: center;
 }
 
-.search-bar {
+.navbar-center .search-bar {
     display: flex;
     align-items: center;
     background-color: var(--gray-color);
