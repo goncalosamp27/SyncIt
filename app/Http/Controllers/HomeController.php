@@ -11,15 +11,21 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $pastEvents = Event::past()->orderBy('event_date', 'desc')->get();
-        $futureEvents = Event::future()->orderBy('event_date', 'asc')->get();
+        try {
+            $pastEvents = Event::pastEvents();
+            $futureEvents = Event::upcomingEvents();
+            $artists = Artist::all();
 
-        $artists = Artist::all();
-
-        return view('pages.home', [
-            'pastEvents' => $pastEvents,
-            'futureEvents' => $futureEvents,
-            'artists' => $artists,
-        ]);
+            
+            return view('pages.home', [
+                'pastEvents' => $pastEvents,
+                'futureEvents' => $futureEvents,
+                'artists' => $artists,
+            ]);
+        } catch (\Exception $e) {
+            // Log the error and show a user-friendly message
+            \Log::error('Error fetching data in HomeController: ' . $e->getMessage());
+            return response()->view('errors.500', [], 500);
+        }
     }
 }
