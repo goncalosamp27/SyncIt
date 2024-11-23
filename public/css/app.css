@@ -13,6 +13,11 @@
 @import url('login.css');
 @import url('register.css');
 
+* {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
 html, body {
 	background-color: var(--background-color);
   margin: 0;
