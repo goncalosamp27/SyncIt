@@ -57,7 +57,4 @@ class Restriction extends Model
     {
         return $this->hasMany(RestrictionNotification::class, 'restriction_id', 'restriction_id');
     }
-
-   
-    
 }

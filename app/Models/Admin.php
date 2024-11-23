@@ -25,5 +25,4 @@ class Admin extends Model
     {
         return $this->hasMany(Restriction::class, 'admin_id', 'admin_id');
     }
-
 }

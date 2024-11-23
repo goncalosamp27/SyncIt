@@ -69,13 +69,12 @@ Route::get('/admin', [AdminController::class, 'display_members']);
 Route::get('/admin/edit/member/{id}', [AdminController::class, 'getMember'])->name('admin.edit.member');
 //Route::put('/admin/edit/member/{id}', [AdminController::class, 'updateMember']);
 
-
+Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
 Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
-
-Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
-
-Route::get('/events', [TagController::class, 'showTagsPerType'])->name('events');
+Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events');
+Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->name('events');
+Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('events');
 
 // Authentication
 Route::controller(LoginController::class)->group(function () {
