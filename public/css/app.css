@@ -12,6 +12,9 @@
 @import url('show-more.css');
 @import url('login.css');
 @import url('register.css');
+@import url('admin.css');
+@import url('edit-member.css');
+@import url('tickets.css');
 
 * {
   color: var(--text-color);
@@ -31,4 +34,9 @@ html, body {
   flex: 1;
   display: 1;
   flex-direction: column;
+}
+
+.tag:hover {
+        transform: scale(1.05);
+        box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
 }
