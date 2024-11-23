@@ -12,6 +12,7 @@
 @import url('show-more.css');
 @import url('login.css');
 @import url('register.css');
+@import url('admin.css');
 
 * {
   color: var(--text-color);
