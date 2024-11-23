@@ -2,8 +2,9 @@
 
 .purple-line{
 	background-color: var(--primary-color); 
-	height: 0.2em;
+	height: 0.1em;
 	margin: auto;
+    box-shadow: 0 0 0.5rem var(--primary-color);
 }
 
 .slogan-container {
