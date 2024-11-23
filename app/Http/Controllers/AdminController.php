@@ -25,7 +25,7 @@ class AdminController extends Controller
             'member' => $member
         ]);
     }
-    /*
+    
     public function updateMember(Request $request, $id)
     {   
         $member = Member::findOrFail($id);
@@ -48,6 +48,5 @@ class AdminController extends Controller
         }
 
         return redirect()->route('pages.admin', $id)->with('success', 'Member updated successfully!');
-    }*/
-
+    }
 }

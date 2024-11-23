@@ -6,6 +6,7 @@ use Illuminate\View\View;
 
 use App\Models\Event;
 use App\Models\Tag;
+use Illuminate\Support\Carbon;
 
 class EventController extends Controller
 {   
@@ -50,12 +51,54 @@ class EventController extends Controller
         return redirect()->route('events.index')->with('success', 'Event created successfully!');
     }
 
-    public function display_events()
+    public function showTagsPerType()
     {
-        // Retrieve all events
-        $events = Event::all(); 
+        // Fetch tags where tag_name is 'Music' or 'Dance' (Genres)
+        $tagsMusic = Tag::type(['Music'])->get();
+		$tagsDance = Tag::type(['Dance'])->get();
+		$tagsMood = Tag::type(['Mood'])->get();
+		$tagsSettings = Tag::type(['Settings'])->get();
+        $events = Event::all();
+        return view('pages.events', [
+            'events' => $events,
+            'tagsMusic' => $tagsMusic,
+            'tagsDance' => $tagsDance,
+			'tagsMood' => $tagsMood,
+			'tagsSettings' => $tagsSettings,
+        ]);
+    }
+    public function showTagsPerTypePast()
+    {
+        // Fetch tags where tag_name is 'Music' or 'Dance' (Genres)
+        $tagsMusic = Tag::type(['Music'])->get();
+		$tagsDance = Tag::type(['Dance'])->get();
+		$tagsMood = Tag::type(['Mood'])->get();
+		$tagsSettings = Tag::type(['Settings'])->get();
+        $events = Event::where('event_date', '<', Carbon::now())->get();
 
-        // Return the view and pass the events data to the view
-        return view('pages.events', ['events' => $events]);
+        return view('pages.events', [
+            'events' => $events,
+            'tagsMusic' => $tagsMusic,
+            'tagsDance' => $tagsDance,
+			'tagsMood' => $tagsMood,
+			'tagsSettings' => $tagsSettings,
+        ]);
+    }
+    public function showTagsPerTypeFuture()
+    {
+        // Fetch tags where tag_name is 'Music' or 'Dance' (Genres)
+        $tagsMusic = Tag::type(['Music'])->get();
+		$tagsDance = Tag::type(['Dance'])->get();
+		$tagsMood = Tag::type(['Mood'])->get();
+		$tagsSettings = Tag::type(['Settings'])->get();
+        $events = Event::where('event_date', '>', Carbon::now())->get();
+
+        return view('pages.events', [
+            'events' => $events,
+            'tagsMusic' => $tagsMusic,
+            'tagsDance' => $tagsDance,
+			'tagsMood' => $tagsMood,
+			'tagsSettings' => $tagsSettings,
+        ]);
     }
 }
