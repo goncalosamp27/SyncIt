@@ -42,11 +42,14 @@
 	filter: brightness(1.2); /* Brightens the image slightly */
   }
 
-.event-page-info h1{
-	font-size: 3rem;
-	color: #FFF;
-	
+  .event-page-info h1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Show only 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+
 
 .event-page-info h2{
 	font-size: 2rem;
@@ -198,4 +201,73 @@
 
 .post-button:hover {
     background-color: var(--hover-color); /* Darker blue on hover */
+}
+
+.event-page-tags {
+    margin-left: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    gap: 1rem;
+    display: flex;
+    flex-wrap: wrap; /* Allow tags to wrap to a new line */
+    justify-content: flex-start;
+    max-width: 100%; /* Ensure the tags stay within the parent container */
+}
+
+.event-page-tags span { /* Existing tag style */
+    padding: 0.5rem 1rem; /* Adjust padding for tag styling */
+    color: white; /* Anchor text color */
+    border-radius: 1rem; /* Rounded corners */
+    font-size: 0.875rem; /* Adjust font size */
+    white-space: nowrap; /* Prevent text from breaking inside tags */
+    text-decoration: none; /* Remove underline for anchor tags */
+    display: inline-block; /* Ensures consistent box sizing */
+    transition: background-color 0.3s ease; /* Optional: Add hover effect */
+}
+
+.event-page-tags span:hover {
+    cursor: pointer; /* Indicate interactivity */
+}
+
+.disabled-btn {
+    background-color: gray;
+    color: lightgray;
+    cursor: not-allowed;
+    pointer-events: none;
+    text-decoration: line-through; /* Crossed text */
+}
+
+/* Purchased button styling */
+.purchased-btn {
+    background-color: var(--hover-color);
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: default; /* Indicate it’s not clickable */
+    pointer-events: none; /* Prevent interaction */
+    border-radius: 2rem;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.purchased-btn:hover {
+    transform: none; /* No hover effect for purchased button */
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow remains */
+}
+
+.buy-more-tickets-btn {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    padding: 1rem; /* Responsive padding */
+    border-radius: 2rem; /* Consistent with rem units */
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.5rem; /* Scalable font size */
+    margin-left: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.buy-more-tickets-btn:hover {
+    background-color: var(--hover-color);
+    transform: scale(1.05);
 }

@@ -11,7 +11,7 @@ body {
 }
 
 .navbar {
-    z-index: 1;
+    z-index: 3;
     position: fixed;
     display: flex;
     justify-content: space-between;
@@ -89,7 +89,7 @@ body {
     justify-content: center;
 }
 
-.search-bar {
+.navbar-center .search-bar {
     display: flex;
     align-items: center;
     background-color: var(--gray-color);

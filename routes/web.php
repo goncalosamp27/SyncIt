@@ -7,6 +7,8 @@ use App\Http\Controllers\EventTagController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\TicketController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -19,7 +21,6 @@ use App\Http\Controllers\Notifications\PollNotificationController;
 use App\Http\Controllers\Notifications\RestrictionNotificationController;
 
 use App\Models\Artist;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,13 @@ Route::redirect('/', '/home');
 // Add this to render the home view
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
+Route::get('/tickets', function () {
+    return view('pages.tickets');
+});
+
+Route::get('/artist/{artist_id}', [ArtistController::class, 'show'])->name('artist');
+
+/*
 Route::get('/artist/{artistId}', function ($artistId) {
     // Fetch the artist and its related events
     $artist = Artist::with('events')->find($artistId);
@@ -49,18 +57,31 @@ Route::get('/artist/{artistId}', function ($artistId) {
 
     $followersCount = $artist->getFollowersCount();
     return view('pages.artist', ['artist' => $artist, 'followersCount' => $followersCount]);
-});
+});*/
 
 Route::get('/create', function () {
     return view('pages.create');
 });
 
+Route::get('/admin', function () {
+    return view('pages.admin');
+});
+
+Route::get('/admin', [AdminController::class, 'display_members']);
+
+Route::get('/admin/edit/member/{id}', [AdminController::class, 'getMember'])->name('admin.edit.member');
+//Route::put('/admin/edit/member/{id}', [AdminController::class, 'updateMember']);
+
+Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
 Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
+Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events');
+Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->name('past-events');
+Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('future-events');
 
-Route::get('/event/{id}', [EventController::class, 'show']);
-
-Route::get('/events', [TagController::class, 'showTagsPerType']);
+Route::middleware('auth')->group(function () {
+    Route::get('/tickets', [TicketController::class, 'ticketAndEventData'])->name('tickets');
+});
 
 // Authentication
 Route::controller(LoginController::class)->group(function () {

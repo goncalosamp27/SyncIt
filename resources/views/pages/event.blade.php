@@ -17,15 +17,69 @@
 			<h4>📍 {{ $event->location }}</h4>
 			<div class="small-line"></div>
 			<h5>👥 {{ $event->ticket_count }} / {{ $event->capacity }} Participants</h5>
-			<a href="https://example.com" class="buy-tickets-btn" target="_blank">Get Tickets - {{ $event->price }}€</a>
-		</div>
 
+			@php
+    			$eventExpired = $event->event_date <= now();
+    			$userTicketCount = $event->tickets->where('user_id', auth()->id())->count();
+			@endphp
+
+			<div class="ticket-buttons">
+				<!-- Main Button -->
+				<a 
+					href="{{ !$eventExpired ? 'https://example.com' : '#' }}" 
+					class="buy-tickets-btn 
+						{{ $eventExpired ? 'disabled-btn' : '' }} 
+						{{ $userTicketCount > 0 ? 'purchased-btn' : '' }}" 
+					target="{{ !$eventExpired ? '_blank' : '_self' }}">
+					@if ($eventExpired)
+						Event Expired
+					@elseif ($userTicketCount > 0)
+						Ticket Purchased: {{ $userTicketCount }} {{ Str::plural('Ticket', $userTicketCount) }}
+					@else
+						Get Tickets - {{ $event->price }}€
+					@endif
+				</a>
+
+				<!-- "Buy More Tickets" Button -->
+				@if ($userTicketCount > 0 && !$eventExpired)
+					<a 
+						href="{{ route('select-tickets', ['event' => $event->id]) }}" 
+						class="buy-more-tickets-btn">
+						Buy More Tickets
+					</a>
+				@endif
+			</div>
+
+		</div>
 		<div class="event-page-img">
 			<img src="{{ asset('storage/events/' . $event->event_media) }}" alt="Event Picture">
 		</div>
 	</div>
 	
 	<div class="description-comments">
+		<div class="purple-line"></div>
+
+		<div class="event-page-tags">
+			<h1>Tags:</h1>
+            @foreach ($event->tags as $tag)
+			<a>
+                <span class="tag-button"
+                style="
+                        background: #{{ $tag->color }};
+                        color: #fff;
+                        border-radius: 12px;
+                        padding: 8px 16px;
+                        display: inline-block;
+                        font-weight: bold;
+                        font-size: 14px;
+                        text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+                        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+                        transition: transform 0.2s ease, box-shadow 0.2s ease;
+                        ">
+                {{ $tag->tag_name }}</span></a>
+            @endforeach
+        </div>
+
 		<div class="purple-line"></div>
 		
 		<div class="event-page-description">
