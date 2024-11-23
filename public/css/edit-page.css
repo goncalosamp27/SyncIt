@@ -1,0 +1,64 @@
+@import url('variables.css');
+
+.edit-page {
+    width: 50%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--black-color);
+    color: var(--text-color);
+    border-radius: 8px;
+}
+
+.edit-page .form-group {
+    margin-bottom: 15px;
+}
+
+.edit-page label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.edit-page input,
+.edit-page textarea,
+.edit-page select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--gray-color);
+    border-radius: 4px;
+    background: var(--background-color);
+    color: var(--text-color);
+}
+
+/* Common styles for both buttons and links */
+.edit-page .save-button, .edit-page .discard-button {
+    display: inline-block;
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none; /* Remove underline for the <a> tag */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Save Button Specific */
+.edit-page .save-button {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+}
+
+.edit-page .save-button:hover, .edit-page .discard-button:hover {
+    background-color: var(--hover-color);
+}
+
+/* Discard Button Specific */
+.edit-page .discard-button {
+    background-color: var(--gray-color);
+    color: var(--text-color);
+    border: 1px solid var(--gray-color);
+}
+
+
