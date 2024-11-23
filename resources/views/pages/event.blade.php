@@ -17,12 +17,39 @@
 			<h4>📍 {{ $event->location }}</h4>
 			<div class="small-line"></div>
 			<h5>👥 {{ $event->ticket_count }} / {{ $event->capacity }} Participants</h5>
-			<a 
-				href="{{ $event->event_date > now() ? 'https://example.com' : '#' }}" 
-				class="buy-tickets-btn {{ $event->event_date > now() ? '' : 'disabled-btn' }}" 
-				target="{{ $event->event_date > now() ? '_blank' : '_self' }}">
-				{{ $event->event_date > now() ? 'Get Tickets - ' . $event->price . '€' : 'Event Expired' }}
-			</a>
+
+			@php
+    			$eventExpired = $event->event_date <= now();
+    			$userTicketCount = $event->tickets->where('user_id', auth()->id())->count();
+			@endphp
+
+			<div class="ticket-buttons">
+				<!-- Main Button -->
+				<a 
+					href="{{ !$eventExpired ? 'https://example.com' : '#' }}" 
+					class="buy-tickets-btn 
+						{{ $eventExpired ? 'disabled-btn' : '' }} 
+						{{ $userTicketCount > 0 ? 'purchased-btn' : '' }}" 
+					target="{{ !$eventExpired ? '_blank' : '_self' }}">
+					@if ($eventExpired)
+						Event Expired
+					@elseif ($userTicketCount > 0)
+						Ticket Purchased: {{ $userTicketCount }} {{ Str::plural('Ticket', $userTicketCount) }}
+					@else
+						Get Tickets - {{ $event->price }}€
+					@endif
+				</a>
+
+				<!-- "Buy More Tickets" Button -->
+				@if ($userTicketCount > 0 && !$eventExpired)
+					<a 
+						href="{{ route('select-tickets', ['event' => $event->id]) }}" 
+						class="buy-more-tickets-btn">
+						Buy More Tickets
+					</a>
+				@endif
+			</div>
+
 		</div>
 		<div class="event-page-img">
 			<img src="{{ asset('storage/events/' . $event->event_media) }}" alt="Event Picture">
