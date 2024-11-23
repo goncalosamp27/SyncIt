@@ -28,7 +28,8 @@ class Event extends Model
             'price' => 'required|numeric|min:0',  
             'type_of_event' => 'required|in:Public,Private',  
             'rating' => 'required|numeric|between:0,5',
-            'media_url' => 'required|string|max:100'    
+            'capacity' => 'required|numeric|min:10',
+            'event_media' => 'required|string|max:100'    
         ]);
 
         return $validator;
