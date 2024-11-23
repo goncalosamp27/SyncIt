@@ -40,7 +40,7 @@ Route::redirect('/', '/home');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 
-Route::get('/artist/{artist_id}', [ArtistController::class, 'show']);
+Route::get('/artist/{artist_id}', [ArtistController::class, 'show'])->name('artist');
 
 
 /*
@@ -74,9 +74,9 @@ Route::get('/admin/edit/member/{id}', [AdminController::class, 'getMember'])->na
 Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
 
-Route::get('/event/{id}', [EventController::class, 'show']);
+Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
 
-Route::get('/events', [TagController::class, 'showTagsPerType']);
+Route::get('/events', [TagController::class, 'showTagsPerType'])->name('events');
 
 // Authentication
 Route::controller(LoginController::class)->group(function () {
