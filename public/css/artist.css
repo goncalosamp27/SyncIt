@@ -10,9 +10,11 @@
 }
 
 .main-layout {
+    margin-top: 1.5rem;
     display: grid;
     grid-template-columns: 1fr 2fr; /* Left column (1) and Right column (2) */
     gap: 30px;
+    margin-bottom: 3rem;
 }
 
 .left-column {
