@@ -30,7 +30,7 @@
 
 		<div class="event-page-tags">
 			<h1>Tags:</h1>
-            @foreach ($event->tags->take(3) as $tag)
+            @foreach ($event->tags as $tag)
 			<a>
                 <span class="tag-button"
                 style="
