@@ -12,9 +12,22 @@
                 {{ $event->price == 0 ? '<span class="event-free">FREE</span>' : $event->price . '€' }}
             </span>
         <div class="event-card-tags">
-            <span class="tag dance">Dance</span>
-            <span class="tag">Tag 1</span>
-            <span class="tag">Tag 2</span>
+            @foreach ($event->tags->take(3) as $tag)
+                <span class="tag-button"
+                style="
+                        background: #{{ $tag->color }};
+                        color: #fff;
+                        border-radius: 12px;
+                        padding: 8px 16px;
+                        display: inline-block;
+                        font-weight: bold;
+                        font-size: 14px;
+                        text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+                        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+                        transition: transform 0.2s ease, box-shadow 0.2s ease;
+                        ">
+                {{ $tag->tag_name }}</span>
+            @endforeach
         </div>
     </div>
 </a>
