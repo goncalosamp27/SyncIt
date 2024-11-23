@@ -20,6 +20,15 @@ class EventController extends Controller
         ]);
     }
 
+    public function editEvent(string $event_id): View 
+	{
+        $event = Event::findOrFail($event_id);
+        
+        return view('pages.edit-event', [
+            'event' => $event
+        ]);
+    }
+
 	public function create()
     {
         // Fetch all tags to populate the dropdown

@@ -64,7 +64,7 @@ Route::get('/admin', function () {
     return view('pages.admin');
 });
 
-Route::get('/admin', [AdminController::class, 'display_members']);
+Route::get('/admin', [AdminController::class, 'display_members'])->name('admin');
 
 Route::get('/admin/edit/member/{id}', [AdminController::class, 'getMember'])->name('admin.edit.member');
 //Route::put('/admin/edit/member/{id}', [AdminController::class, 'updateMember']);
@@ -75,7 +75,12 @@ Route::post('/events/store', [EventController::class, 'store'])->name('events.st
 
 Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
 
+Route::get('/event/{event_id}/edit', [EventController::class, 'editEvent'])->name('edit.event');
+
+
 Route::get('/events', [TagController::class, 'showTagsPerType'])->name('events');
+
+
 
 // Authentication
 Route::controller(LoginController::class)->group(function () {
