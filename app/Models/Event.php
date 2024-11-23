@@ -73,5 +73,4 @@ class Event extends Model
         return self::where('event_date', '<', Carbon::now())->get();
     }
     
-
 }
