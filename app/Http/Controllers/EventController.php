@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 use App\Models\Event;
+use App\Models\Tag;
 
 class EventController extends Controller
 {   

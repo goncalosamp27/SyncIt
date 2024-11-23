@@ -8,7 +8,7 @@
       <div class="left-column">
         <div class="profile-section">
           <div class="profile-picture">
-            <img src="{{ asset('storage/penguin.png') }}" alt="User Profile Picture">
+          <img src="{{ asset('storage/profiles/' . $artist->member->profile_pic_url) }}" alt="User Profile Picture">
           </div>
           <div class="profile-info">
             <h1>{{ $artist->member->display_name }}</h1>

@@ -6,7 +6,7 @@
 			<h1> {{ $event->event_name }} </h1>
 			<div class ="user-event-owner" style="display: flex; align-items: center; margin-top:1rem;">
 				<img 
-					src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" 
+					src="{{ asset('storage/profiles/' . $event->artist->member->profile_pic_url) }}" alt="Event Picture"
 					alt="Profile Picture" 
 					style="width: 5rem; height: 5rem; object-fit: cover; border-radius: 50%; margin-right: 1rem; border: 0.15rem solid white; box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.8);"
 				>
@@ -21,7 +21,7 @@
 		</div>
 
 		<div class="event-page-img">
-			<img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Placeholder">
+			<img src="{{ asset('storage/events/' . $event->event_media) }}" alt="Event Picture">
 		</div>
 	</div>
 	

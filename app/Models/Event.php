@@ -28,7 +28,8 @@ class Event extends Model
             'price' => 'required|numeric|min:0',  
             'type_of_event' => 'required|in:Public,Private',  
             'rating' => 'required|numeric|between:0,5',
-            'media_url' => 'required|string|max:100'    
+            'capacity' => 'required|numeric|min:10',
+            'event_media' => 'required|string|max:100'    
         ]);
 
         return $validator;
@@ -65,16 +66,14 @@ class Event extends Model
         return $this->tickets()->count();
     }
 
-    // Scope for future events
-    public function scopeFuture($query)
+    public static function upcomingEvents()
     {
-        return $query->where('event_date', '>', Carbon::now());
+        return self::where('event_date', '>', Carbon::now())->get();
     }
-
-    // Scope for past events
-    public function scopePast($query)
+    public static function pastEvents()
     {
-        return $query->where('event_date', '<=', Carbon::now());
+        return self::where('event_date', '<', Carbon::now())->get();
     }
+    
 
 }

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 use Illuminate\View\View;
 
-use App\Models\User;
+use App\Models\Member;
 
 class RegisterController extends Controller
 {
@@ -27,22 +27,47 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:250',
-            'email' => 'required|email|max:250|unique:users',
-            'password' => 'required|min:8|confirmed'
+        // Validate incoming request
+        $validatedData = $request->validate([
+            'username' => 'required|alpha_num|min:3|max:50',
+            'display_name' => 'required|regex:/^[A-Za-z0-9_ ]+$/|min:3|max:50',
+            'email' => 'required|email|unique:member,email',
+            'password' => 'required|min:8|max:100',
+            'bio' => 'nullable|regex:/^[A-Za-z0-9_.,?!\s]*$/|max:200',
+            'profile_pic_url' => 'nullable|url|max:200',
         ]);
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
-        ]);
+        // Check if the email is already taken
+        $existingMember = Member::where('email', $validatedData['email'])->first();
+        if ($existingMember) {
+            return back()->withErrors(['email' => 'The email address is already taken.'])->withInput();
+        }
 
-        $credentials = $request->only('email', 'password');
-        Auth::attempt($credentials);
-        $request->session()->regenerate();
-        return redirect()->route('cards')
-            ->withSuccess('You have successfully registered & logged in!');
+        // Prepare the new member data
+        $newMemberData = [
+            'username' => $validatedData['username'],
+            'display_name' => $validatedData['display_name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
+            'bio' => $validatedData['bio'],
+            'profile_pic_url' => $validatedData['profile_pic_url'] ?? null,
+            'member_status' => 'Active',
+        ];
+
+        try {
+            $result = Member::createMember($newMemberData);
+
+            if ($result instanceof \Illuminate\Support\MessageBag) {
+                return back()->withErrors($result)->withInput();
+            }
+
+            Auth::attempt($request->only('email', 'password'));
+            $request->session()->regenerate();
+
+            return redirect()->route('home')->withSuccess('You have successfully registered & logged in!');
+
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Something went wrong. Please try again later.'])->withInput();
+        }
     }
 }
