@@ -1,16 +1,12 @@
 <?php
 use Illuminate\Support\Facades\Route;
 
-/* REMOVE LATER */
-use App\Http\Controllers\CardController;
-use App\Http\Controllers\ItemController;
-/* REMOVE LATER */
-
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventTagController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\TagController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -65,30 +61,7 @@ Route::post('/events/store', [EventController::class, 'store'])->name('events.st
 Route::get('/event/{id}', [EventController::class, 'show']);
 
 Route::get('/events', [EventController::class, 'display_events']);
-
-Route::get('/login',function() {
-    return view('pages.login');
-});
-
-// Cards
-Route::controller(CardController::class)->group(function () {
-    Route::get('/cards', 'list')->name('cards');
-    Route::get('/cards/{id}', 'show');
-});
-
-
-// API
-Route::controller(CardController::class)->group(function () {
-    Route::put('/api/cards', 'create');
-    Route::delete('/api/cards/{card_id}', 'delete');
-});
-
-Route::controller(ItemController::class)->group(function () {
-    Route::put('/api/cards/{card_id}', 'create');
-    Route::post('/api/item/{id}', 'update');
-    Route::delete('/api/item/{id}', 'delete');
-});
-
+Route::get('/events', [TagController::class, 'showTagsPerType']);
 
 // Authentication
 Route::controller(LoginController::class)->group(function () {
