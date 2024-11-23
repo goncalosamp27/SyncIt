@@ -236,3 +236,38 @@
     pointer-events: none;
     text-decoration: line-through; /* Crossed text */
 }
+
+/* Purchased button styling */
+.purchased-btn {
+    background-color: var(--hover-color);
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: default; /* Indicate it’s not clickable */
+    pointer-events: none; /* Prevent interaction */
+    border-radius: 2rem;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.purchased-btn:hover {
+    transform: none; /* No hover effect for purchased button */
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow remains */
+}
+
+.buy-more-tickets-btn {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    padding: 1rem; /* Responsive padding */
+    border-radius: 2rem; /* Consistent with rem units */
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.5rem; /* Scalable font size */
+    margin-left: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.buy-more-tickets-btn:hover {
+    background-color: var(--hover-color);
+    transform: scale(1.05);
+}
