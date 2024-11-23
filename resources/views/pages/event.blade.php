@@ -17,9 +17,13 @@
 			<h4>📍 {{ $event->location }}</h4>
 			<div class="small-line"></div>
 			<h5>👥 {{ $event->ticket_count }} / {{ $event->capacity }} Participants</h5>
-			<a href="https://example.com" class="buy-tickets-btn" target="_blank">Get Tickets - {{ $event->price }}€</a>
+			<a 
+				href="{{ $event->event_date > now() ? 'https://example.com' : '#' }}" 
+				class="buy-tickets-btn {{ $event->event_date > now() ? '' : 'disabled-btn' }}" 
+				target="{{ $event->event_date > now() ? '_blank' : '_self' }}">
+				{{ $event->event_date > now() ? 'Get Tickets - ' . $event->price . '€' : 'Event Expired' }}
+			</a>
 		</div>
-
 		<div class="event-page-img">
 			<img src="{{ asset('storage/events/' . $event->event_media) }}" alt="Event Picture">
 		</div>
