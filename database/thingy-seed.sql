@@ -893,6 +893,8 @@ VALUES
 
 INSERT INTO tag (tag_name, color)
 VALUES 
+    ('Music','FF4D4D'),
+    ('Dance','6A5ACD'),
     -- Music Genres
     ('Jazz', 'FFC300'),          -- Yellow for Jazz
     ('Rock', '900C3F'),          -- Dark Red for Rock
