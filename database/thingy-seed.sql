@@ -1,5 +1,6 @@
-CREATE SCHEMA IF NOT EXISTS THINGY;
+--show search_path;
 ALTER ROLE postgres SET search_path TO thingy;
+
 
 DROP TABLE IF EXISTS member CASCADE;
 DROP TABLE IF EXISTS artist CASCADE;
