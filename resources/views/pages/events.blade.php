@@ -6,37 +6,33 @@
   <div class="dropdown">
     <button class="dropdown-button">Dance</button>
     <div class="dropdown-menu">
-      <span>Ballet</span>
-      <span>Hip Hop</span>
-      <span>Salsa</span>
-      <span>Tango</span>
-      <span>Contemporary</span>
-      <span>Jazz Dance</span>
-      <span>Tap</span>
-      <span>Breakdance</span>
-      <span>Waltz</span>
-      <span>Folk Dance</span>
+      @foreach ($tagsDance as $tag)
+        <span>{{ $tag->tag_name }}</span>
+      @endforeach
     </div>
   </div>
   <div class="dropdown">
     <button class="dropdown-button">Music</button>
     <div class="dropdown-menu">
-      <span>Rock</span>
-      <span>Pop</span>
-      <span>Jazz</span>
-      <span>Classical</span>
-      <span>Hip Hop</span>
-      <span>Country</span>
-      <span>Blues</span>
-      <span>Electronic</span>
-      <span>R&B</span>
-      <span>Metal</span>
+      @foreach ($tagsMusic as $tag)
+        <span>{{ $tag->tag_name }}</span>
+      @endforeach
     </div>
   </div>
   <div class="dropdown">
-    <button class="dropdown-button">All</button>
+    <button class="dropdown-button">Mood</button>
     <div class="dropdown-menu">
-      <span>All Events</span>
+      @foreach ($tagsMood as $tag)
+        <span>{{ $tag->tag_name }}</span>
+      @endforeach
+    </div>
+  </div>
+  <div class="dropdown">
+    <button class="dropdown-button">Setting</button>
+    <div class="dropdown-menu">
+      @foreach ($tagsSettings as $tag)
+        <span>{{ $tag->tag_name }}</span>
+      @endforeach
     </div>
   </div>
 </div>
@@ -47,6 +43,5 @@
         @include('partials.event-card', ['event' => $event])
     @endforeach
 </div>
-
 
 @endsection
