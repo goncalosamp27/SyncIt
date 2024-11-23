@@ -3,8 +3,7 @@
 		<button class="menu-icon">☰</button>
 		<div class="logo">
 			<a href = "{{ url('/home')}}">
-				<span class="logo-icon">🎵</span>
-				<span class="logo-text">SyncIt!</span>
+				<img src="{{ asset('storage/syncit.svg') }}" alt=Logo></img>
 			</a>	
 		</div>
 	</div>
