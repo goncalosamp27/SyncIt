@@ -118,7 +118,7 @@
                 You can upload up to 1 image.
             </small>
             <div id="file-error" class="text-danger" style="display: none;">
-                You can upload a maximum of 3 files and only images are allowed.
+                You can only upload 1 image.
             </div>
             @error('event_files')
                 <div class="text-danger">{{ $message }}</div>
