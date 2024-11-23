@@ -1,0 +1,97 @@
+@import url('variables.css');
+
+.admin_page {
+    width: 80%;
+    align-content: center;
+    margin: 0 auto; /* Centers horizontally */
+
+}
+.member-card {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+    background-color: var(--black-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.member-card:hover {
+    background-color: var(--secondary-color);
+    transform: scale(1.02);
+}
+
+.member-profile-pic img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+    border: 2px solid var(--primary-color);
+}
+
+.member-details {
+    flex-grow: 1;
+}
+
+.member-name {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.member-username {
+    color: var(--gray-color);
+    margin: 5px 0 0;
+}
+
+.member-edit {
+    margin-left: auto;
+}
+
+.edit-button {
+    text-decoration: none;
+    font-size: 1.5em;
+    color: var(--primary-color);
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.edit-button:hover {
+    color: var(--hover-color);
+    transform: scale(1.2);
+}
+
+
+.admin_page .search-bar {
+    display: flex;
+    align-items: center;
+    background-color: var(--gray-color);
+    border-radius: 2rem;
+    width: 100%; /* Responsive width */
+    padding: 0.5rem 1rem;
+    margin: 1rem 0; /* Space below the heading */
+    text-align: left;
+}
+
+.admin_page .search-input {
+    flex: 1; /* Fills available space */
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 1rem;
+    color: #000000;
+    margin-left: 0.5rem;
+}
+
+.admin_page .search-button {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--primary-color);
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
