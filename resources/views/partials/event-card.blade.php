@@ -1,6 +1,6 @@
 <div class="event-card">
     <div class="event-image">
-        <img src="https://karlobag.eu/images/upload/winaa.jpg" alt="Event Image">
+        <img src="{{ asset('storage/events/' . $event->event_media) }}" alt="Event Image">
     </div>
     <div class="event-details">
         <h3 class="event-title">{{ $event->event_name }}</h3>
