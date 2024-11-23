@@ -1,97 +1,97 @@
-/* Center the registration form within its container */
-form {
+/* Scope CSS specifically to .registration-form */
+.registration-wrapper .registration-form {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     margin: auto;
-    padding: 20px;
-    width: 20rem; /* Smaller width for a compact look */
-    background-color: #2a2a2a; /* Dark background similar to artist card */
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    margin-bottom: 50px; /* Space below the form to prevent sticking to footer */
+    padding: 2rem;
+    width: 32rem; /* Increased width for a larger form */
+    background-color: #2a2a2a; /* Dark background */
+    border-radius: 1rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.3);
 }
 
 /* Style for form labels */
-form label {
-    color: #fff; /* White labels for contrast */
-    font-size: 14px;
-    margin-bottom: 5px;
+.registration-wrapper .registration-form label {
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
     text-align: left;
     width: 100%;
 }
 
 /* Style for input fields and textarea */
-form input[type="text"],
-form input[type="email"],
-form input[type="password"],
-form textarea {
+.registration-wrapper .registration-form input[type="text"],
+.registration-wrapper .registration-form input[type="email"],
+.registration-wrapper .registration-form input[type="password"],
+.registration-wrapper .registration-form textarea {
     width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    font-size: 14px;
-    border: 1px solid #9b4dff; /* Matches the artist card color scheme */
-    border-radius: 5px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    border: 0.1rem solid #9b4dff;
+    border-radius: 0.5rem;
     background-color: #fff;
-    color: #000; /* Inserted text is black */
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #000;
+    box-shadow: inset 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
     outline: none;
 }
 
 /* Specific style for textarea */
-form textarea {
-    resize: vertical; /* Allow vertical resizing only */
-    height: 80px; /* Default height for bio */
+.registration-wrapper .registration-form textarea {
+    resize: vertical;
+    height: 6rem; /* Default height for bio */
 }
 
 /* Style for the register button */
-form button {
-    background-color: #9b4dff; /* Matches theme color */
+.registration-wrapper .registration-form button {
+    background-color: #9b4dff;
     color: #fff;
     font-weight: bold;
     border: none;
     cursor: pointer;
-    padding: 10px;
-    border-radius: 5px;
+    padding: 1rem;
+    border-radius: 0.5rem;
     width: 100%;
+    font-size: 1rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Hover effect for button */
-form button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+.registration-wrapper .registration-form button:hover {
+    transform: translateY(-0.125rem);
+    box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.3);
 }
 
 /* Style for additional links like "Login" */
-form a {
+.registration-wrapper .registration-form a {
     color: #9b4dff;
     text-decoration: none;
-    font-size: 14px;
-    margin-top: 10px;
+    font-size: 1rem;
+    margin-top: 0.5rem;
 }
 
 /* Hover effect for links */
-form a:hover {
+.registration-wrapper .registration-form a:hover {
     text-decoration: underline;
 }
 
 /* Error messages */
-.error {
-    color: #ff4d4d; /* Red for errors */
-    font-size: 12px;
-    margin-top: -10px;
-    margin-bottom: 10px;
+.registration-wrapper .registration-form .error {
+    color: #ff4d4d;
+    font-size: 0.875rem;
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
     text-align: left;
     width: 100%;
 }
 
 /* Success messages */
-.success {
-    color: #4dff4d; /* Green for success messages */
-    font-size: 12px;
-    margin-top: 10px;
+.registration-wrapper .registration-form .success {
+    color: #4dff4d;
+    font-size: 0.875rem;
+    margin-top: 1rem;
     text-align: center;
 }
 
@@ -102,5 +102,5 @@ form a:hover {
     justify-content: center;
     min-height: 80vh;
     background-color: var(--background-color); /* Matches the page background */
-    padding-bottom: 50px; /* Additional space at the bottom */
+    padding-bottom: 3rem; /* Additional space at the bottom */
 }
