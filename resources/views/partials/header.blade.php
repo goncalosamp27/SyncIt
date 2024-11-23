@@ -14,7 +14,7 @@
 			<span class="search-icon">🔍</span>
 			<input type="text" placeholder="Search for events, artists, genres, cities..." />
 		</div>
-		<button class="explore-btn">Create Event</button>
+		<a href="{{ url('/events')}}" class="explore-btn">Explore</a>
 	</div>	
 
 	<div class="navbar-right">

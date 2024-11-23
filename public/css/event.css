@@ -37,7 +37,6 @@
 	transition: transform 0.4s ease, box-shadow 0.4s ease, filter 0.4s ease;
   }
   
-  
   .event-page-img img:hover {
 	transform: scale(1.08); /* Slight zoom and a tiny tilt */
 	filter: brightness(1.2); /* Brightens the image slightly */
@@ -54,8 +53,13 @@
 	color: #FFF;
 }
 
+.user-event-owner {
+	text-decoration: none;
+}
+
 .user-event-owner:hover{
 	cursor: pointer;
+	color: var(--hover-color);
 }
 
 .user-event-owner h2:hover{
