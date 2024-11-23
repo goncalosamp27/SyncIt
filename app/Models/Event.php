@@ -31,7 +31,6 @@ class Event extends Model
             'capacity' => 'required|numeric|min:10',
             'event_media' => 'required|string|max:100'    
         ]);
-
         return $validator;
     }
     //Relationships
@@ -55,8 +54,7 @@ class Event extends Model
 
     public function tags()
     {
-        return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id')
-                ->withTimestamps(); // This assumes the pivot table has created_at and updated_at timestamps
+        return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id');
     }   
 
 
