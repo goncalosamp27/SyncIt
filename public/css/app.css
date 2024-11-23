@@ -12,7 +12,8 @@
 @import url('show-more.css');
 @import url('login.css');
 @import url('register.css');
-@import url('tag-button.css');
+@import url('admin.css');
+@import url('edit-member.css');
 
 * {
   color: var(--text-color);
