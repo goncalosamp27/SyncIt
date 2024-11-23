@@ -36,7 +36,7 @@ use App\Models\Artist;
 Route::redirect('/', '/home');
 
 // Add this to render the home view
-Route::get('/home', [HomeController::class, 'index']);
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::get('/artist/{artistId}', function ($artistId) {
     // Fetch the artist and its related events
@@ -74,3 +74,4 @@ Route::controller(RegisterController::class)->group(function () {
     Route::get('/register', 'showRegistrationForm')->name('register');
     Route::post('/register', 'register');
 });
+

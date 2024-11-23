@@ -14,7 +14,7 @@
 			@endif	
 		</div>
 		<div class="slogan-container-image">
-			<img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Placeholder">
+			<img src="{{ asset('storage/home_dj.jpg') }}" alt="Placeholder">
 		</div>
 	</div> 
 
