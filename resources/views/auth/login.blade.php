@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="login-wrapper">
-    <form method="POST" action="{{ route('login') }}">
+    <form class="login-form" method="POST" action="{{ route('login') }}">
         {{ csrf_field() }}
 
         <label for="login">E-mail/Username</label>
