@@ -56,7 +56,6 @@ Route::get('/create', function () {
 
 Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
-
 Route::get('/event/{id}', [EventController::class, 'show']);
 
 Route::get('/events', [TagController::class, 'showTagsPerType']);
