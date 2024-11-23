@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 use App\Models\Tag;
+use App\Models\Event;
 
 class TagController extends Controller
 {
@@ -15,8 +16,9 @@ class TagController extends Controller
 		$tagsDance = Tag::type(['Dance'])->get();
 		$tagsMood = Tag::type(['Mood'])->get();
 		$tagsSettings = Tag::type(['Settings'])->get();
-
+        $events = Event::all();
         return view('pages.events', [
+            'events' => $events,
             'tagsMusic' => $tagsMusic,
             'tagsDance' => $tagsDance,
 			'tagsMood' => $tagsMood,
