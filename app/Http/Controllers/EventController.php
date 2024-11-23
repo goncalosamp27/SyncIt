@@ -21,6 +21,32 @@ class EventController extends Controller
         ]);
     }
 
+    public function editEvent(string $event_id): View 
+	{
+        $event = Event::findOrFail($event_id);
+        
+        return view('pages.edit-event', [
+            'event' => $event
+        ]);
+    }
+
+    public function participants($event_id)
+    {
+        // Retrieve the event by its ID
+        $event = Event::findOrFail($event_id);
+    
+        // Retrieve the participants (members) of the event
+        $participants = $event->tickets->map(function ($ticket) {
+            return $ticket->member;  // Retrieve the associated member for each ticket
+        });
+    
+        // Return a view with the participants
+        return view('pages.manage-participants', [
+            'participants' => $participants
+        ]);
+    }
+
+
 	public function create()
     {
         // Fetch all tags to populate the dropdown
@@ -101,4 +127,5 @@ class EventController extends Controller
 			'tagsSettings' => $tagsSettings,
         ]);
     }
+
 }

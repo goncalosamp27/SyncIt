@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>SyncIt!</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}"> 
+    <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
 <body>
     @include('partials.header')

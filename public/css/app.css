@@ -13,8 +13,8 @@
 @import url('login.css');
 @import url('register.css');
 @import url('admin.css');
-@import url('edit-member.css');
 @import url('tickets.css');
+@import url('edit-page.css');
 
 * {
   color: var(--text-color);
