@@ -8,11 +8,10 @@
     <div class="footer-divider"></div>
     <div class="footer-bottom">
         <p>
-            Laboratório de Bases de Dados e Aplicações Web 24/25 - Project - Group 115
+            Database and Web Applications Laboratory 24/25 - Project - Group 115
         </p>
         <div class="footer-logo">
-            <span class="logo-icon">🎵</span>
-            <span class="logo-text">SyncIt!</span>
+            <img src="{{ asset('storage/syncit.svg') }}" alt=Logo></img>
         </div>
     </div>
 </footer>
