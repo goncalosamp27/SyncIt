@@ -21,7 +21,10 @@
 			<div class="small-line"></div>
 			<h4>📍 {{ $event->location }}</h4>
 			<div class="small-line"></div>
-			<h5>👥 {{ $event->ticket_count }} / {{ $event->capacity }} Participants</h5>
+
+			<a href="{{ route('participants', ['event_id' => $event->event_id]) }}">
+				<h5> 👥 {{ $event->ticket_count }} / {{ $event->capacity }} Participants</h5>
+			</a>
 			<a href="https://example.com" class="buy-tickets-btn" target="_blank">Get Tickets - {{ $event->price }}€</a>
 		</div>
 
