@@ -27,6 +27,29 @@
 	
 	<div class="description-comments">
 		<div class="purple-line"></div>
+
+		<div class="event-page-tags">
+			<h1>Tags:</h1>
+            @foreach ($event->tags->take(3) as $tag)
+			<a>
+                <span class="tag-button"
+                style="
+                        background: #{{ $tag->color }};
+                        color: #fff;
+                        border-radius: 12px;
+                        padding: 8px 16px;
+                        display: inline-block;
+                        font-weight: bold;
+                        font-size: 14px;
+                        text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+                        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+                        transition: transform 0.2s ease, box-shadow 0.2s ease;
+                        ">
+                {{ $tag->tag_name }}</span></a>
+            @endforeach
+        </div>
+
+		<div class="purple-line"></div>
 		
 		<div class="event-page-description">
 			<h1>Description:</h1>

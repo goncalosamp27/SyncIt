@@ -42,11 +42,14 @@
 	filter: brightness(1.2); /* Brightens the image slightly */
   }
 
-.event-page-info h1{
-	font-size: 3rem;
-	color: #FFF;
-	
+  .event-page-info h1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Show only 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+
 
 .event-page-info h2{
 	font-size: 2rem;
@@ -198,4 +201,30 @@
 
 .post-button:hover {
     background-color: var(--hover-color); /* Darker blue on hover */
+}
+
+.event-page-tags {
+    margin-left: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    gap: 1rem;
+    display: flex;
+    flex-wrap: wrap; /* Allow tags to wrap to a new line */
+    justify-content: flex-start;
+    max-width: 100%; /* Ensure the tags stay within the parent container */
+}
+
+.event-page-tags span { /* Existing tag style */
+    padding: 0.5rem 1rem; /* Adjust padding for tag styling */
+    color: white; /* Anchor text color */
+    border-radius: 1rem; /* Rounded corners */
+    font-size: 0.875rem; /* Adjust font size */
+    white-space: nowrap; /* Prevent text from breaking inside tags */
+    text-decoration: none; /* Remove underline for anchor tags */
+    display: inline-block; /* Ensures consistent box sizing */
+    transition: background-color 0.3s ease; /* Optional: Add hover effect */
+}
+
+.event-page-tags span:hover {
+    cursor: pointer; /* Indicate interactivity */
 }

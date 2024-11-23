@@ -20,7 +20,6 @@ use App\Http\Controllers\Notifications\RestrictionNotificationController;
 
 use App\Models\Artist;
 
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes

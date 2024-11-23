@@ -44,12 +44,6 @@
     width: 100%;
 }
 
-.event-card-tags .tag {
-    flex: 1;  /* Each tag takes equal space */
-    text-align: center;  /* Center text inside the tags */
-    margin: 0 5px;  /* Optional: spacing between tags */
-}
-
 .event-price-cap {
     justify-content: space-between;
     gap:200px;
