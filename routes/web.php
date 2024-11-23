@@ -7,6 +7,7 @@ use App\Http\Controllers\EventTagController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\AdminController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -38,6 +39,11 @@ Route::redirect('/', '/home');
 // Add this to render the home view
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
+
+Route::get('/artist/{artist_id}', [ArtistController::class, 'show']);
+
+
+/*
 Route::get('/artist/{artistId}', function ($artistId) {
     // Fetch the artist and its related events
     $artist = Artist::with('events')->find($artistId);
@@ -49,7 +55,7 @@ Route::get('/artist/{artistId}', function ($artistId) {
 
     $followersCount = $artist->getFollowersCount();
     return view('pages.artist', ['artist' => $artist, 'followersCount' => $followersCount]);
-});
+});*/
 
 Route::get('/create', function () {
     return view('pages.create');
@@ -59,7 +65,11 @@ Route::get('/admin', function () {
     return view('pages.admin');
 });
 
-Route::get('/admin', [MemberController::class, 'display_members']);
+Route::get('/admin', [AdminController::class, 'display_members']);
+
+Route::get('/admin/edit/member/{id}', [AdminController::class, 'getMember'])->name('admin.edit.member');
+//Route::put('/admin/edit/member/{id}', [AdminController::class, 'updateMember']);
+
 
 Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');

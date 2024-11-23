@@ -9,6 +9,17 @@ use App\Models\Artist;
 
 class ArtistController extends Controller
 {
+    public function show($artistId){
+        $artist = Artist::with('events')->find($artistId);
+    
+        if (!$artist) {
+            abort(404, 'Artist not found');
+        }
+
+        $followersCount = $artist->getFollowersCount();
+        return view('pages.artist', ['artist' => $artist, 'followersCount' => $followersCount]);
+    }
+
     public function getArtistEvents($artist_id)
     {
     // Find the artist by ID
