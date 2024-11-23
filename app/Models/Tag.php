@@ -41,4 +41,24 @@ class Tag extends Model
     {
         return $query->whereIn('tag_type', $genres);
     }
+    //function to get all of the Mood Tags
+    public static function getMoodTags()
+    {
+        return self::where('tag_type', 'Mood')->get();
+    }
+    //function to get all of the Settings Tags
+    public static function getSettingsTags()
+    {
+        return self::where('tag_type', 'Settings')->get();
+    }
+    //function to get all of the Music Tags
+    public static function getMusicTags()
+    {
+        return self::where('tag_type', 'Music')->get();
+    }
+    //function to get all of the Dance Tags
+    public static function getDanceTags()
+    {
+        return self::where('tag_type', 'Dance')->get();
+    }
 }

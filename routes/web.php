@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\CreateEventController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\ArtistController;
@@ -51,12 +52,15 @@ Route::get('/artist/{artistId}', function ($artistId) {
     return view('pages.artist', ['artist' => $artist, 'followersCount' => $followersCount]);
 });
 
+/*
 Route::get('/create', function () {
     return view('pages.create');
 });
+*/
 
 Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
+
 
 Route::get('/event/{id}', [EventController::class, 'show']);
 
@@ -74,3 +78,5 @@ Route::controller(RegisterController::class)->group(function () {
     Route::post('/register', 'register');
 });
 
+Route::get('/create', [CreateEventController::class, 'show'])->name('create.show');
+Route::post('/create', [CreateEventController::class, 'store'])->name('create.store');
