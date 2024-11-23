@@ -170,6 +170,7 @@ CREATE TABLE vote_comment (
 
 CREATE TABLE tag (
     tag_id SERIAL PRIMARY KEY,
+    tag_type VARCHAR(20) NOT NULL,
     tag_name VARCHAR(20) NOT NULL,
     color VARCHAR(6) NOT NULL
 );
@@ -973,141 +974,141 @@ VALUES
 INSERT INTO event_tag (event_id, tag_id)
 VALUES 
     -- Salsa Night Fever
-    (1, 22),     -- Salsa
-    (1, 41),     -- Indoors
-    (1, 51),     -- Energetic
-    (1, 101),    -- Music
-    (1, 102),    -- Dance
+    (1, 22 + 2),     -- Salsa
+    (1, 41 + 2),     -- Indoors
+    (1, 51 + 2),     -- Energetic
+    (1, 1),          -- Music
+    (1, 2),          -- Dance
     -- Tech Beats Bash
-    (2, 4),      -- Electronic
-    (2, 48),     -- Club
-    (2, 53),     -- HighEnergy
-    (2, 101),    -- Music
+    (2, 4 + 2),      -- Electronic
+    (2, 48 + 2),     -- Club
+    (2, 53 + 2),     -- HighEnergy
+    (2, 1),          -- Music
     -- Classical Harmony
-    (3, 3),      -- Classical
-    (3, 60),     -- Sophisticated
-    (3, 47),     -- Hall
-    (3, 101),    -- Music
+    (3, 3 + 2),      -- Classical
+    (3, 60 + 2),     -- Sophisticated
+    (3, 47 + 2),     -- Hall
+    (3, 1),          -- Music
     -- DJ Night Live
-    (4, 1),      -- HipHop
-    (4, 4),      -- Electronic
-    (4, 48),     -- Club
-    (4, 51),     -- Energetic
-    (4, 101),    -- Music
-    (4, 102),    -- Dance
+    (4, 1 + 2),      -- HipHop
+    (4, 4 + 2),      -- Electronic
+    (4, 48 + 2),     -- Club
+    (4, 51 + 2),     -- Energetic
+    (4, 2),          -- Dance
     -- Reggae Beach Party
-    (5, 7),      -- Reggae
-    (5, 42),     -- Beach
-    (5, 55),     -- Chill
-    (5, 101),    -- Music
+    (5, 7 + 2),      -- Reggae
+    (5, 42 + 2),     -- Beach
+    (5, 55 + 2),     -- Chill
+    (5, 1),          -- Music
     -- Swing Dance Gala
-    (6, 25),     -- SwingDance
-    (6, 57),     -- Theater
-    (6, 51),     -- Energetic
-    (6, 101),    -- Music
-    (6, 102),    -- Dance
+    (6, 25 + 2),     -- SwingDance
+    (6, 57 + 2),     -- Theater
+    (6, 51 + 2),     -- Energetic
+    (6, 1),          -- Music
+    (6, 2),          -- Dance
     -- Metal Madness
-    (7, 6),      -- Metal
-    (7, 47),     -- Arena
-    (7, 53),     -- HighEnergy
-    (7, 101),    -- Music
+    (7, 6 + 2),      -- Metal
+    (7, 47 + 2),     -- Arena
+    (7, 53 + 2),     -- HighEnergy
+    (7, 1),          -- Music
     -- Violin Virtuoso
-    (8, 3),      -- Classical
-    (8, 60),     -- Sophisticated
-    (8, 59),     -- Intimate
-    (8, 101),    -- Music
+    (8, 3 + 2),      -- Classical
+    (8, 60 + 2),     -- Sophisticated
+    (8, 59 + 2),     -- Intimate
+    (8, 1),          -- Music
     -- Jazz Night
-    (9, 1),      -- Jazz
-    (9, 57),     -- Theater
-    (9, 54),     -- Mellow
-    (9, 101),    -- Music
+    (9, 1 + 2),      -- Jazz
+    (9, 57 + 2),     -- Theater
+    (9, 54 + 2),     -- Mellow
+    (9, 1),          -- Music
     -- Pop Fiesta
-    (10, 9),     -- Pop
-    (10, 45),    -- Outdoors
-    (10, 51),    -- Energetic
-    (10, 52),    -- Vibrant
-    (10, 101),   -- Music
+    (10, 9 + 2),     -- Pop
+    (10, 45 + 2),    -- Outdoors
+    (10, 51 + 2),    -- Energetic
+    (10, 52 + 2),    -- Vibrant
+    (10, 1),         -- Music
     -- Afrobeat Summer Jam
-    (21, 17),    -- Afrobeat
-    (21, 45),    -- Outdoors
-    (21, 55),    -- Chill
-    (21, 101),   -- Music
-    (21, 102),   -- Dance
+    (21, 17 + 2),    -- Afrobeat
+    (21, 45 + 2),    -- Outdoors
+    (21, 55 + 2),    -- Chill
+    (21, 1),         -- Music
+    (21, 2),         -- Dance
     -- Folk Fest
-    (22, 13),    -- Folk
-    (22, 45),    -- Outdoors
-    (22, 56),    -- Cultural
-    (22, 101),   -- Music
+    (22, 13 + 2),    -- Folk
+    (22, 45 + 2),    -- Outdoors
+    (22, 56 + 2),    -- Cultural
+    (22, 1),         -- Music
     -- Disco Fever
-    (27, 9),     -- Pop
-    (27, 48),    -- Club
-    (27, 53),    -- HighEnergy
-    (27, 101),   -- Music
-    (27, 102),   -- Dance
+    (27, 9 + 2),     -- Pop
+    (27, 48 + 2),    -- Club
+    (27, 53 + 2),    -- HighEnergy
+    (27, 1),         -- Music
+    (27, 2),         -- Dance
     -- Lo-Fi Chillout
-    (38, 18),    -- LoFi
-    (38, 50),    -- Lounge
-    (38, 54),    -- Mellow
-    (38, 101),   -- Music
+    (38, 18 + 2),    -- LoFi
+    (38, 50 + 2),    -- Lounge
+    (38, 54 + 2),    -- Mellow
+    (38, 1),         -- Music
     -- Hard Rock Havoc
-    (40, 2),     -- Rock
-    (40, 47),    -- Arena
-    (40, 53),    -- HighEnergy
-    (40, 101),   -- Music
+    (40, 2 + 2),     -- Rock
+    (40, 47 + 2),    -- Arena
+    (40, 53 + 2),    -- HighEnergy
+    (40, 1),         -- Music
     -- Ambient Chill
-    (41, 18),    -- LoFi
-    (41, 42),    -- Garden
-    (41, 55),    -- Chill
-    (41, 101),   -- Music
+    (41, 18 + 2),    -- LoFi
+    (41, 42 + 2),    -- Garden
+    (41, 55 + 2),    -- Chill
+    (41, 1),         -- Music
     -- Opera Under the Stars
-    (42, 3),     -- Classical
-    (42, 45),    -- Outdoors
-    (42, 60),    -- Sophisticated
-    (42, 101),   -- Music
+    (42, 3 + 2),     -- Classical
+    (42, 45 + 2),    -- Outdoors
+    (42, 60 + 2),    -- Sophisticated
+    (42, 1),         -- Music
     -- Country Fair
-    (43, 16),    -- Country
-    (43, 46),    -- Park
-    (43, 56),    -- Cultural
-    (43, 101),   -- Music
+    (43, 16 + 2),    -- Country
+    (43, 46 + 2),    -- Park
+    (43, 56 + 2),    -- Cultural
+    (43, 1),         -- Music
     -- Tribal Beats Night
-    (44, 17),    -- Afrobeat
-    (44, 42),    -- Garden
-    (44, 53),    -- HighEnergy
-    (44, 101),   -- Music
-    (44, 102),   -- Dance
+    (44, 17 + 2),    -- Afrobeat
+    (44, 42 + 2),    -- Garden
+    (44, 53 + 2),    -- HighEnergy
+    (44, 1),         -- Music
+    (44, 2),         -- Dance
     -- Zumba Fiesta
-    (45, 32),    -- Zumba
-    (45, 41),    -- Indoors
-    (45, 51),    -- Energetic
-    (45, 102),   -- Dance
+    (45, 32 + 2),    -- Zumba
+    (45, 41 + 2),    -- Indoors
+    (45, 51 + 2),    -- Energetic
+    (45, 2),         -- Dance
     -- Psytrance Universe
-    (46, 15),    -- Psytrance
-    (46, 49),    -- Rooftop
-    (46, 52),    -- Vibrant
-    (46, 101),   -- Music
-    (46, 102),   -- Dance
+    (46, 15 + 2),    -- Psytrance
+    (46, 49 + 2),    -- Rooftop
+    (46, 52 + 2),    -- Vibrant
+    (46, 1),         -- Music
+    (46, 2),         -- Dance
     -- Flamenco Fire
-    (47, 29),    -- Flamenco
-    (47, 57),    -- Theater
-    (47, 59),    -- Intimate
-    (47, 101),   -- Music
-    (47, 102),   -- Dance
+    (47, 29 + 2),    -- Flamenco
+    (47, 57 + 2),    -- Theater
+    (47, 59 + 2),    -- Intimate
+    (47, 1),         -- Music
+    (47, 2),         -- Dance
     -- Neo Soul Groove
-    (48, 12),    -- Soul
-    (48, 50),    -- Lounge
-    (48, 54),    -- Mellow
-    (48, 101),   -- Music
+    (48, 12 + 2),    -- Soul
+    (48, 50 + 2),    -- Lounge
+    (48, 54 + 2),    -- Mellow
+    (48, 1),         -- Music
     -- Blues on the Bayou
-    (49, 10),    -- Blues
-    (49, 42),    -- Garden
-    (49, 56),    -- Cultural
-    (49, 101),   -- Music
+    (49, 10 + 2),    -- Blues
+    (49, 42 + 2),    -- Garden
+    (49, 56 + 2),    -- Cultural
+    (49, 1),         -- Music
     -- Bollywood Beats
-    (50, 34),    -- Bollywood
-    (50, 41),    -- Indoors
-    (50, 52),    -- Vibrant
-    (50, 101),   -- Music
-    (50, 102);   -- Dance
+    (50, 34 + 2),    -- Bollywood
+    (50, 41 + 2),    -- Indoors
+    (50, 52 + 2),    -- Vibrant
+    (50, 1),         -- Music
+    (50, 2);         -- Dance
+
 
 
 INSERT INTO ticket (event_id, ticket_date, member_id)
