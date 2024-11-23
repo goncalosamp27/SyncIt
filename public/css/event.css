@@ -228,3 +228,11 @@
 .event-page-tags span:hover {
     cursor: pointer; /* Indicate interactivity */
 }
+
+.disabled-btn {
+    background-color: gray;
+    color: lightgray;
+    cursor: not-allowed;
+    pointer-events: none;
+    text-decoration: line-through; /* Crossed text */
+}
