@@ -60,7 +60,6 @@ Route::post('/events/store', [EventController::class, 'store'])->name('events.st
 
 Route::get('/event/{id}', [EventController::class, 'show']);
 
-Route::get('/events', [EventController::class, 'display_events']);
 Route::get('/events', [TagController::class, 'showTagsPerType']);
 
 // Authentication
