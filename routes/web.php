@@ -73,8 +73,8 @@ Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event')
 Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
 Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events');
-Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->name('events');
-Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('events');
+Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->name('past-events');
+Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('future-events');
 
 // Authentication
 Route::controller(LoginController::class)->group(function () {
