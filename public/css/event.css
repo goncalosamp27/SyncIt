@@ -397,3 +397,42 @@
     cursor: pointer;
 }
 
+/* Container for both buttons */
+.button-container {
+    margin-top: 2rem;
+    display: flex; /* Align buttons next to each other */
+    gap: 1rem; /* Adds space between buttons (relative to root font size) */
+    align-items: center; /* Ensures vertical alignment */
+}
+
+/* General button styling to make them the same size */
+button.purchased-btn,
+button.buy-tickets-btn2 {
+    padding: 0.75em 1.5em; /* Relative padding based on font size */
+    font-size: 1rem; /* Scalable font size */
+    border-radius: 2rem; /* Rounded corners */
+    font-weight: bold;
+    background-color: var(--primary-color);
+    color: white; /* White text color */
+    cursor: pointer; /* Pointer on hover */
+    flex: 1; /* Ensures equal width for buttons */
+    text-align: center; /* Centers text inside buttons */
+    min-width: 10rem; /* Optional: Ensures a minimum width for consistency */
+    border-style: none;
+}
+
+button.purchased-btn{
+    color:var(--black-color);
+    background-color: gold;
+}
+
+/* Button hover effect */
+button.buy-tickets-btn2:hover {
+    background-color: var(--hover-color); /* Darker blue for hover effect */
+}
+
+/* Ensure the form doesn't break alignment */
+form.buy-tickets-form {
+    margin: 0; /* Remove margin around the form */
+    display: inline; /* Keeps form inline with the button */
+}
