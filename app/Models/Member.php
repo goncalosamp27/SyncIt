@@ -109,6 +109,6 @@ class Member extends Authenticatable
     }
     public function tickets()
     {
-        return $this->hasMany(Ticket::class, 'member_id', 'id');
+        return $this->hasMany(Ticket::class, 'member_id', 'member_id');
     }
 }
