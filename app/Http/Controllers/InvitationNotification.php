@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Notifications;
 
 use Illuminate\Http\Request;
 
-use App\Models\Notifications\InvitationNotification;
+use App\Models\InvitationNotification;
 
 class InvitationNotificationController extends Controller
 {

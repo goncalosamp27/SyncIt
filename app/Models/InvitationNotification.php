@@ -5,24 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CommentNotification extends Model
+class InvitationNotification extends Model
 {
     use HasFactory;
 
-    protected $table = 'comment_notification';
-
+    protected $table = 'invitation_notification';
     protected $primaryKey = 'notification_id';
-
     public $timestamps = false;
-
-
-    public function notification()
-    {
+    
+    public function notification() {
         return $this->belongsTo(Notification::class, 'notification_id', 'notification_id');
     }
 
-    public function comment()
-    {
-        return $this->belongsTo(Comment::class, 'comment_id', 'comment_id');
+    public function invitation() {
+        return $this->belongsTo(Invitation::class, 'invitation_id', 'invitation_id');
     }
 }
