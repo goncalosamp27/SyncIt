@@ -79,11 +79,17 @@ Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events
 Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->name('past-events');
 Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('future-events');
 
+Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
+    ->name('buy-ticket')
+    ->middleware('auth');
+
+Route::delete('/event/refund-ticket', [TicketController::class, 'refundTicket'])
+    ->name('refund-ticket'); 
+
 Route::middleware('auth')->group(function () {
     Route::get('/tickets', [TicketController::class, 'ticketAndEventData'])->name('tickets');
 });
 
-// Authentication
 Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'showLoginForm')->name('login');
     Route::post('/login', 'authenticate');
