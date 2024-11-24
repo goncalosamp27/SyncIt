@@ -17,6 +17,20 @@ class Event extends Model
  
     protected $primaryKey = 'event_id';
 
+    protected $fillable = [
+        'event_name',
+        'event_date',
+        'location',
+        'description',
+        'refund',
+        'price',
+        'type_of_event',
+        'rating',
+        'capacity',
+        'event_media',
+        'artist_id'
+    ];
+
     public static function validate($data)
     {   
         $validator = Validator::make($data, [
@@ -29,7 +43,8 @@ class Event extends Model
             'type_of_event' => 'required|in:Public,Private',  
             'rating' => 'required|numeric|between:0,5',
             'capacity' => 'required|numeric|min:10',
-            'event_media' => 'required|string|max:100'    
+            'event_media' => 'required|string|max:100',
+            'artist_id' => 'required|string'   
         ]);
         return $validator;
     }
@@ -44,12 +59,6 @@ class Event extends Model
     public function artist()
     {
         return $this->belongsTo(Artist::class, 'artist_id', 'artist_id');
-    }
-
-    // 1 Event belongs to 1 Member
-    public function member()
-    {
-        return $this->belongsTo(Member::class, 'member_id', 'member_id');
     }
 
     public function tags()
@@ -71,6 +80,16 @@ class Event extends Model
     public static function pastEvents()
     {
         return self::where('event_date', '<', Carbon::now())->get();
+    }
+
+    public static function createEvent($data)
+    {
+        $validator = self::validate($data);
+
+        if ($validator->fails()) {
+            return $validator->errors();
+        }
+        return self::create($data);
     }
     
 }

@@ -1,4 +1,6 @@
 <?php
+use App\Http\Controllers\CreateEventController;
+use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\ArtistController;
@@ -59,9 +61,11 @@ Route::get('/artist/{artistId}', function ($artistId) {
     return view('pages.artist', ['artist' => $artist, 'followersCount' => $followersCount]);
 });*/
 
+/*
 Route::get('/create', function () {
     return view('pages.create');
 });
+*/
 
 Route::get('/admin', function () {
     return view('pages.admin');
@@ -108,4 +112,9 @@ Route::controller(RegisterController::class)->group(function () {
     Route::get('/register', 'showRegistrationForm')->name('register');
     Route::post('/register', 'register');
 });
+
+Route::get('/create', [CreateEventController::class, 'show'])->name('create.show');
+Route::post('/create', [CreateEventController::class, 'store'])
+    ->middleware('auth')
+    ->name('create.store');
 
