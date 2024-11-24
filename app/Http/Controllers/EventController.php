@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Event;
 use App\Models\Tag;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {   
@@ -138,6 +139,30 @@ class EventController extends Controller
         }
 
         return redirect()->route('events.index')->with('success', 'Event created successfully!');
+    }
+
+    public function search(Request $request)
+    {
+        $searchTerm = $request->input('search'); // Search term from the user input
+
+        $tagsMusic = Tag::type(['Music'])->get();
+		$tagsDance = Tag::type(['Dance'])->get();
+		$tagsMood = Tag::type(['Mood'])->get();
+		$tagsSettings = Tag::type(['Settings'])->get();
+
+        // Handle the search query using PostgreSQL full-text search
+        $events = Event::select('event.*') // Select from the event table (not events)
+            ->whereRaw("to_tsvector('english', COALESCE(event_name, '')) @@ to_tsquery('english', ?)", [$searchTerm])
+            ->orWhereRaw("to_tsvector('english', COALESCE(location, '')) @@ to_tsquery('english', ?)", [$searchTerm])
+            ->get();
+
+        return view('pages.events', [
+            'events' => $events,
+            'tagsMusic' => $tagsMusic,
+            'tagsDance' => $tagsDance,
+			'tagsMood' => $tagsMood,
+			'tagsSettings' => $tagsSettings,
+        ]);
     }
 
     public function showTagsPerType()
