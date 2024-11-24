@@ -181,7 +181,7 @@ CREATE TABLE event_tag (
     event_id INT NOT NULL,
     tag_id INT NOT NULL,
     PRIMARY KEY (event_id, tag_id), 
-    FOREIGN KEY (event_id) REFERENCES event(event_id),
+    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
     FOREIGN KEY (tag_id) REFERENCES tag(tag_id)
 );
 
@@ -190,7 +190,7 @@ CREATE TABLE ticket (
     event_id INT NOT NULL,
     ticket_date TIMESTAMP NOT NULL CHECK (ticket_date >= CURRENT_DATE),
     member_id INT NOT NULL,
-    FOREIGN KEY (event_id) REFERENCES event(event_id),
+    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
     FOREIGN KEY (member_id) REFERENCES member(member_id)
 );
 

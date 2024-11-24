@@ -113,3 +113,35 @@
         flex: 1 1 100%; /* Full width on small screens */
     }
 }
+
+.your-events {
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping to the next line if space runs out */
+    gap: 3rem; /* Adds space between items */
+    justify-content: flex-start; /* Aligns items to the left; use center or space-around if needed */
+    margin: 2rem;
+}
+
+.your-single-event {
+    display: block; /* Overrides flex or other styles in .event-card */
+    padding: 20px; /* Alters layout or spacing */
+}
+
+.delete-button-form {
+    margin-left: 14.2rem;
+    margin-top: -6rem;
+    position: absolute; /* Position the form/button inside the event card */
+}
+
+.delete-button {
+    padding: 0.5rem 1rem;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+.delete-button:hover {
+    background-color: #d32f2f;
+}
