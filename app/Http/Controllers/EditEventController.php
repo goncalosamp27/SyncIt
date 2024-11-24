@@ -47,7 +47,8 @@ class EditEventController extends Controller
         if ($request->hasFile('event_media')) {
             $path = $request->file('event_media')->store('events', 'public');
             $event->event_media= $path;
-            
+            $filename = basename($path);
+            $event->event_media = $filename;
         }
         else {
             $event->event_media= $defaultImage;
