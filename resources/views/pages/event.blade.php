@@ -5,7 +5,12 @@
 
 	<div class="event-page-content">
 		<div class="event-page-info">
-			<h1> {{ $event->event_name }} </h1>
+			<div class="title-edit">
+				<h1> {{ $event->event_name }} </h1>
+				<a href="{{ route('edit.event', ['event_id' => $event->event_id]) }}" class="event-button">
+					Edit
+				</a>
+			</div>			
 			<a class ="user-event-owner" href="{{ url('artist/' . $event->artist->artist_id) }}" style="display: flex; align-items: center; margin-top:1rem;">
 				<img 
 					src="{{ asset('storage/profiles/' . $event->artist->member->profile_pic_url) }}" alt="Event Picture"
@@ -18,7 +23,14 @@
 			<div class="small-line"></div>
 			<h4>📍 {{ $event->location }}</h4>
 			<div class="small-line"></div>
-			<h5>👥 {{ $event->ticket_count }} / {{ $event->capacity }} Participants</h5>
+
+			<div class="title-edit">
+				<h5> 👥 {{ $event->ticket_count }} / {{ $event->capacity }} Participants</h5>
+				<a href="{{ route('participants', ['event_id' => $event->event_id]) }}" class="event-button">
+					Manage
+				</a>
+			</div>
+		
 
 			@php
     			$eventExpired = $event->event_date <= now();

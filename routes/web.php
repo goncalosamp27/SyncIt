@@ -67,7 +67,7 @@ Route::get('/admin', function () {
     return view('pages.admin');
 });
 
-Route::get('/admin', [AdminController::class, 'display_members']);
+Route::get('/admin', [AdminController::class, 'display_members'])->name('admin');
 
 Route::get('/admin/edit/member/{id}', [AdminController::class, 'getMember'])->name('admin.edit.member');
 //Route::put('/admin/edit/member/{id}', [AdminController::class, 'updateMember']);
@@ -88,6 +88,15 @@ Route::post('/tickets/{ticket_id}', [TicketController::class, 'refundTicket'])->
 Route::middleware('auth')->group(function () {
     Route::get('/tickets', [TicketController::class, 'ticketAndEventData'])->name('tickets');
 });
+Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
+Route::get('/event/{event_id}/edit', [EventController::class, 'editEvent'])->name('edit.event');
+Route::get('/event/{event_id}/participants', [EventController::class, 'participants'])->name('participants');
+
+Route::get('/edit_profile/{member_id}', [MemberController::class, 'edit'])->name('profile.edit');
+
+Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events');
+
+
 
 Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'showLoginForm')->name('login');

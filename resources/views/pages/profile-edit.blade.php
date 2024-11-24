@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="edit-page">
-        <h1>Edit Member</h1>
+        <h1>Edit Profile</h1>
         <form action="{{ url('/admin/edit/member/' . $member->member_id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT') <!-- For updating -->
@@ -59,7 +59,7 @@
             <button type="submit" class="save-button">Save Changes</button>
 
             <!-- Discard Changes Button -->
-            <a href="{{ route('admin') }}" class="discard-button">Discard Changes</a>
+            <a href="{{ route('home') }}" class="discard-button">Discard Changes</a>
 
         </form>
     </div>
