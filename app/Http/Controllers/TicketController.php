@@ -25,9 +25,14 @@ class TicketController extends Controller {
 
     public function refundTicket(string $ticket_id)
     {   
-        $ticket = Ticket::findOrFail($ticket_id);
-        $ticket->delete();
-        return redirect()->route('tickets');
+        try {
+            $ticket = Ticket::findOrFail($ticket_id);
+            $ticket->delete();
+            return redirect()->route('tickets')->with('success', "Ticket #'{$ticket_id}' refunded successfully!");
+        }
+        catch (\Exception $e) {
+            return redirect()->route('tickets')->with('error', "Failed to refund the ticket.");
+        }   
     }
 
     public function buyTicket(Request $request)
