@@ -24,7 +24,7 @@ class EventController extends Controller
 	{
         $event = Event::findOrFail($event_id);
 
-        $this->authorize('owner', $event);
+        $this->authorize('edit', $event);
 
         return view('pages.edit-event', [
             'event' => $event
@@ -35,7 +35,7 @@ class EventController extends Controller
     {
         $event = Event::findOrFail($event_id);
     
-        $this->authorize('owner', $event);
+        $this->authorize('edit', $event);
 
         $participants = $event->tickets->map(function ($ticket) {
             return $ticket->member;
