@@ -1,6 +1,6 @@
 --show search_path;
-ALTER ROLE postgres SET search_path TO thingy;
-
+--ALTER ROLE postgres 
+SET search_path TO thingy;
 
 DROP TABLE IF EXISTS member CASCADE;
 DROP TABLE IF EXISTS artist CASCADE;
@@ -189,7 +189,7 @@ CREATE TABLE ticket (
     ticket_id SERIAL PRIMARY KEY,
     event_id INT NOT NULL,
     ticket_date TIMESTAMP NOT NULL CHECK (ticket_date >= CURRENT_DATE),
-    member_id INT NOT NULL UNIQUE,
+    member_id INT NOT NULL,
     FOREIGN KEY (event_id) REFERENCES event(event_id),
     FOREIGN KEY (member_id) REFERENCES member(member_id)
 );
@@ -895,81 +895,83 @@ VALUES
 
 INSERT INTO tag (tag_type, tag_name, color)
 VALUES 
-    ('Music', 'Music', 'FF4D4D'),
-    ('Dance', 'Dance', '6A5ACD'),
+    ('Music', 'Music', 'D32F2F'),       -- Crimson for Music
+    ('Dance', 'Dance', '5A4FCF'),       -- Medium Purple for Dance
     -- Music Genres
-    ('Music', 'Jazz', 'FFC300'),          -- Yellow for Jazz
-    ('Music', 'Rock', '900C3F'),          -- Dark Red for Rock
-    ('Music', 'Classical', 'DAF7A6'),     -- Light Green for Classical
-    ('Music', 'Electronic', 'C70039'),    -- Red for Electronic
-    ('Music', 'HipHop', '581845'),        -- Dark Purple for Hip Hop
-    ('Music', 'Metal', '8B0000'),         -- Dark Red for Metal
-    ('Music', 'Reggae', 'FF5733'),        -- Orange for Reggae
-    ('Music', 'Latin', 'FF33FF'),         -- Magenta for Latin
-    ('Music', 'Pop', 'FF69B4'),           -- Hot Pink for Pop
-    ('Music', 'Blues', '1C1C1C'),         -- Black for Blues
-    ('Music', 'Soul', 'FFD700'),          -- Gold for Soul
-    ('Music', 'Indie', 'A569BD'),         -- Purple for Indie
-    ('Music', 'Folk', 'FF4500'),          -- Orange Red for Folk
-    ('Music', 'Psytrance', '00CED1'),     -- Dark Turquoise for Psytrance
-    ('Music', 'NeoSoul', '6A5ACD'),       -- Slate Blue for Neo Soul
-    ('Music', 'Country', 'B8860B'),       -- Dark Goldenrod for Country
-    ('Music', 'Afrobeat', 'FF7F50'),      -- Coral for Afrobeat
-    ('Music', 'LoFi', '778899'),          -- Light Slate Gray for Lo-Fi
-    ('Music', 'EDM', '00FF7F'),           -- Spring Green for EDM
-    ('Music', 'Dubstep', '4B0082'),       -- Indigo for Dubstep
+    ('Music', 'Jazz', 'CC9900'),        -- Dark Gold for Jazz
+    ('Music', 'Rock', '8B0000'),        -- Crimson Red for Rock
+    ('Music', 'Classical', 'A3C18D'),   -- Muted Green for Classical
+    ('Music', 'Electronic', '9B2C37'), -- Muted Burgundy for Electronic
+    ('Music', 'HipHop', '482A5F'),      -- Deep Purple for HipHop
+    ('Music', 'Metal', '8B1A1A'),       -- Burgundy for Metal
+    ('Music', 'Reggae', 'E35C29'),      -- Burnt Orange for Reggae
+    ('Music', 'Latin', 'BF40BF'),       -- Deep Magenta for Latin
+    ('Music', 'Pop', 'E75887'),         -- Rose Pink for Pop
+    ('Music', 'Blues', '2F2F2F'),       -- Dark Gray for Blues
+    ('Music', 'Soul', 'CCB400'),        -- Mustard Yellow for Soul
+    ('Music', 'Indie', '8751A7'),       -- Rich Purple for Indie
+    ('Music', 'Folk', 'D84512'),        -- Burnt Orange for Folk
+    ('Music', 'Psytrance', '009FAE'),   -- Teal for Psytrance
+    ('Music', 'NeoSoul', '5A49A8'),     -- Rich Indigo for Neo Soul
+    ('Music', 'Country', '9E732B'),     -- Muted Gold for Country
+    ('Music', 'Afrobeat', 'E36E50'),    -- Deep Coral for Afrobeat
+    ('Music', 'LoFi', '647980'),        -- Slate Blue for Lo-Fi
+    ('Music', 'EDM', '00BF6F'),         -- Emerald Green for EDM
+    ('Music', 'Dubstep', '3A216F'),     -- Deep Indigo for Dubstep
     -- Dance Styles
-    ('Dance', 'Salsa', 'FF6347'),         -- Tomato for Salsa
-    ('Dance', 'Ballet', 'F08080'),        -- Light Coral for Ballet
-    ('Dance', 'Tango', 'DC143C'),         -- Crimson for Tango
-    ('Dance', 'HipHopDance', 'FF4500'),   -- Orange Red for Hip Hop Dance
-    ('Dance', 'Ballroom', '8A2BE2'),      -- Blue Violet for Ballroom
-    ('Dance', 'Contemporary', '20B2AA'),  -- Light Sea Green for Contemporary
-    ('Dance', 'Breakdance', '4682B4'),    -- Steel Blue for Breakdance
-    ('Dance', 'SwingDance', '5F9EA0'),    -- Cadet Blue for Swing Dance
-    ('Dance', 'TapDance', '8B4513'),      -- Saddle Brown for Tap Dance
-    ('Dance', 'Flamenco', 'FF1493'),      -- Deep Pink for Flamenco
-    ('Dance', 'Zumba', 'ADFF2F'),         -- Green Yellow for Zumba
-    ('Dance', 'Bollywood', 'FF7F50'),     -- Coral for Bollywood Dance
-    ('Dance', 'JazzDance', 'FFD700'),     -- Gold for Jazz Dance
-    ('Dance', 'Waltz', 'B0E0E6'),         -- Powder Blue for Waltz
-    ('Dance', 'Samba', 'FF4500'),         -- Orange Red for Samba
-    ('Dance', 'AfroCuban', 'FF6347'),     -- Tomato for Afro-Cuban
-    ('Dance', 'StreetDance', '2E8B57'),   -- Sea Green for Street Dance
-    ('Dance', 'LatinDance', 'FF69B4'),    -- Hot Pink for Latin Dance
-    ('Dance', 'Foxtrot', 'CD5C5C'),       -- Indian Red for Foxtrot
-    ('Dance', 'Quickstep', '20B2AA'),     -- Light Sea Green for Quickstep
+    ('Dance', 'Salsa', 'D13F2F'),       -- Vibrant Red for Salsa
+    ('Dance', 'Ballet', 'D96C6C'),      -- Deep Coral for Ballet
+    ('Dance', 'Tango', 'C82333'),       -- Scarlet for Tango
+    ('Dance', 'HipHopDance', 'E05C3F'), -- Vibrant Orange for Hip Hop Dance
+    ('Dance', 'Ballroom', '5F3EA8'),    -- Rich Violet for Ballroom
+    ('Dance', 'Contemporary', '198F8F'),-- Dark Cyan for Contemporary
+    ('Dance', 'Breakdance', '356B92'),  -- Slate Blue for Breakdance
+    ('Dance', 'SwingDance', '3F808A'),  -- Muted Aqua for Swing Dance
+    ('Dance', 'TapDance', '7A4E34'),    -- Brown for Tap Dance
+    ('Dance', 'Flamenco', 'B52782'),    -- Deep Pink for Flamenco
+    ('Dance', 'Zumba', '91A931'),       -- Olive for Zumba
+    ('Dance', 'Bollywood', 'D1533F'),   -- Bright Red-Orange for Bollywood Dance
+    ('Dance', 'JazzDance', 'CCA300'),   -- Gold for Jazz Dance
+    ('Dance', 'Waltz', '7199B0'),       -- Soft Blue for Waltz
+    ('Dance', 'Samba', 'E03C2F'),       -- Bright Scarlet for Samba
+    ('Dance', 'AfroCuban', 'C7462F'),   -- Deep Orange for Afro-Cuban
+    ('Dance', 'StreetDance', '2F7552'), -- Forest Green for Street Dance
+    ('Dance', 'LatinDance', 'DB3A83'),  -- Hot Pink for Latin Dance
+    ('Dance', 'Foxtrot', 'B45555'),     -- Rosewood for Foxtrot
+    ('Dance', 'Quickstep', '238C8A'),   -- Cyan for Quickstep
     -- Event Settings
-    ('Settings', 'Outdoors', '228B22'),      -- Forest Green for Outdoor events
-    ('Settings', 'Indoors', '808080'),       -- Gray for Indoor events
-    ('Settings', 'Beach', '87CEEB'),         -- Sky Blue for Beach events
-    ('Settings', 'Garden', '32CD32'),        -- Lime Green for Garden events
-    ('Settings', 'Park', '98FB98'),          -- Pale Green for Park settings
-    ('Settings', 'Lounge', 'D2B48C'),        -- Tan for Lounge settings
-    ('Settings', 'Rooftop', '4682B4'),       -- Steel Blue for Rooftop events
-    ('Settings', 'Club', '000000'),          -- Black for Club settings
-    ('Settings', 'Amphitheater', 'A9A9A9'),  -- Dark Gray for Amphitheater
-    ('Settings', 'Barn', '8B4513'),          -- Saddle Brown for Barn settings
-    ('Settings', 'Arena', '2F4F4F'),         -- Dark Slate Gray for Arena events
-    ('Settings', 'Hall', '778899'),          -- Light Slate Gray for Hall settings
-    ('Settings', 'Studio', 'B0C4DE'),        -- Light Steel Blue for Studio events
-    ('Settings', 'Festival', 'FFD700'),      -- Gold for Festival-type events
-    ('Settings', 'Ballroom', 'DDA0DD'),      -- Plum for Ballroom settings
-    ('Settings', 'Theater', '9370DB'),       -- Medium Purple for Theater
+    ('Settings', 'Outdoors', '23672A'), -- Dark Forest Green for Outdoors
+    ('Settings', 'Indoors', '545454'),  -- Medium Gray for Indoors
+    ('Settings', 'Beach', '4A90B0'),    -- Ocean Blue for Beach
+    ('Settings', 'Garden', '3A8C3A'),   -- Rich Green for Garden
+    ('Settings', 'Park', '6BB06B'),     -- Lush Green for Park
+    ('Settings', 'Lounge', 'A0835A'),   -- Tan for Lounge
+    ('Settings', 'Rooftop', '3C6075'),  -- Deep Blue for Rooftop
+    ('Settings', 'Club', '1E1E1E'),     -- Charcoal for Club
+    ('Settings', 'Amphitheater', '5C5C5C'), -- Steel Gray for Amphitheater
+    ('Settings', 'Barn', '704B2C'),     -- Rich Brown for Barn
+    ('Settings', 'Arena', '3E4E4E'),    -- Slate Gray for Arena
+    ('Settings', 'Hall', '546875'),     -- Muted Blue for Hall
+    ('Settings', 'Studio', '7088A0'),   -- Soft Steel Blue for Studio
+    ('Settings', 'Festival', 'B28A00'), -- Dark Yellow for Festival
+    ('Settings', 'Ballroom', '8652B3'), -- Plum for Ballroom
+    ('Settings', 'Theater', '7E51A8'),  -- Medium Purple for Theater
     -- Event Moods
-    ('Mood', 'Energetic', 'FF4500'),     -- Orange Red for energetic events
-    ('Mood', 'Relaxed', '87CEFA'),       -- Light Sky Blue for relaxed events
-    ('Mood', 'Romantic', 'FF69B4'),      -- Hot Pink for romantic events
-    ('Mood', 'Mellow', 'BC8F8F'),        -- Rosy Brown for mellow events
-    ('Mood', 'Vibrant', 'FF6347'),       -- Tomato for vibrant events
-    ('Mood', 'Intimate', '6A5ACD'),      -- Slate Blue for intimate events
-    ('Mood', 'HighEnergy', '00CED1'),    -- Dark Turquoise for high-energy events
-    ('Mood', 'Sophisticated', 'B0E0E6'), -- Powder Blue for sophisticated events
-    ('Mood', 'Party', 'FF1493'),         -- Deep Pink for party mood
-    ('Mood', 'Chill', '708090'),         -- Slate Gray for chill events
-    ('Mood', 'Cultural', 'FFDEAD'),      -- Navajo White for cultural events
-    ('Mood', 'Nostalgic', 'DAA520'),     -- Goldenrod for nostalgic events
-    ('Mood', 'Exotic', 'D2691E');        -- Chocolate for exotic events
+    ('Mood', 'Energetic', 'E03F2F'),    -- Bright Red for Energetic
+    ('Mood', 'Relaxed', '4A90B0'),      -- Calm Blue for Relaxed
+    ('Mood', 'Romantic', 'DB3A83'),     -- Hot Pink for Romantic
+    ('Mood', 'Mellow', '9A6D6D'),       -- Soft Brown for Mellow
+    ('Mood', 'Vibrant', 'D8452E'),      -- Bright Orange for Vibrant
+    ('Mood', 'Intimate', '5F3EA8'),     -- Rich Indigo for Intimate
+    ('Mood', 'HighEnergy', '20999F'),   -- Bright Teal for High Energy
+    ('Mood', 'Sophisticated', '5F7D99'),-- Muted Blue for Sophisticated
+    ('Mood', 'Party', 'B03F8B'),        -- Deep Magenta for Party
+    ('Mood', 'Chill', '505E66'),        -- Cool Gray for Chill
+    ('Mood', 'Cultural', 'A66933'),     -- Muted Gold for Cultural
+    ('Mood', 'Nostalgic', 'B08530'),    -- Rich Goldenrod for Nostalgic
+    ('Mood', 'Exotic', '8A552E');       -- Warm Brown for Exotic
+
+
 
 INSERT INTO event_tag (event_id, tag_id)
 VALUES 

@@ -61,7 +61,7 @@
   @if ($events->isEmpty())
     <p>No events found for the selected tags.</p>
   @else
-      @foreach ($events as $event)
+      @foreach ($pastevents as $event)
           @include('partials.event-card', ['event' => $event])
       @endforeach
   @endif
