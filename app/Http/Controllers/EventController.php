@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\Event;
 use App\Models\Tag;
@@ -14,9 +15,62 @@ class EventController extends Controller
 	{
         // Get the event card.
         $event = Event::findOrFail($event_id);
-        
         return view('pages.event', [
             'event' => $event
+        ]);
+    }
+
+    public function refundTicket(string $ticket_id)
+    {   
+        try {
+            $ticket = Ticket::findOrFail($ticket_id);
+            $ticket->delete();
+            return redirect()->route('tickets')->with('success', "Ticket #'{$ticket_id}' refunded successfully!");
+        }
+        catch (\Exception $e) {
+            return redirect()->route('tickets')->with('error', "Failed to refund the ticket.");
+        }   
+    }
+
+
+    public function deleteEvent(string $event_id)
+    {
+        try {
+            // Fetch the event
+            $event = Event::findOrFail($event_id);
+
+            // Debug: Check if event is valid
+            if (!$event) {
+                return redirect()->route('your-events')->with('error', "Event not found.");
+            }
+
+            // Validate event date
+            if (!$event->event_date || Carbon::parse($event->event_date)->isPast()) {
+                return redirect()->route('your-events')->with('error', "Cannot delete past events.");
+            }
+
+            // Attempt to delete the event
+            $event->delete();
+
+            return redirect()->route('your-events')->with('success', "Event #{$event_id} deleted successfully!");
+        } catch (\Exception $e) {
+            // Log the actual error
+            dd($e->getMessage());
+            \Log::error("Failed to delete event: {$e->getMessage()}");
+
+            return redirect()->route('your-events')->with('error', "Failed to delete the event.");
+        }
+    }
+
+
+
+    public function member_events()
+    {
+        $member = Auth::user();
+        $events = Event::where('artist_id', $member->member_id)->get();
+        return view('pages.your-events', [
+            'events' => $events,
+            'member' => $member,
         ]);
     }
 
