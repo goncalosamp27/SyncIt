@@ -83,6 +83,8 @@ Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events
 Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->name('past-events');
 Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('future-events');
 
+Route::get('/events/search', [EventController::class, 'search'])->name('events.search');
+
 Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
     ->name('buy-ticket')
     ->middleware('auth');
@@ -103,7 +105,6 @@ Route::get('/event/{event_id}/participants', [EventController::class, 'participa
 
 Route::get('/edit_profile', [MemberController::class, 'edit'])->name('profile.edit');
 
-Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events');
 
 Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'showLoginForm')->name('login');
