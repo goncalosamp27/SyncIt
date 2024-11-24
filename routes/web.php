@@ -80,7 +80,7 @@ Route::put('/admin/edit/member/{id}', [AdminController::class, 'updateMemberAdmi
 Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
 Route::get('/events/create', [EventController::class, 'create'])->middleware('auth')->name('events.create');
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
-Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events.edit.event');
+Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events');
 Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->name('past-events');
 Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('future-events');
 
