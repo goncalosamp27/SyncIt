@@ -14,7 +14,6 @@ class TicketController extends Controller {
 	public function ticketAndEventData()
     {	
 		$member = Auth::user()->load('tickets');
-
         $tickets = Ticket::where('member_id', Auth::id());
 
         return view('pages.tickets', [
