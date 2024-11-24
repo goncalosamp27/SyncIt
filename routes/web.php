@@ -11,6 +11,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\EditEventController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -35,8 +36,6 @@ use App\Models\Artist;
 |
 */
 
-// Redirect root URL to home
-Route::redirect('/', '/home');
 
 // Add this to render the home view
 Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -66,20 +65,22 @@ Route::get('/create', function () {
     return view('pages.create');
 });
 */
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/admin', function () {
     return view('pages.admin');
 });
 
+
 Route::get('/admin', [AdminController::class, 'display_members'])->name('admin');
 
 Route::get('/admin/edit/member/{id}', [AdminController::class, 'getMember'])->name('admin.edit.member');
-//Route::put('/admin/edit/member/{id}', [AdminController::class, 'updateMember']);
+Route::put('/admin/edit/member/{id}', [AdminController::class, 'updateMemberAdmin'])->name('admin.member.updates');
 
 Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
 Route::get('/events/create', [EventController::class, 'create'])->middleware('auth')->name('events.create');
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
-Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events');
+Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events.edit.event');
 Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->name('past-events');
 Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('future-events');
 
@@ -93,10 +94,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/tickets', [TicketController::class, 'ticketAndEventData'])->name('tickets');
 });
 Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
-Route::get('/event/{event_id}/edit', [EventController::class, 'editEvent'])->name('edit.event');
 Route::get('/event/{event_id}/participants', [EventController::class, 'participants'])->name('participants');
 
 Route::get('/edit_profile', [MemberController::class, 'edit'])->name('profile.edit');
+Route::put('/edit_profile', [MemberController::class, 'updateMember'])->name('member.profile.edit');
 
 Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events');
 
@@ -118,3 +119,6 @@ Route::post('/create', [CreateEventController::class, 'store'])
     ->middleware('auth')
     ->name('create.store');
 
+
+Route::get('/event/edit/{event_id}', [EditEventController::class, 'show'])->name('edit.event.show');
+Route::put('/event/edit/{event_id}', [EditEventController::class, 'editEvent'])->name('edit.event');

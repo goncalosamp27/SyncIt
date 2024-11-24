@@ -30,6 +30,24 @@ class CreateEventController extends Controller
     }
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            // Event data validation rules
+            'event_name' => 'required|string|max:255',
+            'event_date' => 'required|date|after_or_equal:today',
+            'location' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+            'type_of_event' => 'required|string|max:100', // Specify allowed event types
+            'refund' => 'required|numeric|between:0,100', 
+            'price' => 'required|numeric|min:0',
+            'event_files' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'capacity' => 'required|integer|min:10',
+    
+            // Event tags validation rules
+            'music-dance' => 'nullable|numeric',
+            'mood' => 'nullable|numeric',
+            'setting' => 'nullable|numeric',
+        ]);
+
         $eventData = $request->only([
             'event_name',
             'event_date',
@@ -38,6 +56,7 @@ class CreateEventController extends Controller
             'type_of_event',
             'refund',
             'price' ,
+            'event_media',
             'capacity',
         ]);
         $eventTags = $request->only([
@@ -49,7 +68,6 @@ class CreateEventController extends Controller
         $eventDate = $request->input('event_date');
         $eventTime = $request->input('event_time');
         $eventDateTime = Carbon::createFromFormat('Y-m-d H:i', "$eventDate $eventTime");
-
         $defaultImage = 'default_event.png';
 
         $member = Auth::user();
@@ -60,6 +78,13 @@ class CreateEventController extends Controller
             try {
                 // Create and save the event
                 $event = new Event($eventData);
+                if ($request->hasFile('event_files')) {
+                    $path = $request->file('event_files')->store('profiles', 'public');
+                    $event->event_media = $path;
+                }
+                else{
+                    $event->profile_pic_url = $defaultImage;
+                }
                 $event->event_date = $eventDateTime;
                 $event->event_media = $defaultImage;
                 $event->rating = 0;
@@ -101,6 +126,14 @@ class CreateEventController extends Controller
         try {
             // Create and save the event
             $event = new Event($eventData);
+            $event = new Event($eventData);
+                if ($request->hasFile('event_files')) {
+                    $path = $request->file('event_files')->store('profiles', 'public');
+                    $event->event_media = $path;
+                }
+                else{
+                    $event->event_media = $defaultImage;
+                }
             $event->event_date = $eventDateTime;
             $event->event_media = $defaultImage;
             $event->rating = 0;
