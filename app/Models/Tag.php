@@ -25,9 +25,9 @@ class Tag extends Model
     public static function validate($data)
     {
         $validator = Validator::make($data, [
-            'tag_type' => 'required|string|max:20', 
-            'tag_name' => 'required|string|max:20|unique:tag,tag_name', 
-            'color' => 'required|string|size:6', 
+            'tag_type' => 'required|string|max:20',
+            'tag_name' => 'required|string|max:20|unique:tag,tag_name',
+            'color' => 'required|string|size:6',
         ]);
 
         return $validator;
@@ -60,5 +60,13 @@ class Tag extends Model
     public static function getDanceTags()
     {
         return self::where('tag_type', 'Dance')->get();
+    }
+    public static function getTagByTypeAndName($tagType, $tagName)
+    {
+        $tag = self::where('tag_type', $tagType)
+            ->where('tag_name', $tagName)
+            ->first();
+        return $tag->tag_id;
+
     }
 }

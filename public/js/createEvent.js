@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(musicDanceSelect.innerHTML);
         // Update label and options
         if (selectedGenre === "Music") {
-            musicDanceSelect.innerHTML = '<option value="" disabled selected>Msuic</option>';
+            musicDanceSelect.innerHTML = '<option value="" disabled selected>Music</option>';
             musicTags.forEach(tag => {
                 const option = document.createElement("option");
                 option.value = tag.tag_id;

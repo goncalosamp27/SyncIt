@@ -174,8 +174,8 @@ CREATE TABLE tag (
     tag_name VARCHAR(20) NOT NULL,
     color VARCHAR(6) NOT NULL
 );
-CREATE INDEX tag_name_idx ON tag (tag_name);
 
+CREATE INDEX tag_name_idx ON tag (tag_name);
 
 CREATE TABLE event_tag ( 
     event_id INT NOT NULL,

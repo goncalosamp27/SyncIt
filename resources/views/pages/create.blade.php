@@ -16,7 +16,7 @@
 </div>
 
 <div class="create-event-form">
-    <form  method="POST" action="{{ route('create.store') }}">
+    <form method="POST" action="{{ route('create.store') }}">
         @csrf
         <!-- Event Name -->
         <div class="create-event-input">
@@ -34,6 +34,16 @@
             <input type="date" id="event_date" name="event_date" placeholder="Enter a date for your event:"
                 class="form-control" value="{{ old('event_date') }}" required>
             @error('event_date')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
+        </div>
+        <!-- Event Time -->
+        <div class="create-event-input">
+            <label for="event_time" class="form-label">Event Time:</label>
+            <input type="time" id="event_time" name="event_time"
+                value="{{ old('event_time', isset($event) ? \Carbon\Carbon::parse($event->event_date)->format('H:i') : '') }}"
+                required class="form-control" />
+            @error('event_time')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
@@ -155,7 +165,7 @@
             </div>
         </div>
         <!-- File Upload -->
-         <!--
+        <!--
         <div class="create-event-input">
             <label for="event_files" class="form-label">Upload Media</label>
             <input type="file" id="event_files">
@@ -172,7 +182,7 @@
         -->
 
         <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary" >Create Event</button>
+        <button type="submit" class="btn btn-primary">Create Event</button>
     </form>
 </div>
 @endsection
