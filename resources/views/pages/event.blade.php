@@ -28,8 +28,7 @@
 					Manage
 				</a>
 			</div>
-			<a href="https://example.com" class="buy-tickets-btn" target="_blank">Get Tickets - {{ $event->price }}€</a>
-		</div>
+		
 
 			@php
     			$eventExpired = $event->event_date <= now();
@@ -62,7 +61,7 @@
 					</a>
 				@endif
 			</div>
-
+	
 		</div>
 		<div class="event-page-img">
 			<img src="{{ asset('storage/events/' . $event->event_media) }}" alt="Event Picture">
