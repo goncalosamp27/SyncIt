@@ -39,7 +39,7 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/tickets', function () {
     return view('pages.tickets');
 });
-Route::get('/notifications', [NotificationController::class, 'getNotifications']);
+Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications');
 
 Route::get('/artist/{artist_id}', [ArtistController::class, 'show'])->name('artist');
 
