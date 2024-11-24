@@ -1,0 +1,129 @@
+.tickets-div {
+    margin-top: 1rem;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 3rem;
+}
+
+.tickets-title {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.new-purple-line {
+    height: 0.1rem;
+    margin-top: 1rem;
+    background-color: var(--primary-color);
+    box-shadow: 0 0 0.5rem var(--primary-color);
+}
+
+.tickets-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.no-tickets {
+    margin-top: 2rem;
+    font-size: 1.5rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ticket-card {
+    margin-top: 2rem;
+    background-color: #f9f9f9;
+    height: auto; /* Adjusts height based on content */
+    max-width: 70%; /* Ensures it doesn’t grow too wide */
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 1.5rem;
+    border-color: var(--black-color);
+    border-width: 0.4rem;
+    border-style: solid;
+    box-shadow: 0 0 0.5rem var(--primary-color);
+    display: flex;
+    flex-wrap: wrap; /* Allows content to wrap if it overflows */
+    gap: 1rem;
+    overflow: hidden; /* Ensures content doesn't overflow */
+}
+
+.ticket-card > div {
+    flex: 1;
+    color: var(--black-color);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+    font-size: 1.2rem;
+    border-radius: 1rem;
+    box-sizing: border-box; /* Includes padding in the size */
+}
+
+.ticket-owner {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--hover-color);
+}
+
+.ticket-id {
+    color: var(--hover-color);
+    text-decoration: underline;
+    font-weight: bold;
+    word-wrap: break-word; /* Prevents long words from breaking layout */
+}
+
+.ticket-event-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    font-style: italic;
+    color: var(--primary-color);
+    margin-bottom: 0.2rem;
+}
+
+.ticket-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 1.1rem;
+}
+
+.ticket-meta span {
+    background-color: var(--primary-color);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    white-space: nowrap; /* Prevents text from wrapping awkwardly */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adds ellipsis for overflowed text */
+}
+
+.refund-button {
+    width: 100%;
+    margin-top: 0rem;
+    margin-left: auto;
+    margin-right: auto;
+    align-self: flex-start;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: var(--hover-color);
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.refund-button:hover {
+    background-color: rgb(134, 58, 58);
+    box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.15);
+}
+
+/* Additional Fixes */
+.ticket-card img, 
+.ticket-card iframe {
+    max-width: 100%; /* Ensures media stays within container */
+    height: auto; /* Keeps aspect ratio */
+    border-radius: 1rem;
+    overflow: hidden; /* Prevents media overflow */
+}

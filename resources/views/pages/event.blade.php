@@ -1,9 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
+	<script src="{{ asset('js/app.js') }}" defer></script>
+
 	<div class="event-page-content">
 		<div class="event-page-info">
-			<h1> {{ $event->event_name }} </h1>
+			<div class="title-edit">
+				<h1> {{ $event->event_name }} </h1>
+				<a href="{{ route('edit.event', ['event_id' => $event->event_id]) }}" class="event-button">
+					Edit
+				</a>
+			</div>			
 			<a class ="user-event-owner" href="{{ url('artist/' . $event->artist->artist_id) }}" style="display: flex; align-items: center; margin-top:1rem;">
 				<img 
 					src="{{ asset('storage/profiles/' . $event->artist->member->profile_pic_url) }}" alt="Event Picture"
@@ -16,8 +23,59 @@
 			<div class="small-line"></div>
 			<h4>📍 {{ $event->location }}</h4>
 			<div class="small-line"></div>
-			<h5>👥 {{ $event->ticket_count }} / {{ $event->capacity }} Participants</h5>
-			<a href="https://example.com" class="buy-tickets-btn" target="_blank">Get Tickets - {{ $event->price }}€</a>
+
+			<div class="title-edit">
+				<h5> 👥 {{ $event->ticket_count }} / {{ $event->capacity }} Participants</h5>
+				<a href="{{ route('participants', ['event_id' => $event->event_id]) }}" class="event-button">
+					Manage
+				</a>
+			</div>
+		
+
+			@php
+    			$eventExpired = $event->event_date <= now();
+    			$userTicketCount = $event->tickets->where('member_id', auth()->id())->count();
+				$eventType = $event->type_of_event;
+			@endphp
+
+			<div class="ticket-buttons">
+
+				@if($userTicketCount < 10 && $userTicketCount >= 1)
+					<div class="button-container">
+					<button class="purchased-btn">
+						Tickets Purchased: {{ $userTicketCount }}
+					</button>
+					<form action="{{ route('buy-ticket') }}" method="POST">
+						@csrf
+						<input type="hidden" name="event_id" value="{{ $event->event_id }}">
+						<button class="buy-tickets-btn2">
+							Get More Tickets - {{ $event->price }}€
+						</button>
+					</form>
+					</div>	
+
+				@elseif ($userTicketCount == 10)
+					<button type="submit" class="disabled-btn" disa>Ticket Limit Reached</button>
+
+				@elseif ($eventType == 'Private')
+					<button type="submit" class="disabled-btn">Private Event</button>	
+
+				@else			
+				<form action="{{ route('buy-ticket') }}" method="POST">
+					@csrf
+					<input type="hidden" name="event_id" value="{{ $event->event_id }}">
+					<button type="submit" class="buy-tickets-btn {{ $eventExpired ? 'disabled-btn' : '' }}"	  
+					{{ $eventExpired ? 'disabled' : '' }}>
+
+						@if ($eventExpired)
+							Event Expired
+						@else
+							Get Tickets - {{ $event->price }}€
+						@endif
+				@endif		
+					</button>
+				</form>
+			</div>
 		</div>
 
 		<div class="event-page-img">
@@ -26,6 +84,29 @@
 	</div>
 	
 	<div class="description-comments">
+		<div class="purple-line"></div>
+
+		<div class="event-page-tags">
+			<h1>Tags:</h1>
+            @foreach ($event->tags as $tag)
+			<a>
+                <span class="tag-button"
+                style="
+                        background: #{{ $tag->color }};
+                        color: #fff;
+                        border-radius: 12px;
+                        padding: 8px 16px;
+                        display: inline-block;
+                        font-weight: bold;
+                        font-size: 14px;
+                        text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+                        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+                        transition: transform 0.2s ease, box-shadow 0.2s ease;
+                        ">
+                {{ $tag->tag_name }}</span></a>
+            @endforeach
+        </div>
+
 		<div class="purple-line"></div>
 		
 		<div class="event-page-description">
