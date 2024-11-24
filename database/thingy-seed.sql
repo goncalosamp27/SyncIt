@@ -152,7 +152,7 @@ CREATE TABLE comment (
     member_id INT NOT NULL,
     response_comment_id INT,
     FOREIGN KEY (member_id) REFERENCES member(member_id),
-    FOREIGN KEY (event_id) REFERENCES event(event_id),
+    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
     FOREIGN KEY (response_comment_id) REFERENCES comment(comment_id)
 );
 CREATE INDEX comment_event_id_idx ON comment (event_id);
@@ -165,7 +165,7 @@ CREATE TABLE vote_comment (
     member_id INT NOT NULL,
     vote BOOLEAN NOT NULL, -- true = upvote, false = downvote
     FOREIGN KEY (member_id) REFERENCES member(member_id),
-    FOREIGN KEY (comment_id) REFERENCES comment(comment_id)
+    FOREIGN KEY (comment_id) REFERENCES comment(comment_id) ON DELETE CASCADE
 );
 
 CREATE TABLE tag (
@@ -200,7 +200,7 @@ CREATE TABLE poll (
     event_id INT NOT NULL,
     start_date DATE NOT NULL CHECK (start_date >= CURRENT_DATE),
     end_date DATE NOT NULL CHECK (end_date > start_date),
-    FOREIGN KEY (event_id) REFERENCES event(event_id)
+    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE
 );
 
 
@@ -209,7 +209,7 @@ CREATE TABLE option (
     option_name VARCHAR(100) NOT NULL,
     poll_id INT NOT NULL,
 
-    FOREIGN KEY (poll_id) REFERENCES poll(poll_id)
+    FOREIGN KEY (poll_id) REFERENCES poll(poll_id) ON DELETE CASCADE
 );
 
 
@@ -219,7 +219,7 @@ CREATE TABLE invitation (
     invitation_date TIMESTAMP NOT NULL CHECK (invitation_date >= CURRENT_DATE),
     event_id INT NOT NULL,
     member_id INT NOT NULL,
-    FOREIGN KEY (event_id) REFERENCES event(event_id),
+    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
     FOREIGN KEY (member_id) REFERENCES member(member_id)
 );
 
@@ -229,15 +229,15 @@ CREATE TABLE notification (
     notification_message TEXT NOT NULL,
     notification_date TIMESTAMP NOT NULL,
     member_id INT NOT NULL,
-    FOREIGN KEY (member_id) REFERENCES member(member_id)
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
 CREATE INDEX notification_date_idx ON notification (notification_date);
 
 CREATE TABLE invitation_notification (
     notification_id INT PRIMARY KEY,
     invitation_id INT NOT NULL,
-    FOREIGN KEY (notification_id) REFERENCES notification(notification_id),
-    FOREIGN KEY (invitation_id) REFERENCES invitation(invitation_id)
+    FOREIGN KEY (notification_id) REFERENCES notification(notification_id) ON DELETE CASCADE,
+    FOREIGN KEY (invitation_id) REFERENCES invitation(invitation_id) ON DELETE CASCADE
 );
 
 CREATE TABLE follow_notification(
