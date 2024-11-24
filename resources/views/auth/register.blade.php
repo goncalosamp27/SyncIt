@@ -7,58 +7,57 @@
 
     <!-- Username -->
     <label for="username">Username</label>
-    <input id="username" type="text" name="username" value="{{ old('username') }}" required>
+    <input id="username" type="text" name="username" value="{{ old('username') }}" required placeholder="e.g: username123">
     @if ($errors->has('username'))
     <span class="error">
       {{ $errors->first('username') }}
     </span>
-  @endif
+    @endif
 
     <!-- Display Name -->
     <label for="display_name">Display Name</label>
-    <input id="display_name" type="text" name="display_name" value="{{ old('display_name') }}" required>
+    <input id="display_name" type="text" name="display_name" value="{{ old('display_name') }}" required placeholder="e.g: John Doe">
     @if ($errors->has('display_name'))
     <span class="error">
       {{ $errors->first('display_name') }}
     </span>
-  @endif
+    @endif
 
     <!-- Email -->
     <label for="email">E-Mail Address</label>
-    <input id="email" type="email" name="email" value="{{ old('email') }}" required>
+    <input id="email" type="email" name="email" value="{{ old('email') }}" required placeholder="e.g: example@example.com">
     @if ($errors->has('email'))
     <span class="error">
       {{ $errors->first('email') }}
     </span>
-  @endif
+    @endif
 
     <!-- Password -->
     <label for="password">Password</label>
-    <input id="password" type="password" name="password" required>
+    <input id="password" type="password" name="password" required placeholder="e.g: YourSecurePassword123!">
     @if ($errors->has('password'))
     <span class="error">
       {{ $errors->first('password') }}
     </span>
-  @endif
+    @endif
 
     <!-- Confirm Password -->
     <label for="password_confirmation">Confirm Password</label>
-    <input id="password_confirmation" type="password" name="password_confirmation" required>
+    <input id="password_confirmation" type="password" name="password_confirmation" required placeholder="Re-enter your password">
     @if ($errors->has('password_confirmation'))
     <span class="error">
       {{ $errors->first('password_confirmation') }}
     </span>
-  @endif
-
+    @endif
 
     <!-- Bio -->
     <label for="bio">Bio (Optional)</label>
-    <textarea id="bio" name="bio">{{ old('bio') }}</textarea>
+    <textarea id="bio" name="bio" placeholder="e.g: I'm John and I love dancing to HipHop beats. I'm interested in Rap Concerts.">{{ old('bio') }}</textarea>
     @if ($errors->has('bio'))
     <span class="error">
       {{ $errors->first('bio') }}
     </span>
-  @endif
+    @endif
 
     <button type="submit">
       Register
