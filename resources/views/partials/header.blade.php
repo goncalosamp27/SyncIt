@@ -52,7 +52,7 @@
 				@endif			
 					
 				<a href="{{ route('tickets') }}">My Tickets</a>
-				<a href="">My Events</a>
+				<a href="{{ route('your-events') }}">My Events</a>
 				<a href="">Reset Password</a>
 			@endif
 		</div>
