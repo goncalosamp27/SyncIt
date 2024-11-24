@@ -35,6 +35,7 @@
 			@php
     			$eventExpired = $event->event_date <= now();
     			$userTicketCount = $event->tickets->where('member_id', auth()->id())->count();
+				$eventType = $event->type_of_event;
 			@endphp
 
 			<div class="ticket-buttons">
@@ -54,7 +55,10 @@
 					</div>	
 
 				@elseif ($userTicketCount == 10)
-					<button type="submit" class="disabled-btn">Ticket Limit Reached</button>
+					<button type="submit" class="disabled-btn" disa>Ticket Limit Reached</button>
+
+				@elseif ($eventType == 'Private')
+					<button type="submit" class="disabled-btn">Private Event</button>	
 
 				@else			
 				<form action="{{ route('buy-ticket') }}" method="POST">
