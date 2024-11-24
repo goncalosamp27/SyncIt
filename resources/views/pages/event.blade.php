@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+	<script src="{{ asset('js/app.js') }}" defer></script>
+
 	<div class="event-page-content">
 		<div class="event-page-info">
 			<h1> {{ $event->event_name }} </h1>
@@ -20,37 +22,29 @@
 
 			@php
     			$eventExpired = $event->event_date <= now();
-    			$userTicketCount = $event->tickets->where('user_id', auth()->id())->count();
+    			$userTicketCount = $event->tickets->where('member_id', auth()->id())->count();
 			@endphp
 
 			<div class="ticket-buttons">
-				<!-- Main Button -->
-				<a 
-					href="{{ !$eventExpired ? 'https://example.com' : '#' }}" 
-					class="buy-tickets-btn 
+				<form action="{{ route('buy-ticket') }}" method="POST">
+					@csrf
+					<input type="hidden" name="event_id" value="{{ $event->event_id }}">
+					<button type="submit" class="buy-tickets-btn 
 						{{ $eventExpired ? 'disabled-btn' : '' }} 
-						{{ $userTicketCount > 0 ? 'purchased-btn' : '' }}" 
-					target="{{ !$eventExpired ? '_blank' : '_self' }}">
-					@if ($eventExpired)
-						Event Expired
-					@elseif ($userTicketCount > 0)
-						Ticket Purchased: {{ $userTicketCount }} {{ Str::plural('Ticket', $userTicketCount) }}
-					@else
-						Get Tickets - {{ $event->price }}€
-					@endif
-				</a>
-
-				<!-- "Buy More Tickets" Button -->
-				@if ($userTicketCount > 0 && !$eventExpired)
-					<a 
-						href="{{ route('select-tickets', ['event' => $event->id]) }}" 
-						class="buy-more-tickets-btn">
-						Buy More Tickets
-					</a>
-				@endif
+						{{ $userTicketCount > 0 ? 'purchased-btn' : '' }}"	  
+						{{ $eventExpired ? 'disabled' : '' }}>
+						@if ($eventExpired)
+							Event Expired
+						@elseif ($userTicketCount > 0)
+							Tickets Purchased: {{ $userTicketCount }} {{ Str::plural('Ticket', $userTicketCount) }}
+						@else
+							Get Tickets - {{ $event->price }}€
+						@endif
+					</button>
+				</form>
 			</div>
-
 		</div>
+
 		<div class="event-page-img">
 			<img src="{{ asset('storage/events/' . $event->event_media) }}" alt="Event Picture">
 		</div>
