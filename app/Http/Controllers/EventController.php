@@ -23,7 +23,9 @@ class EventController extends Controller
     public function editEvent(string $event_id): View 
 	{
         $event = Event::findOrFail($event_id);
-        
+
+        $this->authorize('owner', $event);
+
         return view('pages.edit-event', [
             'event' => $event
         ]);
@@ -31,15 +33,14 @@ class EventController extends Controller
 
     public function participants($event_id)
     {
-        // Retrieve the event by its ID
         $event = Event::findOrFail($event_id);
     
-        // Retrieve the participants (members) of the event
+        $this->authorize('owner', $event);
+
         $participants = $event->tickets->map(function ($ticket) {
-            return $ticket->member;  // Retrieve the associated member for each ticket
+            return $ticket->member;
         });
     
-        // Return a view with the participants
         return view('pages.manage-participants', [
             'participants' => $participants
         ]);

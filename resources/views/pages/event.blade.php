@@ -7,9 +7,12 @@
 		<div class="event-page-info">
 			<div class="title-edit">
 				<h1> {{ $event->event_name }} </h1>
+				@can('edit', $event)
 				<a href="{{ route('edit.event', ['event_id' => $event->event_id]) }}" class="event-button">
 					Edit
 				</a>
+				@endcan
+
 			</div>			
 			<a class ="user-event-owner" href="{{ url('artist/' . $event->artist->artist_id) }}" style="display: flex; align-items: center; margin-top:1rem;">
 				<img 
@@ -26,9 +29,13 @@
 
 			<div class="title-edit">
 				<h5> 👥 {{ $event->ticket_count }} / {{ $event->capacity }} Participants</h5>
+
+				@can('edit', $event)
 				<a href="{{ route('participants', ['event_id' => $event->event_id]) }}" class="event-button">
 					Manage
 				</a>
+				@endcan
+
 			</div>
 		
 
@@ -38,44 +45,41 @@
 				$eventType = $event->type_of_event;
 			@endphp
 
+			@cannot('edit', $event)
 			<div class="ticket-buttons">
-
 				@if($userTicketCount < 10 && $userTicketCount >= 1)
 					<div class="button-container">
-					<button class="purchased-btn">
-						Tickets Purchased: {{ $userTicketCount }}
-					</button>
+						<button class="purchased-btn">
+							Tickets Purchased: {{ $userTicketCount }}
+						</button>
+						<form action="{{ route('buy-ticket') }}" method="POST">
+							@csrf
+							<input type="hidden" name="event_id" value="{{ $event->event_id }}">
+							<button class="buy-tickets-btn2">
+								Get More Tickets - {{ $event->price }}€
+							</button>
+						</form>
+					</div>  
+				@elseif ($userTicketCount == 10)
+					<button type="submit" class="disabled-btn" disabled>Ticket Limit Reached</button>
+				@elseif ($eventType == 'Private')
+					<button type="submit" class="disabled-btn">Private Event</button>    
+				@else            
 					<form action="{{ route('buy-ticket') }}" method="POST">
 						@csrf
 						<input type="hidden" name="event_id" value="{{ $event->event_id }}">
-						<button class="buy-tickets-btn2">
-							Get More Tickets - {{ $event->price }}€
+						<button type="submit" class="buy-tickets-btn {{ $eventExpired ? 'disabled-btn' : '' }}" {{ $eventExpired ? 'disabled' : '' }}>
+							@if ($eventExpired)
+								Event Expired
+							@else
+								Get Tickets - {{ $event->price }}€
+							@endif
 						</button>
 					</form>
-					</div>	
-
-				@elseif ($userTicketCount == 10)
-					<button type="submit" class="disabled-btn" disa>Ticket Limit Reached</button>
-
-				@elseif ($eventType == 'Private')
-					<button type="submit" class="disabled-btn">Private Event</button>	
-
-				@else			
-				<form action="{{ route('buy-ticket') }}" method="POST">
-					@csrf
-					<input type="hidden" name="event_id" value="{{ $event->event_id }}">
-					<button type="submit" class="buy-tickets-btn {{ $eventExpired ? 'disabled-btn' : '' }}"	  
-					{{ $eventExpired ? 'disabled' : '' }}>
-
-						@if ($eventExpired)
-							Event Expired
-						@else
-							Get Tickets - {{ $event->price }}€
-						@endif
-				@endif		
-					</button>
-				</form>
+				@endif  
 			</div>
+		@endcannot
+
 		</div>
 
 		<div class="event-page-img">
