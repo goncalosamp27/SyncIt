@@ -436,3 +436,24 @@ form.buy-tickets-form {
     margin: 0; /* Remove margin around the form */
     display: inline; /* Keeps form inline with the button */
 }
+
+.take-me-button-member{
+    display: inline-block;
+    text-decoration: none;
+    background: var(--primary-color);
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    color: var(--text-color);
+    padding: 1rem 6rem; /* 10px 20px equivalent */
+    font-size: 3rem;
+    border-radius: 1em;
+	box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
+	transition: all 0.3s ease-in-out;
+	margin-top: 2rem;
+    text-align: center;
+}
+
+.take-me-button-member:hover {
+    background: var(--hover-color);
+}

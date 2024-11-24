@@ -3,10 +3,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\Event;
 use App\Models\Tag;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {   
@@ -14,11 +16,76 @@ class EventController extends Controller
 	{
         // Get the event card.
         $event = Event::findOrFail($event_id);
-        
         return view('pages.event', [
             'event' => $event
         ]);
     }
+
+    public function refundTicket(string $ticket_id)
+    {   
+        try {
+            $ticket = Ticket::findOrFail($ticket_id);
+            $ticket->delete();
+            return redirect()->route('tickets')->with('success', "Ticket #'{$ticket_id}' refunded successfully!");
+        }
+        catch (\Exception $e) {
+            return redirect()->route('tickets')->with('error', "Failed to refund the ticket.");
+        }   
+    }
+
+
+    public function deleteEvent(string $event_id)
+    {
+        try {
+            // Fetch the event
+            $event = Event::findOrFail($event_id);
+
+            // Debug: Check if event is valid
+            if (!$event) {
+                return redirect()->route('your-events')->with('error', "Event not found.");
+            }
+
+            // Validate event date
+            if (!$event->event_date || Carbon::parse($event->event_date)->isPast()) {
+                return redirect()->route('your-events')->with('error', "Cannot delete past events.");
+            }
+
+            // Attempt to delete the event
+            $event->delete();
+
+            return redirect()->route('your-events')->with('success', "Event #{$event_id} deleted successfully!");
+        } catch (\Exception $e) {
+            // Log the actual error
+            dd($e->getMessage());
+            \Log::error("Failed to delete event: {$e->getMessage()}");
+
+            return redirect()->route('your-events')->with('error', "Failed to delete the event.");
+        }
+    }
+
+
+
+    public function member_events()
+    {
+        $member = Auth::user();
+        $events = Event::where('artist_id', $member->member_id)->get();
+        return view('pages.your-events', [
+            'events' => $events,
+            'member' => $member,
+        ]);
+    }
+
+    public function editEvent(string $event_id): View 
+	{
+        $event = Event::findOrFail($event_id);
+
+        $this->authorize('edit', $event);
+
+        return view('pages.edit-event', [
+            'event' => $event
+        ]);
+    }
+
     public function participants($event_id)
     {
         $event = Event::findOrFail($event_id);
@@ -72,6 +139,30 @@ class EventController extends Controller
         }
 
         return redirect()->route('events.index')->with('success', 'Event created successfully!');
+    }
+
+    public function search(Request $request)
+    {
+        $searchTerm = $request->input('search'); // Search term from the user input
+
+        $tagsMusic = Tag::type(['Music'])->get();
+		$tagsDance = Tag::type(['Dance'])->get();
+		$tagsMood = Tag::type(['Mood'])->get();
+		$tagsSettings = Tag::type(['Settings'])->get();
+
+        // Handle the search query using PostgreSQL full-text search
+        $events = Event::select('event.*') // Select from the event table (not events)
+            ->whereRaw("to_tsvector('english', COALESCE(event_name, '')) @@ to_tsquery('english', ?)", [$searchTerm])
+            ->orWhereRaw("to_tsvector('english', COALESCE(location, '')) @@ to_tsquery('english', ?)", [$searchTerm])
+            ->get();
+
+        return view('pages.events', [
+            'events' => $events,
+            'tagsMusic' => $tagsMusic,
+            'tagsDance' => $tagsDance,
+			'tagsMood' => $tagsMood,
+			'tagsSettings' => $tagsSettings,
+        ]);
     }
 
     public function showTagsPerType()

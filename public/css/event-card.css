@@ -4,6 +4,9 @@
     border-radius: 15px;
     overflow: hidden;
     width: 300px;
+    display: flex; 
+    flex-direction: column; 
+    position: relative;
 }
 
 .event-image {

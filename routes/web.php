@@ -84,23 +84,27 @@ Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events
 Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->name('past-events');
 Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('future-events');
 
+Route::get('/events/search', [EventController::class, 'search'])->name('events.search');
+
 Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
     ->name('buy-ticket')
     ->middleware('auth');
 
 Route::post('/tickets/{ticket_id}', [TicketController::class, 'refundTicket'])->name('refund-ticket');
+Route::post('/your-events/{event_id}', [EventController::class, 'deleteEvent'])->name('delete-event');
 
+Route::middleware('auth')->group(function () {
+    Route::get('/your-events', [EventController::class, 'member_events'])->name('your-events');
+});
 Route::middleware('auth')->group(function () {
     Route::get('/tickets', [TicketController::class, 'ticketAndEventData'])->name('tickets');
 });
+
 Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
 Route::get('/event/{event_id}/participants', [EventController::class, 'participants'])->name('participants');
 
 Route::get('/edit_profile', [MemberController::class, 'edit'])->name('profile.edit');
 Route::put('/edit_profile', [MemberController::class, 'updateMember'])->name('member.profile.edit');
-
-Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events');
-
 
 
 Route::controller(LoginController::class)->group(function () {
