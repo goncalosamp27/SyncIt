@@ -88,7 +88,7 @@ Route::get('/event/{event_id}/participants', [EventController::class, 'participa
 
 Route::get('/edit_profile/{member_id}', [MemberController::class, 'edit'])->name('profile.edit');
 
-Route::get('/events', [TagController::class, 'showTagsPerType'])->name('events');
+Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events');
 
 
 
