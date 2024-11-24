@@ -9,7 +9,9 @@ use App\Models\Event;
 use App\Models\Tag;
 use App\Models\Member;
 use App\Models\Artist;
+use App\Models\EventTag;
 use Exception;
+use Carbon\Carbon;
 
 class CreateEventController extends Controller
 {
@@ -26,43 +28,65 @@ class CreateEventController extends Controller
             'settingsTags' => $settingsTags
         ]);
     }
-
     public function store(Request $request)
     {
         $eventData = $request->only([
             'event_name',
             'event_date',
-            'location',
+            'location' ,
             'description',
-            'refund',
-            'price',
             'type_of_event',
+            'refund',
+            'price' ,
             'capacity',
-            'genre',
         ]);
+        $eventTags = $request->only([
+            'music-dance',
+            'mood',
+            'setting'
+        ]);
+        // Extract event_date and event_time
+        $eventDate = $request->input('event_date');
+        $eventTime = $request->input('event_time');
+        $eventDateTime = Carbon::createFromFormat('Y-m-d H:i', "$eventDate $eventTime");
 
         $defaultImage = 'default_event.png';
+
         $member = Auth::user();
         if (!$member) {
             return response()->json(['error' => 'User is not authenticated'], 401);
         }
         if (Member::isArtist($member->member_id)) {
             try {
+                // Create and save the event
                 $event = new Event($eventData);
+                $event->event_date = $eventDateTime;
                 $event->event_media = $defaultImage;
                 $event->rating = 0;
                 $event->artist_id = Artist::getArtistIdByMemberId($member->member_id);
-
-                // Save the event to the database
                 $event->save();
-                return redirect()->route('event.show', ['id' => $event->event_id])
-                    ->with('message', 'Event created successfully');
+                try {
+                    // Add tags to the event
+                    EventTag::createEventTag($event->event_id, $eventTags['music-dance']);
+                    EventTag::createEventTag($event->event_id, $eventTags['mood']);
+                    EventTag::createEventTag($event->event_id, $eventTags['setting']);
+
+                    return redirect()->route('event', ['event_id' => $event->event_id])
+                        ->with('message', 'Event created successfully.');
+
+                } catch (Exception $e) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Failed to add tags.',
+                        'error' => $e->getMessage(),
+                    ], 500);
+                }
 
             } catch (Exception $e) {
-                return redirect()->back()->withErrors(['error' => 'Failed to create event: ' . $e->getMessage()])
-                    ->withInput(); 
+                return response()->json(['error' => 'Failed to create event: ' . $e->getMessage()], 500);
             }
         }
+
         $artistResponse = Artist::createArtist([
             'member_id' => $member->member_id,
             'rating' => 0
@@ -73,22 +97,34 @@ class CreateEventController extends Controller
         }
 
         $artist = Artist::where('artist_id', $member->member_id)->first();
+
         try {
+            // Create and save the event
             $event = new Event($eventData);
+            $event->event_date = $eventDateTime;
             $event->event_media = $defaultImage;
             $event->rating = 0;
             $event->artist_id = $artist->artist_id;
-
             $event->save();
-            return redirect()->route('event.show', ['id' => $event->event_id])
-                ->with('message', 'Event created successfully');
+            try {
+                // Add tags to the event
+                EventTag::createEventTag($event->event_id, $eventTags['music-dance']);
+                EventTag::createEventTag($event->event_id, $eventTags['mood']);
+                EventTag::createEventTag($event->event_id, $eventTags['setting']);
 
+                return redirect()->route('event', ['event_id' => $event->event_id])
+                    ->with('message', 'Event created successfully.');
+
+            } catch (Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to add tags.',
+                    'error' => $e->getMessage(),
+                ], 500);
+            }
         } catch (Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Failed to create event: ' . $e->getMessage()])
-                    ->withInput(); 
+            return response()->json(['error' => 'Failed to create event: ' . $e->getMessage()], 500);
         }
-
     }
-
 
 }
