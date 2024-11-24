@@ -8,7 +8,7 @@
 			<div class="title-edit">
 				<h1> {{ $event->event_name }} </h1>
 				@can('edit', $event)
-				<a href="{{ route('edit.event', ['event_id' => $event->event_id]) }}" class="event-button">
+				<a href="{{ route('edit.event.show', ['event_id' => $event->event_id]) }}" class="event-button">
 					Edit
 				</a>
 				@endcan

@@ -26,7 +26,7 @@ class AdminController extends Controller
         ]);
     }
     
-    public function updateMember(Request $request, $id)
+    public function updateMemberAdmin(Request $request, $id)
     {   
         $member = Member::findOrFail($id);
 
@@ -40,13 +40,14 @@ class AdminController extends Controller
         ]);
 
         $member->update($validated);
-
+        
+        
         if ($request->hasFile('profile_pic_url')) {
             $path = $request->file('profile_pic_url')->store('profiles', 'public');
             $member->profile_pic_url = $path;
             $member->save();
         }
-
-        return redirect()->route('pages.admin', $id)->with('success', 'Member updated successfully!');
+        
+        return redirect()->route('admin')->with('success', 'Member updated successfully!');
     }
 }
