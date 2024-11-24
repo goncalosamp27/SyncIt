@@ -10,7 +10,6 @@ use Illuminate\Support\Carbon;
 
 class EventController extends Controller
 {   
-	/* Show the event for a given event id */
     public function show(string $event_id): View 
 	{
         // Get the event card.
@@ -128,4 +127,16 @@ class EventController extends Controller
         ]);
     }
 
+    public function selectTickets(Event $event)
+    {
+        // Example logic to display ticket selection page
+        $userTicketCount = $event->tickets()
+            ->where('member_id', auth()->id())
+            ->count();
+
+        return view('events.select-tickets', [
+            'event' => $event,
+            'userTicketCount' => $userTicketCount,
+        ]);
+    }
 }

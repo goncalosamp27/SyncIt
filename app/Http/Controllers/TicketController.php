@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\Ticket;
 use App\Models\Event;
@@ -12,52 +13,46 @@ use App\Models\Member;
 class TicketController extends Controller {
 	public function ticketAndEventData()
     {	
-		$member = auth()->user()->load('tickets');
-        $tickets = Ticket::where('member_id', auth()->id())->get();
+		$member = Auth::user()->load('tickets');
 
-        $events = $tickets->map(function ($ticket) {
-            return $ticket->event;
-        })->filter();
+        $tickets = Ticket::where('member_id', Auth::id());
 
         return view('pages.tickets', [
             'tickets' => $tickets, 
-            'events' => $events,
-			'member' => $member,
+            'member' => $member,
         ]);
     }
-    
-    public function buyTicket(Request $request, Event $event)
+
+    public function refundTicket(string $ticket_id)
+    {   
+        try {
+            $ticket = Ticket::findOrFail($ticket_id);
+            $ticket->delete();
+            return redirect()->route('tickets')->with('success', "Ticket #'{$ticket_id}' refunded successfully!");
+        }
+        catch (\Exception $e) {
+            return redirect()->route('tickets')->with('error', "Failed to refund the ticket.");
+        }   
+    }
+
+    public function buyTicket(Request $request)
     {
-        // Validate the event and user conditions
-        $user = auth()->user(); // Get the authenticated user
-        $userTicketCount = Ticket::where('event_id', $event->id)
-            ->where('member_id', $user->id)
-            ->count();
-
-        // Check if the user has reached the ticket limit
-        if ($userTicketCount >= 10) {
-            return response()->json([
-                'message' => 'You cannot purchase more than 10 tickets for this event.'
-            ], 400); // HTTP 400 Bad Request
-        }
-
-        // Ensure the event is not expired
+        $member = Auth::user();
+        $event = Event::findOrFail($request->event_id);
         if ($event->event_date <= now()) {
-            return response()->json([
-                'message' => 'This event has already expired.'
-            ], 400);
+            return response()->json(['message' => 'This event has already expired.'], 400);
         }
-
-        // Insert the ticket into the database
+        $memberTicketCount = Ticket::where('event_id', $event->event_id)
+            ->where('member_id', $member->member_id)
+            ->count();
+        if ($memberTicketCount >= 10) {
+            return response()->json(['message' => 'You cannot purchase more than 10 tickets for this event.'], 400);
+        }
         $ticket = new Ticket();
-        $ticket->event_id = $event->id;
+        $ticket->event_id = $event->event_id;
         $ticket->ticket_date = now();
-        $ticket->member_id = $user->id;
+        $ticket->member_id = $member->member_id;
         $ticket->save();
-
-        return response()->json([
-            'message' => 'Ticket purchased successfully!',
-            'ticket_id' => $ticket->ticket_id
-        ], 201); // HTTP 201 Created
+        return redirect()->route('tickets');
     }
 }
