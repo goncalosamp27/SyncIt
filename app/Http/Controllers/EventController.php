@@ -23,7 +23,9 @@ class EventController extends Controller
     public function editEvent(string $event_id): View 
 	{
         $event = Event::findOrFail($event_id);
-        
+
+        $this->authorize('edit', $event);
+
         return view('pages.edit-event', [
             'event' => $event
         ]);
@@ -31,15 +33,14 @@ class EventController extends Controller
 
     public function participants($event_id)
     {
-        // Retrieve the event by its ID
         $event = Event::findOrFail($event_id);
     
-        // Retrieve the participants (members) of the event
+        $this->authorize('edit', $event);
+
         $participants = $event->tickets->map(function ($ticket) {
-            return $ticket->member;  // Retrieve the associated member for each ticket
+            return $ticket->member;
         });
     
-        // Return a view with the participants
         return view('pages.manage-participants', [
             'participants' => $participants
         ]);
@@ -49,8 +50,17 @@ class EventController extends Controller
 	public function create()
     {
         // Fetch all tags to populate the dropdown
-        $tags = Tag::all();
-        return view('events.create', compact('tags'));
+        $tagsMusic = Tag::type(['Music'])->get();
+		$tagsDance = Tag::type(['Dance'])->get();
+		$tagsMood = Tag::type(['Mood'])->get();
+		$tagsSettings = Tag::type(['Settings'])->get();
+
+        return view('pages.create', [
+            'musicTags' => $tagsMusic,
+            'danceTags' => $tagsDance,
+			'moodTags' => $tagsMood,
+			'settingsTags' => $tagsSettings,
+        ]);
     }
     
     public function store(Request $request)
