@@ -7,7 +7,9 @@ use Illuminate\View\View;
 
 use App\Models\Event;
 use App\Models\Tag;
-use Exception; 
+use App\Models\Member;
+use App\Models\Artist;
+use Exception;
 
 class CreateEventController extends Controller
 {
@@ -26,49 +28,67 @@ class CreateEventController extends Controller
     }
 
     public function store(Request $request)
-{
-    // Validate the form data
-    $validatedData = $request->validate([
-        'event_name' => 'required|string|max:100',
-        'event_date' => 'required|date|after_or_equal:today',
-        'location' => 'required|string|max:100',
-        'description' => 'required|string',
-        'refund' => 'required|numeric|between:0,100',
-        'price' => 'required|numeric|min:0',
-        'type_of_event' => 'required|in:Public,Private',
-        'capacity' => 'required|numeric|min:10',
-    ]);
-    $defaultImage = 'default_event.png';
-    $member = Auth::user(); 
-    try {
-        // Create a new Event instance
-        $event = new Event();
-        // Assign validated data to the event's attributes
-        $event->event_name = $validatedData['event_name'];
-        $event->event_date = $validatedData['event_date'];
-        $event->location = $validatedData['location'];
-        $event->description = $validatedData['description'];
-        $event->refund = $validatedData['refund'];
-        $event->price = $validatedData['price'];
-        $event->type_of_event = $validatedData['type_of_event'];
-        $event->capacity = $validatedData['capacity'];
-        $event->event_media = 'default_event.png'; // Default image for the event
-        $event->rating = 0; // Default rating for the event
-        $event->artist_id = $member->member_id; // Default rating for the event
-        $event-> event_media = $defaultImage;
+    {
+        $eventData = $request->only([
+            'event_name',
+            'event_date',
+            'location',
+            'description',
+            'refund',
+            'price',
+            'type_of_event',
+            'capacity',
+            'genre',
+        ]);
 
-        $event->save();
+        $defaultImage = 'default_event.png';
+        $member = Auth::user();
+        if (!$member) {
+            return response()->json(['error' => 'User is not authenticated'], 401);
+        }
+        if (Member::isArtist($member->member_id)) {
+            try {
+                $event = new Event($eventData);
+                $event->event_media = $defaultImage;
+                $event->rating = 0;
+                $event->artist_id = Artist::getArtistIdByMemberId($member->member_id);
 
-        return redirect()->route('home')->with('success', 'Event created successfully!');
-    } catch (Exception $e) {
-        // Log the error for debugging purposes
-        \Log::error('Error creating event: ' . $e->getMessage());
+                // Save the event to the database
+                $event->save();
+                return redirect()->route('event.show', ['id' => $event->event_id])
+                    ->with('message', 'Event created successfully');
 
-        // Return an error message to the user
-        return redirect()->back()->withErrors(['error' => 'An error occurred while creating the event. Please try again.']);
+            } catch (Exception $e) {
+                return redirect()->back()->withErrors(['error' => 'Failed to create event: ' . $e->getMessage()])
+                    ->withInput(); 
+            }
+        }
+        $artistResponse = Artist::createArtist([
+            'member_id' => $member->member_id,
+            'rating' => 0
+        ]);
+
+        if (isset($artistResponse['success']) && $artistResponse['success'] === false) {
+            return response()->json(['error' => 'Failed to create artist'], 500);
+        }
+
+        $artist = Artist::where('artist_id', $member->member_id)->first();
+        try {
+            $event = new Event($eventData);
+            $event->event_media = $defaultImage;
+            $event->rating = 0;
+            $event->artist_id = $artist->artist_id;
+
+            $event->save();
+            return redirect()->route('event.show', ['id' => $event->event_id])
+                ->with('message', 'Event created successfully');
+
+        } catch (Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Failed to create event: ' . $e->getMessage()])
+                    ->withInput(); 
+        }
+
     }
-}
-
 
 
 }
