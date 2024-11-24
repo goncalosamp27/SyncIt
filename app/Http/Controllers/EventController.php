@@ -50,8 +50,17 @@ class EventController extends Controller
 	public function create()
     {
         // Fetch all tags to populate the dropdown
-        $tags = Tag::all();
-        return view('events.create', compact('tags'));
+        $tagsMusic = Tag::type(['Music'])->get();
+		$tagsDance = Tag::type(['Dance'])->get();
+		$tagsMood = Tag::type(['Mood'])->get();
+		$tagsSettings = Tag::type(['Settings'])->get();
+
+        return view('pages.create', [
+            'musicTags' => $tagsMusic,
+            'danceTags' => $tagsDance,
+			'moodTags' => $tagsMood,
+			'settingsTags' => $tagsSettings,
+        ]);
     }
     
     public function store(Request $request)
