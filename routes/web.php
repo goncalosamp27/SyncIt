@@ -83,8 +83,7 @@ Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
     ->name('buy-ticket')
     ->middleware('auth');
 
-Route::delete('/event/refund-ticket', [TicketController::class, 'refundTicket'])
-    ->name('refund-ticket'); 
+Route::post('/tickets/{ticket_id}', [TicketController::class, 'refundTicket'])->name('refund-ticket');
 
 Route::middleware('auth')->group(function () {
     Route::get('/tickets', [TicketController::class, 'ticketAndEventData'])->name('tickets');

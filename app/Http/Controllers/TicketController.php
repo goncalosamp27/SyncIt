@@ -23,10 +23,10 @@ class TicketController extends Controller {
         ]);
     }
 
-    public function refundTicket(Ticket $ticket)
-    {
+    public function refundTicket(string $ticket_id)
+    {   
+        $ticket = Ticket::findOrFail($ticket_id);
         $ticket->delete();
-        
         return redirect()->route('tickets');
     }
 
