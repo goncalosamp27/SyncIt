@@ -46,6 +46,11 @@
 				<!-- Menu Links -->
 				<a href="{{ route('admin') }}">Admin Panel</a>
 				<a href="{{ route('profile.edit') }}">Edit Profile</a>
+				
+				@if(Auth::user()->isArtist(Auth::user()->member_id))
+					<a href="{{ route('artist', ['artist_id' => Auth::user()->member_id]) }}">Artist page</a>
+				@endif			
+					
 				<a href="{{ route('tickets') }}">My Tickets</a>
 				<a href="">My Events</a>
 				<a href="">Reset Password</a>
