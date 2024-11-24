@@ -8,6 +8,11 @@
     text-align: center;
 }
 
+.create-page {
+    width: 50%;
+    margin:auto;
+}
+
 .create-event h1 {
     font-size: 1.8rem;
     /* Slightly smaller font */
