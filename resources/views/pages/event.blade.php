@@ -54,11 +54,11 @@
 					</form>
 					</div>	
 
-				@elseif ($userTicketCount == 10)
-					<button type="submit" class="disabled-btn" disa>Ticket Limit Reached</button>
+				@elseif ($userTicketCount >= 10)
+					<button type="submit" class="buy-tickets-btn" disabled>Ticket Limit Reached</button>
 
 				@elseif ($eventType == 'Private')
-					<button type="submit" class="disabled-btn">Private Event</button>	
+					<button type="submit" class="buy-tickets-btn" disabled>Private Event</button>	
 
 				@else			
 				<form action="{{ route('buy-ticket') }}" method="POST">
