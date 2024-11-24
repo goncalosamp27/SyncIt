@@ -8,17 +8,55 @@ use App\Models\Event;
 use App\Models\Tag;
 use Illuminate\Support\Carbon;
 
-class EventController extends Controller
+class EditEventController extends Controller
 {   
     public function show(string $event_id): View 
 	{
         // Get the event card.
         $event = Event::findOrFail($event_id);
         
-        return view('pages.event', [
+        return view('pages.edit-event', [
             'event' => $event
         ]);
     }
+
+    public function editEvent(Request $request, string $event_id) 
+	{
+        $event = Event::findOrFail($event_id);
+        // Validate inputs
+        $validated = $request->validate([
+            'event_name' => 'required|string|max:100',
+            'event_date' => 'required|date|after_or_equal:tomorrow',
+            'event_time' => 'required|date_format:H:i',  
+            'location' => 'required|string|max:100',
+            'description' => 'required|string',
+            'refund' => 'required|numeric|between:0,100',  
+            'price' => 'required|numeric|min:0',  
+            'type_of_event' => 'required|in:Public,Private',  
+            'rating' => 'required|numeric|between:0,5',
+            'capacity' => 'required|numeric|min:10',
+            'event_media' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+        $defaultImage = 'default_event.png';
+
+        $event->update($validated);
+        $eventDate = $request->input('event_date');
+        $eventTime = $request->input('event_time');
+        $eventDateTime = Carbon::createFromFormat('Y-m-d H:i', "$eventDate $eventTime");
+
+        if ($request->hasFile('event_media')) {
+            $path = $request->file('event_media')->store('events', 'public');
+            $event->event_media= $path;
+            
+        }
+        else {
+            $event->event_media= $defaultImage;
+        }
+        $event->event_date = $eventDateTime;
+            $event->save();
+        return redirect()->route('event', ['event_id' => $event_id])->with('success', 'Member updated successfully!');
+    }
+
     public function participants($event_id)
     {
         $event = Event::findOrFail($event_id);
@@ -33,7 +71,6 @@ class EventController extends Controller
             'participants' => $participants
         ]);
     }
-
 
 	public function create()
     {
