@@ -13,7 +13,10 @@
 	<div class="navbar-center">
 		<div class="search-bar">
 			<span class="search-icon">🔍</span>
-			<input type="text" placeholder="Search for events, artists, genres, cities..." />
+			<form method="GET" action="{{ route('events.search') }}">
+				<input type="text" name="search" placeholder="Search for events, artists, genres, cities..." value="{{ request('search') }}">
+				<button type="submit">Search</button>
+			</form>
 		</div>
 		<a href="{{ route('events') }}" class="explore-btn">Explore</a>
 	</div>	
@@ -50,7 +53,7 @@
 				@if(Auth::user()->isArtist(Auth::user()->member_id))
 					<a href="{{ route('artist', ['artist_id' => Auth::user()->member_id]) }}">Artist page</a>
 				@endif			
-					
+
 				<a href="{{ route('tickets') }}">My Tickets</a>
 				<a href="">My Events</a>
 				<a href="">Reset Password</a>
