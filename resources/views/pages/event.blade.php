@@ -26,20 +26,37 @@
 			@endphp
 
 			<div class="ticket-buttons">
+
+				@if($userTicketCount < 10 && $userTicketCount >= 1)
+					<div class="button-container">
+					<button class="purchased-btn">
+						Tickets Purchased: {{ $userTicketCount }}
+					</button>
+					<form action="{{ route('buy-ticket') }}" method="POST">
+						@csrf
+						<input type="hidden" name="event_id" value="{{ $event->event_id }}">
+						<button class="buy-tickets-btn2">
+							Get More Tickets - {{ $event->price }}€
+						</button>
+					</form>
+					</div>	
+
+				@elseif ($userTicketCount == 10)
+					<button type="submit" class="disabled-btn">Ticket Limit Reached</button>
+
+				@else			
 				<form action="{{ route('buy-ticket') }}" method="POST">
 					@csrf
 					<input type="hidden" name="event_id" value="{{ $event->event_id }}">
-					<button type="submit" class="buy-tickets-btn 
-						{{ $eventExpired ? 'disabled-btn' : '' }} 
-						{{ $userTicketCount > 0 ? 'purchased-btn' : '' }}"	  
-						{{ $eventExpired ? 'disabled' : '' }}>
+					<button type="submit" class="buy-tickets-btn {{ $eventExpired ? 'disabled-btn' : '' }}"	  
+					{{ $eventExpired ? 'disabled' : '' }}>
+
 						@if ($eventExpired)
 							Event Expired
-						@elseif ($userTicketCount > 0)
-							Tickets Purchased: {{ $userTicketCount }} {{ Str::plural('Ticket', $userTicketCount) }}
 						@else
 							Get Tickets - {{ $event->price }}€
 						@endif
+				@endif		
 					</button>
 				</form>
 			</div>

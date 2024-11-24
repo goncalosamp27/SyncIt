@@ -1,5 +1,6 @@
 --show search_path;
-ALTER ROLE postgres SET search_path TO thingy;
+--ALTER ROLE postgres 
+SET search_path TO thingy;
 
 DROP TABLE IF EXISTS member CASCADE;
 DROP TABLE IF EXISTS artist CASCADE;
@@ -188,7 +189,7 @@ CREATE TABLE ticket (
     ticket_id SERIAL PRIMARY KEY,
     event_id INT NOT NULL,
     ticket_date TIMESTAMP NOT NULL CHECK (ticket_date >= CURRENT_DATE),
-    member_id INT NOT NULL UNIQUE,
+    member_id INT NOT NULL,
     FOREIGN KEY (event_id) REFERENCES event(event_id),
     FOREIGN KEY (member_id) REFERENCES member(member_id)
 );
