@@ -29,7 +29,7 @@ class RegisterController extends Controller
             'username' => 'required|alpha_num|min:3|max:50',
             'display_name' => 'required|regex:/^[A-Za-z0-9_ ]+$/|min:3|max:50',
             'email' => 'required|email|unique:member,email',
-            'password' => 'required|min:8|max:100',
+            'password' => 'required|min:8|max:100|confirmed',
             'bio' => 'nullable|regex:/^[A-Za-z0-9_.,?!\s]*$/|max:200',
             'profile_pic_url' => 'nullable|url|max:200',
         ]);

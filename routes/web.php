@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\CreateEventController;
+use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\ArtistController;
@@ -62,7 +63,7 @@ Route::get('/events/create', [EventController::class, 'create'])->name('events.c
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
 
 
-Route::get('/event/{id}', [EventController::class, 'show']);
+Route::get('/event/{id}', [EventController::class, 'show'])->name('event.show');;
 
 Route::get('/events', [TagController::class, 'showTagsPerType']);
 
@@ -79,4 +80,7 @@ Route::controller(RegisterController::class)->group(function () {
 });
 
 Route::get('/create', [CreateEventController::class, 'show'])->name('create.show');
-Route::post('/create', [CreateEventController::class, 'store'])->name('create.store');
+Route::post('/create', [CreateEventController::class, 'store'])
+    ->middleware('auth')
+    ->name('create.store');
+

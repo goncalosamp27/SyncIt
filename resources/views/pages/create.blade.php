@@ -155,6 +155,7 @@
             </div>
         </div>
         <!-- File Upload -->
+         <!--
         <div class="create-event-input">
             <label for="event_files" class="form-label">Upload Media</label>
             <input type="file" id="event_files">
@@ -168,6 +169,7 @@
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
+        -->
 
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary" >Create Event</button>
