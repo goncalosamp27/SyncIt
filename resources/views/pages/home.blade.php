@@ -6,12 +6,9 @@
 			<h1>Create <span class="highlighter">Your Own Show!</span></h1>
 			<h2><span class="highlighter">Steal the Spotlight</span></h2>
 			<p>And <span class="highlighter">Show</span> the World your <span class="highlighter">Talent</span></p>
+			
+			<a class="take-me-button" href="{{ route('events.create') }}">Get Started!</a>
 
-			@if (Auth::check())
-				<a class="take-me-button" href="{{ url('/create') }}">Get Started!</a>
-			@else
-				<a class="take-me-button" href="{{ url('/login') }}">Get Started!</a>
-			@endif	
 		</div>
 		<div class="slogan-container-image">
 			<img src="{{ asset('storage/home_dj.jpg') }}" alt="Placeholder">
