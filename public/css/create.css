@@ -188,6 +188,17 @@ select {
     border-color: var(--primary-color);
     box-shadow: 0 0 5px var(--primary-color);
 }
+.create-event-input input[type="time"] {
+    width: 100%;
+    padding: 0.7rem; /* Reduced padding */
+    font-size: 1.5rem; /* Slightly smaller font size */
+    border: 1px solid var(--gray-color);
+    border-radius: 5px;
+    background-color: var(--background-color);
+    color: var(--white-color);
+    outline: none;
+    transition: all 0.3s ease;
+}
 
 #create-event-input #file-error {
     margin-top: 0.5rem;
