@@ -52,7 +52,7 @@ class EventController extends Controller
         $tags = Tag::all();
         return view('events.create', compact('tags'));
     }
-
+    
     public function store(Request $request)
     {
         // Use validation from the Event model

@@ -3,12 +3,14 @@
 /* Container for the Event Form */
 .create-event {
     margin: 0rem auto;
-    max-width: 70rem; /* Reduced width */
+    max-width: 70rem;
+    /* Reduced width */
     text-align: center;
 }
 
 .create-event h1 {
-    font-size: 1.8rem; /* Slightly smaller font */
+    font-size: 1.8rem;
+    /* Slightly smaller font */
     margin-bottom: 1rem;
     color: #fff;
     text-transform: uppercase;
@@ -16,29 +18,36 @@
 }
 
 .purple-line2 {
-    width: 80%; /* Adjusted width to align with compact layout */
+    width: 80%;
+    /* Adjusted width to align with compact layout */
     height: 4px;
     background-color: var(--primary-color);
-    margin: 0.5rem auto; /* Reduced margin */
+    margin: 0.5rem auto;
+    /* Reduced margin */
 }
 
 /* Form Wrapper */
 .create-event-form {
     background-color: var(--black-color);
-    padding: 1.5rem; /* Reduced padding */
+    padding: 1.5rem;
+    /* Reduced padding */
     border-radius: 8px;
     box-shadow: 0 0rem 0.5rem rgba(0, 0, 0, 0.8);
-    margin: 1.5rem auto; /* Adjusted margin */
-    max-width: 70rem; /* Same as the container */
-	margin-bottom: 5rem;
+    margin: 1.5rem auto;
+    /* Adjusted margin */
+    max-width: 70rem;
+    /* Same as the container */
+    margin-bottom: 5rem;
 }
 
 /* Input Fields */
-.create-event-input {
+.create-event-input,
+.create-event-input-inline {
     margin-bottom: 1.5rem; /* Reduced spacing */
 }
 
-.create-event-input label {
+.create-event-input label,
+.create-event-input-inline label {
     display: block;
     font-size: 0.9rem; /* Slightly smaller labels */
     margin-bottom: 0.4rem; /* Reduced margin */
@@ -60,12 +69,31 @@
     transition: all 0.3s ease;
 }
 
-.create-event-input input:focus,
-.create-event-input textarea:focus,
-.create-event-input select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 4px var(--primary-color); /* Reduced shadow size */
+/* Global Select Styling for All select Elements */
+.create-event-input select {
+    font-size: 1.2rem; /* Slightly smaller font size */
+    padding: 0.6rem; /* Reduced padding */
+    width: 100%; /* Ensures the select dropdown stretches to fill the space */
+    border-radius: 5px;
+    background-color: var(--background-color);
+    color: var(--white-color);
+    border: 1px solid var(--gray-color);
+    outline: none;
 }
+
+/* Inline Layout for Music/Dance, Mood, Setting */
+.create-event-input-inline {
+    display: flex;
+    gap: 1rem; /* Space between fields */
+    justify-content: space-between;
+    margin-bottom: 1.5rem; /* Match existing spacing */
+}
+
+.create-event-input-inline > div {
+    flex: 1; /* Ensures equal width for all items */
+    min-width: 12rem; /* Minimum width to prevent shrinking too much */
+}
+
 
 /* Error Message */
 .text-danger {
@@ -74,14 +102,26 @@
     margin-top: 0.3rem; /* Reduced spacing */
 }
 
+.create-event-input-inline select {
+    font-size: 1.2rem; /* Slightly smaller font size */
+    padding: 0.6rem; /* Reduced padding */
+    width: 100%; /* Ensures the select dropdown stretches to fill the space */
+    border-radius: 5px;
+    background-color: var(--background-color);
+    color: var(--white-color);
+    border: 1px solid var(--gray-color);
+    outline: none;
+}
 /* Button Styling */
 .btn-primary {
-	margin-top: 3rem;
-	margin-bottom: 1rem;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
     display: block;
     width: 100%;
-    padding: 0.8rem; /* Reduced padding */
-    font-size: 1rem; /* Reduced font size */
+    padding: 0.8rem;
+    /* Reduced padding */
+    font-size: 1rem;
+    /* Reduced font size */
     font-weight: bold;
     text-transform: uppercase;
     color: var(--white-color);
@@ -94,7 +134,8 @@
 
 .btn-primary:hover {
     background-color: var(--hover-color);
-    transform: scale(1.01); /* Slightly reduced hover effect */
+    transform: scale(1.01);
+    /* Slightly reduced hover effect */
 }
 
 /* Additional Styling */
@@ -103,10 +144,12 @@ textarea {
 }
 
 select {
-    appearance: none; /* For consistent dropdown styling */
+    appearance: none;
+    /* For consistent dropdown styling */
 }
 
-.create-event-input select {
+.create-event-input select,
+.create-event-input-inline select {
     background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"%3E%3Cpath fill="var(--gray-color)" d="M2 0L0 2h4z"/%3E%3C/svg%3E');
     background-repeat: no-repeat;
     background-position: right 10px center;
@@ -114,7 +157,8 @@ select {
 }
 
 .create-event-input select[multiple] {
-    height: auto; /* Adjust height for multiple select */
+    height: auto;
+    /* Adjust height for multiple select */
     min-height: 120px;
     background-color: var(--background-color);
     border: 1px solid var(--gray-color);
@@ -149,4 +193,39 @@ select {
     margin-top: 0.5rem;
     font-size: 0.9rem;
     color: var(--hover-color);
+}
+
+/* Inline Layout for Tag Selection (Main Tag, Mood, Setting) in One Row */
+.create-event-input-inline {
+    display: flex;
+    gap: 1rem;
+    /* Space between items */
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    /* Match existing spacing */
+}
+
+.create-event-input-inline>div {
+    flex: 1;
+    /* Ensures equal width for all items */
+    min-width: 12rem;
+    /* Slightly smaller minimum width */
+}
+
+/* Small-sized Select Elements */
+.create-event-input-inline select {
+    font-size: 1.2rem;
+    /* Smaller font size */
+    padding: 0.6rem;
+    /* Reduced padding */
+    width: 100%;
+    /* Ensures select dropdown stretches to fill the space */
+}
+
+/* Ensuring consistency for all select elements */
+.create-event-input select {
+    border-radius: 5px;
+    background-color: var(--background-color);
+    color: var(--white-color);
+    border: 1px solid var(--gray-color);
 }
