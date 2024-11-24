@@ -43,7 +43,6 @@
   }
 
   .event-page-info h1 {
-    display: -webkit-box;
     -webkit-line-clamp: 2; /* Show only 2 lines */
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -255,19 +254,185 @@
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow remains */
 }
 
-.buy-more-tickets-btn {
+.buy-tickets-btn {
     background-color: var(--primary-color);
-    color: var(--white-color);
-    padding: 1rem; /* Responsive padding */
-    border-radius: 2rem; /* Consistent with rem units */
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 1.5rem; /* Scalable font size */
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.buy-tickets-btn:hover {
+    background-color: var(--hover-color);
+    transform: scale(1.05);
+}
+
+.buy-tickets-btn:disabled {
+    background-color: gray;
+    color: lightgray;
+    cursor: not-allowed;
+}
+
+.buy-more-tickets-btn {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
     margin-left: 1rem;
+    text-decoration: none;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .buy-more-tickets-btn:hover {
     background-color: var(--hover-color);
     transform: scale(1.05);
+}
+
+/* Edit Button */
+.event-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: var(--primary-color); /* Green background */
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    text-decoration: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, transform 0.2s ease;
+    margin-top: 1rem; /* Adds some space at the top */
+}
+
+.event-button:hover {
+    background-color: var(--hover-color); /* Slightly darker green on hover */
+}
+
+.title-edit {
+    display: flex;
+    justify-content: space-between; /* To place the event name and edit button on opposite sides */
+    align-items: center;
+}
+
+.remove-participant {
+    background-color: var(--primary-color); /* Replace with your primary color */
+    color: var(--text-color); /* Text color */
+    border: none;
+    border-radius: 8px; /* Rounded edges */
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.remove-participant:hover {
+    background-color: var(--hover-color); /* Hover color */
+    transform: scale(1.05); /* Slight zoom on hover */
+}
+
+.remove-participant:active {
+    background-color: var(--active-color); /* Active color when clicked */
+    transform: scale(0.95); /* Slight shrink on click */
+}
+
+
+
+
+.participants-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.add-participant-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.add-participant-btn {
+    background-color: var(--primary-color); /* Adjust to site theme */
+    color: white;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.admin_page .search-bar-container {
+    display: none;
+    margin-left: 0.5rem;
+}
+
+.admin_page .search-bar-container.active {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.admin_page .search-bar-input {
+    color: var(--black-color);
+    width: 150px;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.admin_page .search-submit-btn {
+    background-color: var(--primary-color); /* Adjust to site theme */
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Container for both buttons */
+.button-container {
+    margin-top: 2rem;
+    display: flex; /* Align buttons next to each other */
+    gap: 1rem; /* Adds space between buttons (relative to root font size) */
+    align-items: center; /* Ensures vertical alignment */
+}
+
+/* General button styling to make them the same size */
+button.purchased-btn,
+button.buy-tickets-btn2 {
+    padding: 0.75em 1.5em; /* Relative padding based on font size */
+    font-size: 1rem; /* Scalable font size */
+    border-radius: 2rem; /* Rounded corners */
+    font-weight: bold;
+    background-color: var(--primary-color);
+    color: white; /* White text color */
+    cursor: pointer; /* Pointer on hover */
+    flex: 1; /* Ensures equal width for buttons */
+    text-align: center; /* Centers text inside buttons */
+    min-width: 10rem; /* Optional: Ensures a minimum width for consistency */
+    border-style: none;
+}
+
+button.purchased-btn{
+    color:var(--black-color);
+    background-color: gold;
+}
+
+/* Button hover effect */
+button.buy-tickets-btn2:hover {
+    background-color: var(--hover-color); /* Darker blue for hover effect */
+}
+
+/* Ensure the form doesn't break alignment */
+form.buy-tickets-form {
+    margin: 0; /* Remove margin around the form */
+    display: inline; /* Keeps form inline with the button */
 }
