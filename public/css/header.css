@@ -10,6 +10,7 @@ body {
     font-family: Arial, sans-serif;
 }
 
+/* Navigation Bar */
 .navbar {
     z-index: 3;
     position: fixed;
@@ -94,8 +95,8 @@ body {
     align-items: center;
     background-color: var(--gray-color);
     border-radius: 2rem;
-    width: 120%; /* Responsive width */
-    max-width: 32rem; /* Restrict maximum size */
+    width: 120%;
+    max-width: 32rem;
     padding: 0.5rem 1rem;
     margin: 0 1rem;
     text-align: left;
@@ -160,54 +161,84 @@ body {
 }
 
 
-
-
-
+/* Side Menu */ 
 /* Side Menu Styles */
 .side-menu {
-	height: 100%;
-	width: 0;
-	position: fixed;
-	top: 0;
-	left: 0;
-	background-color: #333;
-	overflow-x: hidden;
-	transition: 0.3s;
-	padding-top: 3rem;
-	z-index: 1000;
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #333;
+    overflow-x: hidden;
+    transition: 0.3s;
+    padding-top: 2rem;
+    z-index: 1000;
 }
 
 .side-menu a {
-	padding: 1rem 1.5rem;
-	text-decoration: none;
-	font-size: 1.5rem;
-	color: #fff;
-	display: block;
-	transition: 0.2s;
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    font-size: 1.2rem;
+    color: var(--text-color);
+    display: block;
+    transition: 0.2s;
 }
 
 .side-menu a:hover {
-	color: #6c63ff; /* Adjust to site theme */
+    color: var(--primary-color); /* Adjust to match your site theme */
 }
 
 .side-menu .close-btn {
-	position: absolute;
-	top: 1rem;
-	right: 1.5rem;
-	font-size: 2rem;
-	color: #fff;
-	cursor: pointer;
+    position: absolute;
+    top: 0.1rem;
+    right: 0.1rem;
+    font-size: 2rem;
+    color: #fff;
+    cursor: pointer;
 }
 
+/* User Info Styles */
+.side-menu .user-info {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #555;
+    padding-bottom: 1rem;
+    
+}
+
+.side-menu .user-info .profile-pic {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 0.5rem;
+    border: 2px solid #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.side-menu .user-info h3 {
+    margin: 0.5rem 0;
+    color: #fff;
+    font-size: 1.4rem;
+}
+
+.side-menu .user-info p {
+    margin: 0.2rem 0;
+    color: #ccc;
+    font-size: 1rem;
+}
+
+/* Menu Icon Styles */
 .menu-icon {
-	background: none;
-	border: none;
-	font-size: 2rem;
-	color: #333;
-	cursor: pointer;
-	transition: color 0.3s ease;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.3s ease;
 }
 
 .menu-icon:hover {
-	color: #6c63ff;
+    color: #6c63ff;
 }
