@@ -11,13 +11,10 @@
 	</div>
 
 	<div class="navbar-center">
-		<div class="search-bar">
-			<span class="search-icon">🔍</span>
-			<form method="GET" action="{{ route('events.search') }}">
-				<input type="text" name="search" placeholder="Search for events, artists, genres, cities..." value="{{ request('search') }}">
-				<button type="submit">Search</button>
+			<form method="GET" action="{{ route('events.search') }}" class="search-bar">
+				<input type="text" name="search" placeholder="Search for events or locations..." value="{{ request('search') }}">
+				<button class="search-btn" type="submit">Search</button>
 			</form>
-		</div>
 		<a href="{{ route('events') }}" class="explore-btn">Explore</a>
 	</div>	
 
