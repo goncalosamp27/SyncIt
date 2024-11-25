@@ -40,6 +40,7 @@ Route::controller(AdminController::class)->middleware('admin')->group(function (
     Route::get('admin/search', 'search')->name('members.search');
     Route::get('admin/edit/member/{id}', 'getMember')->name('admin.edit.member');
     Route::put('admin/edit/member/{id}', 'updateMemberAdmin')->name('member.updates');
+    //Route::get('admin/')->name('create.member');
 });
 
 Route::controller(EventController::class)->group(function () {

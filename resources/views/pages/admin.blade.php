@@ -2,7 +2,11 @@
 
 @section('content')
     <div class="admin_page">
+        <div class="participants-header">
+
         <h1> Member search </h1>
+        <button class="add-participant-btn" onclick="{{ route('create.member') }}">➕</button>
+        </div>
 
 		<form method="GET" action="{{ route('members.search') }}" class="search-bar">
 				<button type="submit" class="search-button">🔍</button>
