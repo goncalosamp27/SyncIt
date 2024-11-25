@@ -30,93 +30,132 @@ class CreateEventController extends Controller
     }
     public function store(Request $request)
     {
-        // Validate the request data
         $validated = $request->validate([
+            // Event data validation rules
             'event_name' => 'required|string|max:255',
             'event_date' => 'required|date|after_or_equal:today',
-            'event_time' => 'required|date_format:H:i',
             'location' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'type_of_event' => 'required|string|max:100',
-            'refund' => 'required|numeric|between:0,100',
+            'type_of_event' => 'required|string|max:100', // Specify allowed event types
+            'refund' => 'required|numeric|between:0,100', 
             'price' => 'required|numeric|min:0',
             'event_files' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'capacity' => 'required|integer|min:10',
+    
+            // Event tags validation rules
             'music-dance' => 'nullable|numeric',
             'mood' => 'nullable|numeric',
             'setting' => 'nullable|numeric',
         ]);
-    
-        // Extract data from the request
+
         $eventData = $request->only([
             'event_name',
             'event_date',
-            'location',
+            'location' ,
             'description',
             'type_of_event',
             'refund',
-            'price',
+            'price' ,
+            'event_media',
             'capacity',
         ]);
-    
-        $eventTags = $request->only(['music-dance', 'mood', 'setting']);
-    
-        // Combine event_date and event_time into a DateTime object
+        $eventTags = $request->only([
+            'music-dance',
+            'mood',
+            'setting'
+        ]);
+        // Extract event_date and event_time
         $eventDate = $request->input('event_date');
         $eventTime = $request->input('event_time');
-        $eventDateTime = "$eventDate $eventTime";
-    
-        // Authenticate the member
+        $eventDateTime = Carbon::createFromFormat('Y-m-d H:i', "$eventDate $eventTime");
+        $defaultImage = 'default_event.png';
+
         $member = Auth::user();
         if (!$member) {
             return response()->json(['error' => 'User is not authenticated'], 401);
         }
-    
-        // Check if the member is an artist
-        if (!Member::isArtist($member->member_id)) {
-            // If not, create an artist profile for the member
-            $artistResponse = Artist::createArtist([
-                'member_id' => $member->member_id,
-                'rating' => 0,
-            ]);
-    
-            if (!$artistResponse['success'] ?? true) {
-                return response()->json(['error' => 'Failed to create artist'], 500);
+        if (Member::isArtist($member->member_id)) {
+            try {
+                // Create and save the event
+                $event = new Event($eventData);
+                if ($request->hasFile('event_files')) {
+                    $path = $request->file('event_files')->store('events', 'public');
+                    $event->event_media = basename($path);
+                }
+                else{
+                    $event->event_media = $defaultImage;
+                }
+                $event->event_date = $eventDateTime;
+                $event->rating = 0;
+                $event->artist_id = Artist::getArtistIdByMemberId($member->member_id);
+                $event->save();
+                try {
+                    // Add tags to the event
+                    EventTag::createEventTag($event->event_id, $eventTags['music-dance']);
+                    EventTag::createEventTag($event->event_id, $eventTags['mood']);
+                    EventTag::createEventTag($event->event_id, $eventTags['setting']);
+
+                    return redirect()->route('event', ['event_id' => $event->event_id])
+                        ->with('message', 'Event created successfully.');
+
+                } catch (Exception $e) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Failed to add tags.',
+                        'error' => $e->getMessage(),
+                    ], 500);
+                }
+
+            } catch (Exception $e) {
+                return response()->json(['error' => 'Failed to create event: ' . $e->getMessage()], 500);
             }
         }
-    
-        // Fetch the artist ID
-        $artistId = Artist::getArtistIdByMemberId($member->member_id);
-    
-        // Create the event
+
+        $artistResponse = Artist::createArtist([
+            'member_id' => $member->member_id,
+            'rating' => 0
+        ]);
+
+        if (isset($artistResponse['success']) && $artistResponse['success'] === false) {
+            return response()->json(['error' => 'Failed to create artist'], 500);
+        }
+
+        $artist = Artist::where('artist_id', $member->member_id)->first();
+
         try {
+            // Create and save the event
             $event = new Event($eventData);
-            $event->event_media = 'default_event.png';
-            // Handle the file upload if provided
-            if ($request->hasFile('event_files')) {
-                $path = $request->file('event_files')->store('profiles', 'public');
-                $event->event_media = basename($path);
-            }
-    
-            // Assign event-specific data
+            $event = new Event($eventData);
+                if ($request->hasFile('event_files')) {
+                    $path = $request->file('event_files')->store('events', 'public');
+                    $event->event_media = basename($path);
+                }
+                else{
+                    $event->event_media = $defaultImage;
+                }
             $event->event_date = $eventDateTime;
             $event->rating = 0;
-            $event->artist_id = $artistId;
+            $event->artist_id = $artist->artist_id;
             $event->save();
-    
-            // Add tags to the event
-            foreach ($eventTags as $tag) {
-                if ($tag) {
-                    EventTag::createEventTag($event->event_id, $tag);
-                }
+            try {
+                // Add tags to the event
+                EventTag::createEventTag($event->event_id, $eventTags['music-dance']);
+                EventTag::createEventTag($event->event_id, $eventTags['mood']);
+                EventTag::createEventTag($event->event_id, $eventTags['setting']);
+
+                return redirect()->route('event', ['event_id' => $event->event_id])
+                    ->with('message', 'Event created successfully.');
+
+            } catch (Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to add tags.',
+                    'error' => $e->getMessage(),
+                ], 500);
             }
-    
-            return redirect()->route('event', ['event_id' => $event->event_id])
-                ->with('message', 'Event created successfully.');
         } catch (Exception $e) {
             return response()->json(['error' => 'Failed to create event: ' . $e->getMessage()], 500);
         }
     }
-    
 
 }

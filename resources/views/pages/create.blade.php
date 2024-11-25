@@ -17,7 +17,7 @@
 </div>
 
 <div class="create-event-form">
-    <form method="POST" action="{{ route('create.store') }}">
+    <form method="POST" action="{{ route('create.store') }}" enctype="multipart/form-data">
         @csrf
         <!-- Event Name -->
         <div class="create-event-input">
@@ -169,7 +169,7 @@
     
         <div class="create-event-input">
             <label for="event_files" class="form-label">Upload Media</label>
-            <input type="file" id="event_files">
+            <input type="file" id="event_files" name="event_files">
             <small class="form-text text-muted">
                 You can upload up to 1 image.
             </small>
