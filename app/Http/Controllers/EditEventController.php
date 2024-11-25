@@ -6,6 +6,7 @@ use Illuminate\View\View;
 
 use App\Models\Event;
 use App\Models\Tag;
+use App\Models\Ticket;
 use Illuminate\Support\Carbon;
 
 class EditEventController extends Controller
@@ -68,6 +69,22 @@ class EditEventController extends Controller
             'event' => $event,
             'tickets' => $tickets
         ]);
+    }
+
+    public function deleteParticipant($event_id, $ticket_id)
+    {
+        try 
+        {
+            $ticket = Ticket::findOrFail($ticket_id);
+            $member = $ticket->member; 
+            $ticket->delete();
+            return redirect()->route('event', ['event_id' => $event_id ])->with('success', "'{$member->username}'s Ticket #'{$ticket_id}' deleted successfully!");
+        }
+
+        catch (\Exception $e) 
+        {
+            return redirect()->route('event', ['event_id' => $event_id ])->with('error', "Failed to delete '{$member->username}'s ticket.");
+        }   
     }
 
 	public function create()
