@@ -91,5 +91,4 @@ class Event extends Model
         }
         return self::create($data);
     }
-    
 }

@@ -1,0 +1,79 @@
+@import url('variables.css');
+
+.invitation-card{
+	margin-top: 2rem;
+    background-color: #f9f9f9;
+    height: auto; /* Adjusts height based on content */
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 1.5rem;
+    border-color: var(--black-color);
+    border-width: 0.4rem;
+    border-style: solid;
+    box-shadow: 0 0 0.5rem var(--primary-color);
+    display: flex;
+    flex-wrap: wrap; /* Allows content to wrap if it overflows */
+    gap: 1rem;
+    overflow: hidden; /* Ensures content doesn't overflow */
+}
+
+.invitation-card > div {
+    flex: 1;
+    color: var(--black-color);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2rem;
+    font-size: 1.2rem;
+    border-radius: 1rem;
+    box-sizing: border-box; /* Includes padding in the size */
+}
+
+.invitation-date{
+		font-size: 1.5rem;
+		font-weight: bold;
+		color: var(--hover-color);
+}
+.invitation-text {
+    width: 100%; /* Adjust as needed for layout */
+    max-width: 100%; /* Prevent overflowing parent container */
+    overflow-wrap: break-word; /* Break long words to prevent overflow */
+    word-wrap: break-word; /* Legacy support for older browsers */
+    white-space: normal; /* Allow text to wrap normally */
+    overflow: hidden; /* Prevent content overflow */
+    text-overflow: ellipsis; /* Optional: Add ellipsis for trimmed overflow (use only if truncation is desired) */
+	color: var(--black-color);
+	font-size: 1.2rem;
+	font-weight: bold;
+	text-align:justify;
+}
+.delete-notification-button{
+	width: 100%;
+    margin-top: 0rem;
+    margin-left: auto;
+    margin-right: auto;
+    align-self: flex-start;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: var(--hover-color);
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+	position: relative;
+	margin-top: 10rem;
+}
+
+.invitation-username{
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: var(--primary-color);
+}
+
+.invitation-event-card{
+	margin-left: auto;
+	margin-right: auto;
+}

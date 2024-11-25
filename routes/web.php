@@ -16,13 +16,6 @@ use App\Http\Controllers\EditEventController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 
-use App\Http\Controllers\Notifications\NotificationController;
-use App\Http\Controllers\Notifications\CommentNotificationController;
-use App\Http\Controllers\Notifications\FollowNotificationController;
-use App\Http\Controllers\Notifications\InvitationNotificationController;
-use App\Http\Controllers\Notifications\PollNotificationController;
-use App\Http\Controllers\Notifications\RestrictionNotificationController;
-
 use App\Models\Artist;
 
 /*
@@ -36,14 +29,13 @@ use App\Models\Artist;
 |
 */
 
-
-// Add this to render the home view
+// Redirect root URL to home
+Route::redirect('/', '/home');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-
 Route::get('/tickets', function () {
     return view('pages.tickets');
 });
-
+Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications');
 Route::get('/artist/{artist_id}', [ArtistController::class, 'show'])->name('artist');
 
 /*
@@ -92,6 +84,7 @@ Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
 
 Route::post('/tickets/{ticket_id}', [TicketController::class, 'refundTicket'])->name('refund-ticket');
 Route::post('/your-events/{event_id}', [EventController::class, 'deleteEvent'])->name('delete-event');
+Route::post('/notifications/{notification_id}', [NotificationController::class, 'deleteNotification'])->name('delete-notification');
 
 Route::middleware('auth')->group(function () {
     Route::get('/your-events', [EventController::class, 'member_events'])->name('your-events');
@@ -106,6 +99,8 @@ Route::get('/event/{event_id}/participants', [EventController::class, 'participa
 Route::get('/edit_profile', [MemberController::class, 'edit'])->name('profile.edit');
 Route::put('/edit_profile', [MemberController::class, 'updateMember'])->name('member.profile.edit');
 
+Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events');
+Route::post('/create-invitation', [InvitationController::class, 'create'])->name('create-invitation');
 
 Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'showLoginForm')->name('login');
