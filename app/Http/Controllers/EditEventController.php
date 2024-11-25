@@ -78,12 +78,12 @@ class EditEventController extends Controller
             $ticket = Ticket::findOrFail($ticket_id);
             $member = $ticket->member; 
             $ticket->delete();
-            return redirect()->route('event', ['event_id' => $event_id ])->with('success', "'{$member->username}'s Ticket #'{$ticket_id}' deleted successfully!");
+            return redirect()->route('participants', ['event_id' => $event_id ])->with('success', "@{$member->username}'s Ticket #{$ticket_id} deleted successfully!");
         }
 
         catch (\Exception $e) 
         {
-            return redirect()->route('event', ['event_id' => $event_id ])->with('error', "Failed to delete '{$member->username}'s ticket.");
+            return redirect()->route('participants', ['event_id' => $event_id ])->with('error', "Failed to delete {$member->username}'s ticket.");
         }   
     }
 
