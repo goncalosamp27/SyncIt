@@ -26,7 +26,7 @@
 	<div class="navbar-right">
 		<div class="login-register-logout">
 			@if (Auth::check() || Auth::guard('admin')->check())
-				<a class="icon-button" href="">✉️</a>
+				<a class="icon-button" href="{{ route('notifications') }}">✉️</a>
 				<a class="button" href="{{ route('logout') }}">Logout</a>
 			@else
 				<a class="button" href="{{ route('login') }}">Login</a>
