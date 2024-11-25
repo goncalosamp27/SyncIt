@@ -3,7 +3,7 @@
 @section('content')
     <div class="edit-page">
         <h1>Edit Member</h1>
-        <form action="{{ url('/admin/edit/member/' . $member->member_id) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('member.updates', ['id' => $member->member_id]) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT') <!-- For updating -->
 

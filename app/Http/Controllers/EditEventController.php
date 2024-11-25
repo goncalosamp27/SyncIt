@@ -41,7 +41,7 @@ class EditEventController extends Controller
         $event->update($validated);
         $eventDate = $request->input('event_date');
         $eventTime = $request->input('event_time');
-        $eventDateTime = new DateTime("$eventDate $eventTime");
+        $eventDateTime = $eventDate . ' ' . $eventTime;
 
         if ($request->hasFile('event_media')) {
             $path = $request->file('event_media')->store('events', 'public');

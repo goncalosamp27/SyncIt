@@ -3,7 +3,7 @@
 @section('content')
     <div class="edit-page">
         <h1>Edit Event</h1>
-        <form  action="{{ url('/event/edit/' . $event->event_id) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('edit.event', ['event_id' => $event->event_id]) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT') <!-- For updating -->
 

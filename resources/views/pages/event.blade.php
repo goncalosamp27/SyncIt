@@ -14,7 +14,7 @@
 				@endcan
 
 			</div>			
-			<a class ="user-event-owner" href="{{ url('artist/' . $event->artist->artist_id) }}" style="display: flex; align-items: center; margin-top:1rem;">
+			<a class="user-event-owner" href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}" style="display: flex; align-items: center; margin-top:1rem;">
 				<img 
 					src="{{ asset('storage/profiles/' . $event->artist->member->profile_pic_url) }}" alt="Event Picture"
 					alt="Profile Picture" 
