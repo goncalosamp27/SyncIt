@@ -39,7 +39,12 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'member',
-        ]
+        ],
+
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admin',
+        ],
     ],
 
 
@@ -64,12 +69,12 @@ return [
         'member' => [
             'driver' => 'eloquent',
             'model' => App\Models\Member::class,
-        ]
+        ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'admin' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
     ],
 
     /*

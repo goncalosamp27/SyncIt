@@ -6,8 +6,8 @@ use App\Models\Member;
 
 class AdminPolicy
 {
-    public function accessAdmin(User $user)
+    public function beAdmin(User $user)
     {
-        return $user->role === 'admin';
+        return auth('admin')->check();
     }
 }
