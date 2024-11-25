@@ -17,6 +17,7 @@
 
 	<div class="navbar-center">
 			<form method="GET" action="{{ route('events.search') }}" class="search-bar">
+				<button type="submit" class="search-button">🔍</button>
 				<input type="text" name="search" placeholder="Search for events or locations..." value="{{ request('search') }}">
 				<button class="search-btn" type="submit">Search</button>
 			</form>
@@ -48,7 +49,7 @@
 					<p><strong>Bio:</strong> {{ Auth::user()->bio }}</p>
 				</div>
 
-				<!-- Menu Links -->
+				<!-- Menu Links --> 
 				<a href="{{ route('profile.edit') }}">Edit Profile</a>
 				
 				@if(Auth::user()->isArtist(Auth::user()->member_id))
