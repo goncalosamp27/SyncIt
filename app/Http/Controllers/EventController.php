@@ -65,8 +65,6 @@ class EventController extends Controller
         }
     }
 
-
-
     public function member_events()
     {
         $member = Auth::user();
@@ -88,19 +86,15 @@ class EventController extends Controller
         ]);
     }
 
-    public function participants($event_id)
+    public function tickets($event_id)
     {
         $event = Event::findOrFail($event_id);
+        $tickets = $event->tickets();
 
-        $this->authorize('edit', $event);
-
-        $participants = $event->tickets->map(function ($ticket) {
-            return $ticket->member;
-        });
-
+        $tickets = $event->tickets()->with('member')->get();
         return view('pages.manage-participants', [
             'event' => $event,
-            'participants' => $participants
+            'tickets' => $tickets
         ]);
     }
 
@@ -174,6 +168,22 @@ class EventController extends Controller
             'tagsMood' => $tagsMood,
             'tagsSettings' => $tagsSettings,
         ]);
+    }
+
+    public function deleteParticipant($event_id, $ticket_id)
+    {
+        try 
+        {
+            $ticket = Ticket::findOrFail($ticket_id);
+            $member = $ticket->member; 
+            $ticket->delete();
+            return redirect()->route('event', ['event_id' => $event_id ])->with('success', "'{$member->username}'s Ticket #'{$ticket_id}' deleted successfully!");
+        }
+
+        catch (\Exception $e) 
+        {
+            return redirect()->route('event', ['event_id' => $event_id ])->with('error', "Failed to delete '{$member->username}'s ticket.");
+        }   
     }
 
     public function showTagsPerType()
