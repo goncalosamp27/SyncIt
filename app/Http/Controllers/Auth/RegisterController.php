@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use App\Models\Member;
+use App\Models\Admin;
 
 class RegisterController extends Controller
 {
@@ -28,7 +29,15 @@ class RegisterController extends Controller
         $validatedData = $request->validate([
             'username' => 'required|alpha_num|min:3|max:50',
             'display_name' => 'required|regex:/^[A-Za-z0-9_ ]+$/|min:3|max:50',
-            'email' => 'required|email|unique:member,email',
+            'email' => [
+                'required',
+                'email',
+                function ($attribute, $value, $fail) {
+                    if (Member::where('email', $value)->exists() || Admin::where('email', $value)->exists()) {
+                        $fail('The email address is already taken.');
+                    }
+                },
+            ],
             'password' => 'required|min:8|max:100|confirmed',
             'bio' => 'nullable|regex:/^[A-Za-z0-9_.,?!\s]*$/|max:200',
             'profile_pic_url' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
