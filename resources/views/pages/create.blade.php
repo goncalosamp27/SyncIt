@@ -42,7 +42,7 @@
         <div class="create-event-input">
             <label for="event_time" class="form-label">Event Time:</label>
             <input type="time" id="event_time" name="event_time"
-                value="{{ old('event_time', isset($event) ? \Carbon\Carbon::parse($event->event_date)->format('H:i') : '') }}"
+                value="{{ old('event_time', isset($event) ? date('H:i', strtotime($event->event_date)) : '') }}"
                 required class="form-control" />
             @error('event_time')
                 <div class="text-danger">{{ $message }}</div>

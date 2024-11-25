@@ -43,7 +43,7 @@
           <h2>Upcoming Events:</h2>
           <div class="events-list">
           @foreach ($artist->events->take(2) as $event)
-            @if (\Carbon\Carbon::parse($event->event_date)->isFuture())
+            @if (strtotime($event->event_date) > time())
                 @include('partials.event-card', ['event' => $event])
             @endif
           @endforeach
@@ -57,7 +57,7 @@
           <h2>Past Events:</h2>
           <div class="events-list">
             @foreach ($artist->events->take(2) as $event)
-              @if (\Carbon\Carbon::parse($event->event_date)->isPast())
+              @if (strtotime($event->event_date) < time())
                   @include('partials.event-card', ['event' => $event])
               @endif
             @endforeach
