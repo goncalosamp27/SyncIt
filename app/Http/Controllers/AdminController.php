@@ -64,4 +64,8 @@ class AdminController extends Controller
             'members' => $members,
         ]);
     }
+
+    public function createMember(){
+        return view('auth.register');
+    }
 }

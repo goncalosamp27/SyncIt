@@ -40,7 +40,7 @@ Route::controller(AdminController::class)->middleware('admin')->group(function (
     Route::get('admin/search', 'search')->name('members.search');
     Route::get('admin/edit/member/{id}', 'getMember')->name('admin.edit.member');
     Route::put('admin/edit/member/{id}', 'updateMemberAdmin')->name('member.updates');
-    //Route::get('admin/')->name('create.member');
+    Route::get('admin/register', 'createMember')->name('create.member');
 });
 
 Route::controller(EventController::class)->group(function () {
@@ -65,9 +65,9 @@ Route::controller(TicketController::class)->middleware(['notAdmin', 'auth'])->gr
     Route::get('/tickets', 'ticketAndEventData')->name('tickets');
 });
 
-Route::post('/create-invitation', [InvitationController::class, 'create'])->name('create-invitation');
+Route::post('/create-invitation', [InvitationController::class, 'create'])->middleware(['notAdmin', 'auth'])->name('create-invitation');
 
-Route::controller(NotificationController::class)->group(function () {
+Route::controller(NotificationController::class)->middleware(['notAdmin', 'auth'])->group(function () {
     Route::get('/notifications', 'getNotifications')->name('notifications');
     Route::post('/notifications/{notification_id}', 'deleteNotification')->name('delete-notification');
 });
@@ -84,8 +84,8 @@ Route::controller(LoginController::class)->group(function () {
 });
 
 Route::controller(RegisterController::class)->group(function () {
-    Route::get('/register', 'showRegistrationForm')->name('register');
-    Route::post('/register', 'register');
+    Route::get('/register', 'showRegistrationForm')->middleware(['visitor'])->name('register');
+    Route::post('/register', 'register')->name('post.register');
 });
 
 Route::controller(CreateEventController::class)->middleware(['notAdmin', 'auth'])->group(function () {

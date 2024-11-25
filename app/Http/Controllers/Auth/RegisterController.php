@@ -66,11 +66,15 @@ class RegisterController extends Controller
                 return back()->withErrors($result)->withInput();
             }
 
-            Auth::attempt($request->only('email', 'password'));
-            Auth::login($result);
 
+            if(!(Auth::guard('admin')->check())) {
+                Auth::attempt($request->only('email', 'password'));
+                Auth::login($result);
+            }
+            
+            if (Auth::check()) return redirect()->route('home')->withSuccess('You have successfully registered & logged in!');
+            else if (Auth::guard('admin')->check()) return redirect()->route('admin')->withSuccess('You have successfully registered a new member!');
 
-            return redirect()->route('home')->withSuccess('You have successfully registered & logged in!');
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Something went wrong. Please try again later.'])->withInput();
         }
