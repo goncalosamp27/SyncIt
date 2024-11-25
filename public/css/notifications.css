@@ -29,6 +29,9 @@
     border-radius: 1rem;
     box-sizing: border-box; /* Includes padding in the size */
 }
+.go-back-margin{
+    margin-top: 2rem;
+}
 
 .invitation-date{
 		font-size: 1.5rem;

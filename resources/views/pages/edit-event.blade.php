@@ -146,5 +146,6 @@
             <a href="{{ route('event', ['event_id' => $event->event_id]) }}" class="discard-button">Discard Changes</a>
 
         </form>
+        @include('partials.go-back')
     </div>
 @endsection

@@ -133,5 +133,6 @@
 				@include('partials.reply-comment')
 			</div>
 		</div>
+		@include('partials.go-back')
 	</div>	
 @endsection	
