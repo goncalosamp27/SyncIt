@@ -30,4 +30,30 @@ class NotificationController extends Controller
             'member' => $member,
         ]);
     }
+
+    public function deleteNotification(string $notification_id)
+    {
+        try {
+            // Fetch the event
+            $notification = Notification::findOrFail($notification_id);
+
+            // Debug: Check if event is valid
+            if (!$notification) {
+                return redirect()->route('notifications')->with('error', "Notification not found.");
+            }
+
+            // Attempt to delete the event
+            $notification->delete();
+
+            return redirect()->route('notifications')->with('success', "Notification #{$notification_id} deleted successfully!");
+        } 
+        catch (\Exception $e) 
+        {
+            // Log the actual error
+            dd($e->getMessage());
+            \Log::error("Failed to delete notification: {$e->getMessage()}");
+
+            return redirect()->route('notifications')->with('error', "Failed to delete the notification.");
+        }
+    }
 }

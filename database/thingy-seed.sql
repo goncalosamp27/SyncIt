@@ -223,7 +223,6 @@ CREATE TABLE invitation (
     FOREIGN KEY (member_id) REFERENCES member(member_id)
 );
 
-
 CREATE TABLE notification (
     notification_id SERIAL PRIMARY KEY,
     notification_message TEXT NOT NULL,

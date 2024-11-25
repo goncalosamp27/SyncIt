@@ -30,4 +30,9 @@ class Notification extends Model
     {
         return $this->belongsTo(Member::class, 'member_id', 'member_id');
     }
+
+    public function invitationNotification()
+    {
+        return $this->hasOne(InvitationNotification::class, 'notification_id');
+    }
 }
