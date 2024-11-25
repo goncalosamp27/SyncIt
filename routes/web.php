@@ -64,9 +64,9 @@ Route::controller(TicketController::class)->middleware(['notAdmin', 'auth'])->gr
     Route::get('/tickets', 'ticketAndEventData')->name('tickets');
 });
 
-Route::post('/create-invitation', [InvitationController::class, 'create'])->middleware(['notAdmin','auth'])->name('create-invitation');
+Route::post('/create-invitation', [InvitationController::class, 'create'])->name('create-invitation');
 
-Route::controller(NotificationController::class)->middleware(['notAdmin','auth'])->group(function () {
+Route::controller(NotificationController::class)->group(function () {
     Route::get('/notifications', 'getNotifications')->name('notifications');
     Route::post('/notifications/{notification_id}', 'deleteNotification')->name('delete-notification');
 });
@@ -77,14 +77,14 @@ Route::controller(MemberController::class)->middleware(['notAdmin', 'auth'])->gr
 });
 
 Route::controller(LoginController::class)->group(function () {
-    Route::get('/login', 'showLoginForm')->middleware('notAdmin')->name('login');
-    Route::post('/login', 'authenticate')->middleware('notAdmin');
-    Route::get('/logout', 'logout')->name('logout');
+    Route::get('/login', 'showLoginForm')->middleware(['visitor'])->name('login');
+    Route::post('/login', 'authenticate')->middleware(['visitor']);
+    Route::get('/logout', 'logout')->middleware(['userAdmin'])->name('logout');
 });
 
 Route::controller(RegisterController::class)->group(function () {
-    Route::get('/register', 'showRegistrationForm')->middleware('notAdmin')->name('register');
-    Route::post('/register', 'register')->middleware('notAdmin');
+    Route::get('/register', 'showRegistrationForm')->name('register');
+    Route::post('/register', 'register');
 });
 
 Route::controller(CreateEventController::class)->middleware(['notAdmin', 'auth'])->group(function () {
