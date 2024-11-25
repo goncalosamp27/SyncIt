@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\Event;
 use App\Models\Tag;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
@@ -46,7 +45,7 @@ class EventController extends Controller
             }
 
             // Validate event date
-            if (!$event->event_date || Carbon::parse($event->event_date)->isPast()) {
+            if (!$event->event_date || strtotime($event->event_date) < time()) {
                 return redirect()->route('your-events')->with('error', "Cannot delete past events.");
             }
 
@@ -189,7 +188,7 @@ class EventController extends Controller
 		$tagsDance = Tag::type(['Dance'])->get();
 		$tagsMood = Tag::type(['Mood'])->get();
 		$tagsSettings = Tag::type(['Settings'])->get();
-        $events = Event::where('event_date', '<', Carbon::now())->get();
+        $events = Event::where('event_date', '<', now())->get();
 
         return view('pages.events', [
             'events' => $events,
@@ -206,7 +205,7 @@ class EventController extends Controller
 		$tagsDance = Tag::type(['Dance'])->get();
 		$tagsMood = Tag::type(['Mood'])->get();
 		$tagsSettings = Tag::type(['Settings'])->get();
-        $events = Event::where('event_date', '>', Carbon::now())->get();
+        $events = Event::where('event_date', '>', now())->get();
 
         return view('pages.events', [
             'events' => $events,

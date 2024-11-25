@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="registration-wrapper">
-  <form class="registration-form" method="POST" action="{{ route('register') }}">
+  <form class="registration-form" method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
     {{ csrf_field() }}
 
     <!-- Username -->
@@ -50,8 +50,23 @@
     </span>
     @endif
 
+    <!-- File Upload -->
+    <div class="create-event-input">
+        <label for="profile_pic_url" class="form-label">Upload Media (optional)</label>
+        <input type="file" id="profile_pic_url" name="profile_pic_url">
+        <small class="form-text text-muted">
+            You can upload up to 1 image.
+        </small>
+        <div id="file-error" class="text-danger" style="display: none;">
+            You can only upload 1 image.
+        </div>
+        @error('profile_pic_url')
+            <div class="text-danger">{{ $message }}</div>
+        @enderror
+    </div>
+    
     <!-- Bio -->
-    <label for="bio">Bio (Optional)</label>
+    <label for="bio">Bio (optional)</label>
     <textarea id="bio" name="bio" placeholder="e.g: I'm John and I love dancing to HipHop beats. I'm interested in Rap Concerts.">{{ old('bio') }}</textarea>
     @if ($errors->has('bio'))
     <span class="error">
