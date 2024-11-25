@@ -79,14 +79,13 @@ class CreateEventController extends Controller
                 // Create and save the event
                 $event = new Event($eventData);
                 if ($request->hasFile('event_files')) {
-                    $path = $request->file('event_files')->store('profiles', 'public');
-                    $event->event_media = $path;
+                    $path = $request->file('event_files')->store('events', 'public');
+                    $event->event_media = basename($path);
                 }
                 else{
-                    $event->profile_pic_url = $defaultImage;
+                    $event->event_media = $defaultImage;
                 }
                 $event->event_date = $eventDateTime;
-                $event->event_media = $defaultImage;
                 $event->rating = 0;
                 $event->artist_id = Artist::getArtistIdByMemberId($member->member_id);
                 $event->save();
@@ -128,14 +127,13 @@ class CreateEventController extends Controller
             $event = new Event($eventData);
             $event = new Event($eventData);
                 if ($request->hasFile('event_files')) {
-                    $path = $request->file('event_files')->store('profiles', 'public');
-                    $event->event_media = $path;
+                    $path = $request->file('event_files')->store('events', 'public');
+                    $event->event_media = basename($path);
                 }
                 else{
                     $event->event_media = $defaultImage;
                 }
             $event->event_date = $eventDateTime;
-            $event->event_media = $defaultImage;
             $event->rating = 0;
             $event->artist_id = $artist->artist_id;
             $event->save();

@@ -99,6 +99,7 @@ class EventController extends Controller
         });
 
         return view('pages.manage-participants', [
+            'event' => $event,
             'participants' => $participants
         ]);
     }

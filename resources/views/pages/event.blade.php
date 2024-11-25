@@ -22,7 +22,7 @@
 				>
 				<span class ="user-event-owner-by">by: </span><h2 style="margin: 0;"> {{'@' . $event->artist->member->username}}</h2>
 			</a>			
-			<h3>📅 {{ \Carbon\Carbon::parse($event->event_date)->format('d/m/Y - h:i A') }}</h3>
+			<h3>📅 {{ date('d/m/Y - h:i A', strtotime($event->event_date)) }}</h3>
 			<div class="small-line"></div>
 			<h4>📍 {{ $event->location }}</h4>
 			<div class="small-line"></div>
@@ -133,5 +133,6 @@
 				@include('partials.reply-comment')
 			</div>
 		</div>
+		@include('partials.go-back')
 	</div>	
 @endsection	
