@@ -26,7 +26,7 @@
                     type="date" 
                     id="event_date" 
                     name="event_date" 
-                    value="{{ \Carbon\Carbon::parse($event->event_date)->format('Y-m-d') }}" 
+                    value="{{ date('Y-m-d', strtotime($event->event_date)) }}"
                     required 
                 />
             </div>
@@ -39,7 +39,7 @@
                     type="time" 
                     id="event_time" 
                     name="event_time" 
-                    value="{{ \Carbon\Carbon::parse($event->event_date)->format('H:i') }}" 
+                    value="{{ date('H:i', strtotime($event->event_date)) }}"
                     required 
                 />
             </div>
