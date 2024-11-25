@@ -52,6 +52,6 @@ class TicketController extends Controller {
         $ticket->ticket_date = now();
         $ticket->member_id = $member->member_id;
         $ticket->save();
-        return redirect()->route('tickets');
+        return redirect()->route('tickets')->with('success', "Ticket to '{$event->event_name}' purchased successfully!");
     }
 }

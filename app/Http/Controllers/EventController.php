@@ -63,8 +63,6 @@ class EventController extends Controller
         }
     }
 
-
-
     public function member_events()
     {
         $member = Auth::user();
@@ -86,22 +84,17 @@ class EventController extends Controller
         ]);
     }
 
-    public function participants($event_id)
+    public function tickets($event_id)
     {
         $event = Event::findOrFail($event_id);
-    
-        $this->authorize('edit', $event);
+        $tickets = $event->tickets();
 
-        $participants = $event->tickets->map(function ($ticket) {
-            return $ticket->member;
-        });
-    
+        $tickets = $event->tickets()->with('member')->get();
         return view('pages.manage-participants', [
             'event' => $event,
-            'participants' => $participants
+            'tickets' => $tickets
         ]);
     }
-
 
 	public function create()
     {
