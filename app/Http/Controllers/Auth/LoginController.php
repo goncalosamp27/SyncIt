@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 use Illuminate\View\View;
 use App\Models\Member;
+use App\Models\Admin;
 
 
 class LoginController extends Controller
@@ -40,6 +41,18 @@ class LoginController extends Controller
         ]);
 
         $loginField = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        // Try to authenticate as Admin (use email only)
+        if (filter_var($credentials['login'], FILTER_VALIDATE_EMAIL)) {
+            $admin = Admin::where('email', $credentials['login'])->first();
+    
+            if ($admin && Auth::guard('admin')->attempt(['email' => $credentials['login'], 'password' => $credentials['password']], $request->filled('remember'))) {
+                $request->session()->regenerate();
+    
+                return redirect()->intended('/home');
+            }
+        }
+            
 
         if (Auth::attempt([$loginField => $credentials['login'], 'password' => $credentials['password']], $request->filled('remember'))) {
             $request->session()->regenerate();
