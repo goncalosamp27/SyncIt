@@ -15,9 +15,9 @@ class MemberController extends Controller
         return view('pages.profile-edit', compact('member'));
     }
 
-    public function updateMember(Request $request, $id)
+    public function updateMember(Request $request)
     {   
-        $member = Member::findOrFail($id);
+        $member = Auth::user();
 
         // Validate inputs
         $validated = $request->validate([
@@ -33,7 +33,7 @@ class MemberController extends Controller
         
         if ($request->hasFile('profile_pic_url')) {
             $path = $request->file('profile_pic_url')->store('profiles', 'public');
-            $member->profile_pic_url = $path;
+            $member->profile_pic_url = basename($path);
             $member->save();
         }
         

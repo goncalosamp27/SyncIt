@@ -386,6 +386,14 @@
     border-radius: 4px;
     font-size: 0.9rem;
 }
+.admin_page .search-bar-input2 {
+    color: var(--black-color);
+    width: 500px;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
 
 .admin_page .search-submit-btn {
     background-color: var(--primary-color); /* Adjust to site theme */

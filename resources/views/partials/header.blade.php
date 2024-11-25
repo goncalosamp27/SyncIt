@@ -3,6 +3,11 @@
 		@if (Auth::check())
 		<button class="menu-icon" onclick="toggleMenu()">☰</button>
 		@endif
+
+		@if(Auth::guard('admin')->check())
+			<a class="menu-icon" href="{{ route('admin') }}"> ⚙️ </a>
+		@endif
+
 		<div class="logo">
 			<a href="{{ route('home') }}">
 				<img src="{{ asset('storage/syncit.svg') }}" alt="Logo" />
@@ -12,6 +17,7 @@
 
 	<div class="navbar-center">
 			<form method="GET" action="{{ route('events.search') }}" class="search-bar">
+				<button type="submit" class="search-button">🔍</button>
 				<input type="text" name="search" placeholder="Search for events or locations..." value="{{ request('search') }}">
 				<button class="search-btn" type="submit">Search</button>
 			</form>
@@ -20,8 +26,8 @@
 
 	<div class="navbar-right">
 		<div class="login-register-logout">
-			@if (Auth::check())
-				<a class="icon-button" href="">✉️</a>
+			@if (Auth::check() || Auth::guard('admin')->check())
+				<a class="icon-button" href="{{ route('notifications') }}">✉️</a>
 				<a class="button" href="{{ route('logout') }}">Logout</a>
 			@else
 				<a class="button" href="{{ route('login') }}">Login</a>
@@ -29,11 +35,10 @@
 				<a class="button" href="{{ route('register') }}">Register</a>
 			@endif
 		</div>
-		
 		<!-- Side Menu -->
 		<div id="side-menu" class="side-menu">
 			<a href="javascript:void(0)" class="close-btn" onclick="toggleMenu()">×</a>
-			
+
 			@if (Auth::check())
 				<!-- User Info -->
 				<div class="user-info">
@@ -44,8 +49,7 @@
 					<p><strong>Bio:</strong> {{ Auth::user()->bio }}</p>
 				</div>
 
-				<!-- Menu Links -->
-				<a href="{{ route('admin') }}">Admin Panel</a>
+				<!-- Menu Links --> 
 				<a href="{{ route('profile.edit') }}">Edit Profile</a>
 				
 				@if(Auth::user()->isArtist(Auth::user()->member_id))

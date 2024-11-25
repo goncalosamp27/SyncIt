@@ -43,13 +43,15 @@
           <h2>Upcoming Events:</h2>
           <div class="events-list">
           @foreach ($artist->events->take(2) as $event)
-            @if (\Carbon\Carbon::parse($event->event_date)->isFuture())
+            @if (strtotime($event->event_date) > time())
                 @include('partials.event-card', ['event' => $event])
             @endif
           @endforeach
 
           </div>
-          @include('partials.show-more')
+          <a href="{{ route('your-events') }}">
+				    @include('partials.show-more')
+			    </a>             
         </div>
 
         <!-- Past Events -->
@@ -57,15 +59,18 @@
           <h2>Past Events:</h2>
           <div class="events-list">
             @foreach ($artist->events->take(2) as $event)
-              @if (\Carbon\Carbon::parse($event->event_date)->isPast())
+              @if (strtotime($event->event_date) < time())
                   @include('partials.event-card', ['event' => $event])
               @endif
             @endforeach
           </div>
-          @include('partials.show-more')
+          <a href="{{ route('your-events') }}">
+				    @include('partials.show-more')
+			    </a>        
         </div>
       </div>
     </div>
+    @include('partials.go-back')
   </div>
 @endsection
 

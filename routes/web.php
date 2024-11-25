@@ -12,19 +12,13 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\EditEventController;
+use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\NotificationController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 
-use App\Http\Controllers\Notifications\NotificationController;
-use App\Http\Controllers\Notifications\CommentNotificationController;
-use App\Http\Controllers\Notifications\FollowNotificationController;
-use App\Http\Controllers\Notifications\InvitationNotificationController;
-use App\Http\Controllers\Notifications\PollNotificationController;
-use App\Http\Controllers\Notifications\RestrictionNotificationController;
-
 use App\Models\Artist;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -36,47 +30,32 @@ use App\Models\Artist;
 |
 */
 
-
-// Add this to render the home view
+Route::redirect('/', '/home');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-Route::get('/tickets', function () {
-    return view('pages.tickets');
-});
 
 Route::get('/artist/{artist_id}', [ArtistController::class, 'show'])->name('artist');
 
-/*
-Route::get('/artist/{artistId}', function ($artistId) {
-    // Fetch the artist and its related events
-    $artist = Artist::with('events')->find($artistId);
+Route::controller(AdminController::class)->middleware('admin')->group(function () {
+    Route::get('admin', 'display_members')->name('admin');
+    Route::get('admin/edit/member/{id}', 'getMember')->name('admin.edit.member');
+    Route::put('admin/edit/member/{id}', 'updateMemberAdmin')->name('member.updates');
+});
+
+Route::controller(EventController::class)->group(function () {
+    Route::get('/event/{event_id}', 'show')->name('event');
+    Route::get('/events', 'showTagsPerType')->name('events');
+    Route::get('/past-events', 'showTagsPerTypePast')->name('past-events');
+    Route::get('/future-events', 'showTagsPerTypeFuture')->name('future-events');
+    Route::get('/events/search', 'search')->name('events.search');
+    Route::get('/event/{event_id}/participants', 'participants')->name('participants');
     
-    // Handle if the artist is not found
-    if (!$artist) {
-        abort(404, 'Artist not found');
-    }
-
-    $followersCount = $artist->getFollowersCount();
-    return view('pages.artist', ['artist' => $artist, 'followersCount' => $followersCount]);
-});*/
-
-/*
-Route::get('/create', function () {
-    return view('pages.create');
+    Route::middleware(['notAdmin', 'auth'])->group(function () {
+        Route::get('/events/create', 'create')->name('events.create');
+        Route::post('/events/store', 'store')->name('events.store');
+        Route::get('/your-events', 'member_events')->name('your-events');
+        Route::post('/your-events/{event_id}', 'deleteEvent')->name('delete-event');
+    });
 });
-*/
-Route::get('/', [HomeController::class, 'index'])->name('home');
-
-Route::get('/admin', function () {
-    return view('pages.admin');
-});
-
-
-Route::get('/admin', [AdminController::class, 'display_members'])->name('admin');
-
-Route::get('/admin/edit/member/{id}', [AdminController::class, 'getMember'])->name('admin.edit.member');
-Route::put('/admin/edit/member/{id}', [AdminController::class, 'updateMemberAdmin'])->name('admin.member.updates');
-
 Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
 Route::get('/events/create', [EventController::class, 'create'])->middleware('auth')->name('events.create');
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
@@ -98,24 +77,28 @@ Route::post('/future-events/getEventCards', [EventController::class, 'getEventCa
 Route::post('/tickets/{ticket_id}', [TicketController::class, 'refundTicket'])->name('refund-ticket');
 Route::post('/your-events/{event_id}', [EventController::class, 'deleteEvent'])->name('delete-event');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/your-events', [EventController::class, 'member_events'])->name('your-events');
+Route::controller(TicketController::class)->middleware(['notAdmin', 'auth'])->group(function () {
+    Route::post('/event/buy-ticket', 'buyTicket')->name('buy-ticket');
+    Route::post('/tickets/{ticket_id}', 'refundTicket')->name('refund-ticket');
+    Route::get('/tickets', 'ticketAndEventData')->name('tickets');
 });
-Route::middleware('auth')->group(function () {
-    Route::get('/tickets', [TicketController::class, 'ticketAndEventData'])->name('tickets');
+
+Route::post('/create-invitation', [InvitationController::class, 'create'])->name('create-invitation');
+
+Route::controller(NotificationController::class)->group(function () {
+    Route::get('/notifications', 'getNotifications')->name('notifications');
+    Route::post('/notifications/{notification_id}', 'deleteNotification')->name('delete-notification');
 });
 
-Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
-Route::get('/event/{event_id}/participants', [EventController::class, 'participants'])->name('participants');
-
-Route::get('/edit_profile', [MemberController::class, 'edit'])->name('profile.edit');
-Route::put('/edit_profile', [MemberController::class, 'updateMember'])->name('member.profile.edit');
-
+Route::controller(MemberController::class)->middleware(['notAdmin', 'auth'])->group(function () {
+    Route::get('/edit_profile', 'edit')->name('profile.edit');
+    Route::put('/edit_profile', 'updateMember')->name('member.profile.edit');
+});
 
 Route::controller(LoginController::class)->group(function () {
-    Route::get('/login', 'showLoginForm')->name('login');
-    Route::post('/login', 'authenticate');
-    Route::get('/logout', 'logout')->name('logout');
+    Route::get('/login', 'showLoginForm')->middleware(['visitor'])->name('login');
+    Route::post('/login', 'authenticate')->middleware(['visitor']);
+    Route::get('/logout', 'logout')->middleware(['userAdmin'])->name('logout');
 });
 
 Route::controller(RegisterController::class)->group(function () {
@@ -123,11 +106,15 @@ Route::controller(RegisterController::class)->group(function () {
     Route::post('/register', 'register');
 });
 
-Route::get('/create', [CreateEventController::class, 'show'])->name('create.show');
-Route::post('/create', [CreateEventController::class, 'store'])
-    ->middleware('auth')
-    ->name('create.store');
+Route::controller(CreateEventController::class)->middleware(['notAdmin', 'auth'])->group(function () {
+    Route::get('/create', 'show')->name('create.show');
+    Route::post('/create', 'store')->name('create.store');
+});
+
+Route::controller(EditEventController::class)->middleware(['notAdmin', 'auth'])->group(function () {
+    Route::get('/event/edit/{event_id}', 'show')->name('edit.event.show');
+    Route::put('/event/edit/{event_id}', 'editEvent')->name('edit.event');
+});
 
 
-Route::get('/event/edit/{event_id}', [EditEventController::class, 'show'])->name('edit.event.show');
-Route::put('/event/edit/{event_id}', [EditEventController::class, 'editEvent'])->name('edit.event');
+

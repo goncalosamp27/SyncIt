@@ -17,7 +17,7 @@
 </div>
 
 <div class="create-event-form">
-    <form method="POST" action="{{ route('create.store') }}">
+    <form method="POST" action="{{ route('create.store') }}" enctype="multipart/form-data">
         @csrf
         <!-- Event Name -->
         <div class="create-event-input">
@@ -42,7 +42,7 @@
         <div class="create-event-input">
             <label for="event_time" class="form-label">Event Time:</label>
             <input type="time" id="event_time" name="event_time"
-                value="{{ old('event_time', isset($event) ? \Carbon\Carbon::parse($event->event_date)->format('H:i') : '') }}"
+                value="{{ old('event_time', isset($event) ? date('H:i', strtotime($event->event_date)) : '') }}"
                 required class="form-control" />
             @error('event_time')
                 <div class="text-danger">{{ $message }}</div>
@@ -169,7 +169,7 @@
     
         <div class="create-event-input">
             <label for="event_files" class="form-label">Upload Media</label>
-            <input type="file" id="event_files">
+            <input type="file" id="event_files" name="event_files">
             <small class="form-text text-muted">
                 You can upload up to 1 image.
             </small>
@@ -186,5 +186,6 @@
         <button type="submit" class="btn btn-primary">Create Event</button>
     </form>
 </div>
+@include('partials.go-back')
 </div>
 @endsection
