@@ -31,7 +31,7 @@ class RegisterController extends Controller
             'email' => 'required|email|unique:member,email',
             'password' => 'required|min:8|max:100|confirmed',
             'bio' => 'nullable|regex:/^[A-Za-z0-9_.,?!\s]*$/|max:200',
-            'profile_pic_url' => 'nullable|url|max:200',
+            'profile_pic_url' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         // Check if the email is already taken
@@ -41,10 +41,16 @@ class RegisterController extends Controller
 
         // Add the hashed password and default values
         $validatedData['password'] = Hash::make($validatedData['password']);
-        //$validatedData['profile_pic_url'] = $validatedData['profile_pic_url'] ?? null;
         $validatedData['member_status'] = 'Active';
+        $validatedData['profile_pic_url'] = 'default_user.png';
 
         try {
+            
+            if ($request->hasFile('profile_pic_url')) {
+                $path = $request->file('profile_pic_url')->store('profiles', 'public');
+                $validatedData['profile_pic_url'] = basename($path);
+            }
+
             $result = Member::createMember($validatedData);
 
             if ($result instanceof \Illuminate\Support\MessageBag) {
@@ -52,7 +58,8 @@ class RegisterController extends Controller
             }
 
             Auth::attempt($request->only('email', 'password'));
-            $request->session()->regenerate();
+            Auth::login($result);
+
 
             return redirect()->route('home')->withSuccess('You have successfully registered & logged in!');
         } catch (\Exception $e) {
