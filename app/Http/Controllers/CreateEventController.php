@@ -83,7 +83,7 @@ class CreateEventController extends Controller
                     $event->event_media = $path;
                 }
                 else{
-                    $event->profile_pic_url = $defaultImage;
+                    $event->event_media = $defaultImage;
                 }
                 $event->event_date = $eventDateTime;
                 $event->event_media = $defaultImage;
