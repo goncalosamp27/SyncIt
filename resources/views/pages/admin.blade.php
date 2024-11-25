@@ -5,7 +5,7 @@
         <div class="participants-header">
 
         <h1> Member search </h1>
-        <button class="add-participant-btn" onclick="{{ route('create.member') }}">➕</button>
+        <a class="add-participant-btn" href="{{ route('create.member') }}">➕</a>
         </div>
 
 		<form method="GET" action="{{ route('members.search') }}" class="search-bar">

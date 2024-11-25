@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="registration-wrapper">
-  <form class="registration-form" method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
+  <form class="registration-form" method="POST" action="{{ route('post.register') }}" enctype="multipart/form-data">
     {{ csrf_field() }}
 
     <!-- Username -->
