@@ -3,6 +3,11 @@
 		@if (Auth::check())
 		<button class="menu-icon" onclick="toggleMenu()">☰</button>
 		@endif
+
+		@if(Auth::guard('admin')->check())
+			<a class="menu-icon" href="{{ route('admin') }}"> ⚙️ </a>
+		@endif
+
 		<div class="logo">
 			<a href="{{ route('home') }}">
 				<img src="{{ asset('storage/syncit.svg') }}" alt="Logo" />
@@ -20,7 +25,7 @@
 
 	<div class="navbar-right">
 		<div class="login-register-logout">
-			@if (Auth::check())
+			@if (Auth::check() || Auth::guard('admin')->check())
 				<a class="icon-button" href="">✉️</a>
 				<a class="button" href="{{ route('logout') }}">Logout</a>
 			@else
@@ -29,11 +34,10 @@
 				<a class="button" href="{{ route('register') }}">Register</a>
 			@endif
 		</div>
-		
 		<!-- Side Menu -->
 		<div id="side-menu" class="side-menu">
 			<a href="javascript:void(0)" class="close-btn" onclick="toggleMenu()">×</a>
-			
+
 			@if (Auth::check())
 				<!-- User Info -->
 				<div class="user-info">
@@ -45,7 +49,6 @@
 				</div>
 
 				<!-- Menu Links -->
-				<a href="{{ route('admin') }}">Admin Panel</a>
 				<a href="{{ route('profile.edit') }}">Edit Profile</a>
 				
 				@if(Auth::user()->isArtist(Auth::user()->member_id))
