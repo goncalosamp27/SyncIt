@@ -19,7 +19,6 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 
 use App\Models\Artist;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes

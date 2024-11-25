@@ -66,7 +66,6 @@ class Event extends Model
         return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id');
     }   
 
-
     // Accessor for ticket count
     public function getTicketCountAttribute()
     {
