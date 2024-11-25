@@ -32,15 +32,11 @@ use App\Models\Artist;
 
 // Redirect root URL to home
 Route::redirect('/', '/home');
-
-// Add this to render the home view
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-
 Route::get('/tickets', function () {
     return view('pages.tickets');
 });
 Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications');
-
 Route::get('/artist/{artist_id}', [ArtistController::class, 'show'])->name('artist');
 
 /*
@@ -85,6 +81,7 @@ Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
 
 Route::post('/tickets/{ticket_id}', [TicketController::class, 'refundTicket'])->name('refund-ticket');
 Route::post('/your-events/{event_id}', [EventController::class, 'deleteEvent'])->name('delete-event');
+Route::post('/notifications/{notification_id}', [NotificationController::class, 'deleteNotification'])->name('delete-notification');
 
 Route::middleware('auth')->group(function () {
     Route::get('/your-events', [EventController::class, 'member_events'])->name('your-events');
