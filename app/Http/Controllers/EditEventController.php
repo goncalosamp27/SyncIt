@@ -58,18 +58,15 @@ class EditEventController extends Controller
         return redirect()->route('event', ['event_id' => $event_id])->with('success', 'Member updated successfully!');
     }
 
-    public function participants($event_id)
+    public function tickets($event_id)
     {
         $event = Event::findOrFail($event_id);
-    
-        $this->authorize('edit', $event);
+        $tickets = $event->tickets();
 
-        $participants = $event->tickets->map(function ($ticket) {
-            return $ticket->member;
-        });
-    
+        $tickets = $event->tickets()->with('member')->get();
         return view('pages.manage-participants', [
-            'participants' => $participants
+            'event' => $event,
+            'tickets' => $tickets
         ]);
     }
 
