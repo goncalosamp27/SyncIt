@@ -78,7 +78,10 @@
       Register
     </button>
 
+    @can('beAdmin()')
     <a class="button button-outline" href="{{ route('login') }}">Login</a>
+    @endcan
+
   </form>
 </div>
 @endsection

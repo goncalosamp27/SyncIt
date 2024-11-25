@@ -21,7 +21,7 @@
 		<div class="tickets-list">
 			@if ($events->isEmpty())
     			<p class="no-tickets">You do not own any events.</p>
-				<a class="take-me-button-member" href="{{ url('/create') }}">Create your first Event!</a>
+				<a class="take-me-button-member" href="{{ route('create') }}">Create your first Event!</a>
 			@else
 			<div class = "your-events">
     			@foreach ($events as $event)
