@@ -37,6 +37,6 @@ class MemberController extends Controller
             $member->save();
         }
         
-        return redirect()->route('home')->with('success', 'Member updated successfully!');
+        return redirect()->route('home')->with('success', "Your profile was updated successfully!");
     }
 }
