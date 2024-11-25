@@ -22,6 +22,27 @@
   text-decoration: none;
 }
 
+.go-back-btn {
+  display: flex; /* To center content using flexbox */
+  justify-content: center; /* Horizontally center the content */
+  align-items: center; /* Vertically center the content */
+  padding: 0.8rem 1.5rem; /* Adjust padding for a larger clickable area */
+  background-color: var(--primary-color); /* Keep your primary color */
+  color: #fff; /* White text for contrast */
+  font-size: 1.5rem; /* Adjust font size as needed */
+  border-radius: 3em; /* Rounded shape */
+  text-decoration: none; /* Remove underline for anchor tags */
+  cursor: pointer; /* Pointer cursor for better UX */
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.go-back-btn:hover{
+  background-color: var(--hover-color);
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
+}
+
 .success,
 .error{
     color: white;

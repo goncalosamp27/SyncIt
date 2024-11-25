@@ -70,6 +70,7 @@
         </div>
       </div>
     </div>
+    @include('partials.go-back')
   </div>
 @endsection
 
