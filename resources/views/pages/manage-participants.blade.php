@@ -62,6 +62,7 @@
                 </div> 
                 <div class="member-edit">
                   <form action="{{ route('delete-participant', ['event_id' => $event->event_id, 'ticket_id' => $ticket->ticket_id]) }}" method="POST">
+                    @csrf
                     <button class="remove-participant" title="Remove participant" type="submit">
                         Remove
                     </button>

@@ -159,6 +159,22 @@ class EventController extends Controller
         ]);
     }
 
+    public function deleteParticipant($event_id, $ticket_id)
+    {
+        try 
+        {
+            $ticket = Ticket::findOrFail($ticket_id);
+            $member = $ticket->member; 
+            $ticket->delete();
+            return redirect()->route('event', ['event_id' => $event_id ])->with('success', "'{$member->username}'s Ticket #'{$ticket_id}' deleted successfully!");
+        }
+
+        catch (\Exception $e) 
+        {
+            return redirect()->route('event', ['event_id' => $event_id ])->with('error', "Failed to delete '{$member->username}'s ticket.");
+        }   
+    }
+
     public function showTagsPerType()
     {
         // Fetch tags where tag_name is 'Music' or 'Dance' (Genres)

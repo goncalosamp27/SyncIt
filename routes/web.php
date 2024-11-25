@@ -94,7 +94,7 @@ Route::controller(CreateEventController::class)->middleware(['notAdmin', 'auth']
 Route::controller(EditEventController::class)->middleware(['notAdmin', 'auth'])->group(function () {
     Route::get('/event/edit/{event_id}', 'show')->name('edit.event.show');
     Route::put('/event/edit/{event_id}', 'editEvent')->name('edit.event');
-    Route::put('/event/edit/{event_id}/{ticket_id}', 'deleteParticipant')->name('delete-participant');
+    Route::post('/event/edit/{event_id}/{ticket_id}', 'deleteParticipant')->name('delete-participant');
 });
 
 
