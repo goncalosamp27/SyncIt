@@ -37,6 +37,7 @@ Route::get('/artist/{artist_id}', [ArtistController::class, 'show'])->name('arti
 
 Route::controller(AdminController::class)->middleware('admin')->group(function () {
     Route::get('admin', 'display_members')->name('admin');
+    Route::get('admin/search', 'search')->name('members.search');
     Route::get('admin/edit/member/{id}', 'getMember')->name('admin.edit.member');
     Route::put('admin/edit/member/{id}', 'updateMemberAdmin')->name('member.updates');
 });
