@@ -49,7 +49,9 @@
           @endforeach
 
           </div>
-          @include('partials.show-more')
+          <a href="{{ route('your-events') }}">
+				    @include('partials.show-more')
+			    </a>             
         </div>
 
         <!-- Past Events -->
@@ -62,7 +64,9 @@
               @endif
             @endforeach
           </div>
-          @include('partials.show-more')
+          <a href="{{ route('your-events') }}">
+				    @include('partials.show-more')
+			    </a>        
         </div>
       </div>
     </div>
