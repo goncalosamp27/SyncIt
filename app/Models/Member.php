@@ -75,7 +75,7 @@ class Member extends Authenticatable
 
     public function notifications()
     {
-        return $this->hasMany(Notification::class, 'member_id', 'member_id');
+        return $this->hasMany(Notification::class, 'member_id');
     }
 
     public function restrictions()
