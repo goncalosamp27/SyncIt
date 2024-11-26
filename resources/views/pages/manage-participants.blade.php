@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
     @if (session('success'))
         <div class = "success">
             {{ session('success') }}
@@ -35,15 +34,11 @@
                     placeholder="Enter a custom invitation message"
                     class="search-bar-input2"
                 ></textarea>
-
                 <input type="hidden" name="event_id" value="{{ $event->event_id }}">
                 <button type="submit" class="search-submit-btn">Invite</button></form>
         </div>
     </div>  
-    </div>
-
-
-        
+    </div>        
         <div class="search-bar">
             <button type="submit" class="search-button">🔍</button>
             <input 
@@ -53,23 +48,26 @@
             />
         </div>
 
-        @foreach ($participants as $participant)
+        @foreach ($tickets as $ticket) <!-- $participant is a Ticket -->
+            @php
+                $member = $ticket->member; 
+            @endphp
             <div class="member-card">
                 <div class="member-profile-pic">
-                    <img src="{{ asset('storage/profiles/' . $participant->profile_pic_url) }}" alt="{{ $participant->display_name }}">
+                    {{--<img src="{{ asset('storage/profiles/' . $member->profile_pic_url)}}" alt="{{ $member->display_name }}">--}}
                 </div>
                 <div class="member-details">
-                    <h3 class="member-name">{{ $participant->display_name }}</h3>
-                    <p class="member-username">{{'@' . $participant->username }}</p>
+                    <h3 class="member-name">{{ $member->display_name }}</h3>
+                    <p class="member-username">{{'@' . $member->username }}</p>
                 </div> 
                 <div class="member-edit">
-                    <button class="remove-participant" title="Remove participant">
+                  <form action="{{ route('delete-participant', ['event_id' => $event->event_id, 'ticket_id' => $ticket->ticket_id]) }}" method="POST">
+                    @csrf
+                    <button class="remove-participant" title="Remove participant" type="submit">
                         Remove
-                    </a>
+                    </button>
                 </div>
             </div>
-
         @endforeach
-
     </div>
 @endsection

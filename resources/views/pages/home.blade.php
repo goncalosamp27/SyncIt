@@ -1,6 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
+	@if (session('success'))
+			<div class = "success">
+				{{ session('success') }}
+			</div>
+		@endif
+		@if (session('error'))
+			<div class="error">
+				{{ session('error') }}
+			</div>
+    @endif
+	<div class = "slogan">
 	<div class="slogan-container">
 		<div class="slogan-container-text">
 			<h1>Create <span class="highlighter">Your Own Show!</span></h1>
@@ -14,6 +25,7 @@
 			<img src="{{ asset('storage/home_dj.jpg') }}" alt="Placeholder">
 		</div>
 	</div> 
+	</div>
 
 	<div class="home-page-bottom">
 		<div class="purple-line"></div>
