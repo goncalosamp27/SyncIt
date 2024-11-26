@@ -5,7 +5,7 @@
     <div class="event-details">
         <h3 class="event-title">{{ $event->event_name }}</h3>
         <p>📍 {{ $event->location }} </p>
-        <p>📅 {{ \Carbon\Carbon::parse($event->event_date)->format('d/m/Y - h:i A') }}</p>
+        <p>📅 {{ date('d/m/Y - h:i A', strtotime($event->event_date)) }}</p>
         <p class="event-price-cap"> 
             <span class="event-capacity"> {{ $event->ticket_count }}/{{ $event->capacity }} </span>
             <span class="event-price">
