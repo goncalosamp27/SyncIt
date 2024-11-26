@@ -53,12 +53,12 @@ paths:
             schema:
               type: object
               properties:
-                email:          # <!--- form field name
+                email_or_username:          # <!--- form field name
                   type: string
                 password:    # <!--- form field name
                   type: string
               required:
-                - email
+                - email_or_username
                 - password
  
       responses:
@@ -95,8 +95,8 @@ paths:
                 type: string
               examples:
                 302Success:
-                  description: 'Successful logout. Redirect to login form.'
-                  value: '/login'
+                  description: 'Successful logout. Redirect to home page.'
+                  value: '/home'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -130,11 +130,15 @@ paths:
               properties:
                 name:
                   type: string
+                display_name:
+                  type: string    
                 email:
                   type: string
                 picture:
                   type: string
                   format: binary
+                bio:
+                  type: string  
               required:
                 - email
                 - password
@@ -148,208 +152,17 @@ paths:
                 type: string
               examples:
                 302Success:
-                  description: 'Successful authentication. Redirect to user profile.'
-                  value: '/users/{id}'
+                  description: 'Successful authentication. Redirect to home page.'
+                  value: '/home'
                 302Failure:
-                  description: 'Failed authentication. Redirect to login form.'
-                  value: '/login'
+                  description: 'Failed authentication. Redirect to Registration form.'
+                  value: '/register'
 
-###VERIFY EMAIL
-  /verify-email/send:
-    post: 
-      operationId: R106
-      summary: 'R106: Send Verification Email'
-      description: 'Sends a verification email with a confirmation link to the user. Access: VST'
-      tags:
-        - 'M01: Authentication'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  format: email
-                  description: 'The email address to send the verification link'
-        responses:
-          '302':
-            description: 'Redirect to success or error page.'
-            headers:
-              Location:
-                schema:
-                  type: string
-                examples:
-                  success:
-                    value: '/verify-email/confirm' 
-                  error:
-                    value: '/verify-email/error'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-
-  /verify-email/confirm:
-    get:
-      operationId: R107
-      summary: 'R107: Confirm Email Address'
-      tags:
-        - 'M01: Authentication'
-      parameters:
-        - in: query
-          name: token
-          schema:
-            type: string
-          required: true
-      responses:
-        '302':
-          description: 'Redirect after confirmation.'
-          headers:
-            Location:
-              schema:
-                type: string
-              examples:
-                success:
-                  value: '/homepage'
-                error:
-                  value: '/verify-email/error'
-
-  /verify-email/status:
-    get:
-      operationId: R108
-      summary: 'R108: Check Email Confirmation Status'
-      description: 'Checks if the users email is confirmed. Access: VST'
-      tags:
-        - 'M01: Authentication'
-      parameters:
-        - in: query
-          name: email
-          schema:
-            type: string
-          required: true
-          description: 'Email address to check confirmation status'
-      responses:
-        '200':
-          description: 'Returns the email confirmation status.'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  email:
-                    type: string
-                  confirmed:
-                    type: boolean
-                example:
-                  email: 'user@example.com'
-                  confirmed: true
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'   
-
-## RESET PASSWORD
-  /reset-password/request:
-    post:
-      operationId: R109
-      summary: 'R109: Request Password Reset'
-      description: 'Allows a member to request a password reset using their username. Access: PUB'
-      tags:
-        - 'M01: Authentication'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                  description: 'Username of the member requesting the password reset'
-              required:
-                - username
-      responses:
-        '200':
-          description: 'Password reset request received. Verification token sent.'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
-  /reset-password/verify:
-    get:
-      operationId: R110
-      summary: 'R110: Verify Password Reset Token'
-      description: 'Verifies the password reset token sent to the user. Access: PUB'
-      tags:
-        - 'M01: Authentication'
-      parameters:
-        - in: query
-          name: token
-          schema:
-            type: string
-          required: true
-          description: 'Unique token for password reset verification'
-      responses:
-        '200':
-          description: 'Token is valid. Proceed to reset password.'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
-  /reset-password/update:
-    post:
-      operationId: R111
-      summary: 'R111: Update Password'
-      description: 'Allows a member to set a new password after verification. Access: PUB'
-      tags:
-        - 'M01: Authentication'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                token:
-                  type: string
-                  description: 'Verification token for password reset'
-                new_password:
-                  type: string
-                  description: 'The new password for the user account'
-              required:
-                - token
-                - new_password
-      responses:
-        '200':
-          description: 'Password updated successfully.'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'      
-
-######################################USERS###########################################
-
-  /users/{id}:
-  ##VIEW PROFILE
+  /*:
     get:
       operationId: R201
       summary: 'R201: View user profile'
-      description: 'Show the individual user profile. Access: VST, MBR, OWN, ART, ADM'
+      description: 'Show the individual user profile. Access: MBR, OWN, ART, ADM'
       tags:
         - 'M02: Users'
       parameters:
@@ -362,7 +175,7 @@ paths:
         '200':
           description: 'Ok. Show view profile UI'
         '302':
-          description: 'Redirect if user is not logged in or other user doesn’t exist'
+          description: 'Redirect if user is not logged'
           headers:
             Location:
               schema:
@@ -371,7 +184,8 @@ paths:
                 302Failure:
                   description: 'Failure.'
 
-    ## EDIT PROFILE   
+    ## EDIT PROFILE  
+  /edit_profile:   
     put:
       operationId: R202
       summary: 'R202: Edit Profile'
@@ -397,8 +211,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  ##VIEW FUTURE EVENTS
-  /users/{id}/tickets:
+  /tickets:
     get:
       operationId: R203
       summary: 'R203: View user tickets'
@@ -437,50 +250,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  ##VIEW PAST EVENTS
-  /users/{id}/events/past:
-    get:
-      operationId: R204
-      summary: 'R204: View user past events'
-      description: 'Show a list of past events attended or created by the user. Access: OWN, ADM'
-      tags:
-        - 'M02: Users'
-        - 'M03: Events and Tickets'
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: 'Unique identifier of the user'
-        - in: query
-          name: offset
-          schema:
-            type: integer
-          required: false
-          description: 'Optional offset for pagination'
-      responses:
-        '200':
-          description: 'List of past events retrieved successfully.'
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Event'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
-
-
 #################################EVENTS AND TICKETS####################################
-
 ##SEARCH EVENTS
   /events/search:
     get:
@@ -521,11 +291,11 @@ paths:
                   $ref: '#/components/schemas/Event'
 
 ##CREATE EVENT
-  /events/creation:
+  /create:
       post:
         operationId: R302
         summary: 'R302: Create Event with Media'
-        description: 'Allows a member to create a new event with optional media uploads (images). Access: MBR'
+        description: 'Allows a member to create a new event with an optional media upload (image). Access: MBR'
         tags:
           - 'M03: Events and Tickets'
         requestBody:
@@ -548,27 +318,18 @@ paths:
                     type: string
                     format: date-time
                     description: 'Date and time of the event in ISO 8601 format'
-                  duration:
-                    type: integer
-                    description: 'Duration of the event in minutes'
-                  is_public:
-                    type: boolean
+                  type_of_event:
+                    type: string
                     description: 'Indicates if the event is public or private'
-                  participants:
-                    type: array
-                    items:
-                      type: string
-                    description: 'List of participant emails to invite'
                   media:
-                    type: array
-                    items:
-                      type: string
-                      format: binary
+                    type: string
+                    format: binary
                     description: 'Optional media files (images or videos) for the event'
                 required:
                   - title
                   - date
-                  - is_public
+                  - description
+                  - type_of_event
         responses:
           '201':
             description: 'Event created successfully.'
@@ -586,11 +347,11 @@ paths:
             $ref: '#/components/responses/InternalServerError'
 
 ##INVITE TO EVENT
-  /events/{event_id}/invite:
+  /create-invitation:
     post:
       operationId: R303
       summary: 'R303: Invite Users to Event by Username'
-      description: 'Allows an artist to invite friends to their event using their usernames. The invite is sent as an in-app notification. Access: OWN'
+      description: 'Allows an artist to invite members to their event using their usernames. The invite is sent as an in-app notification. Access: OWN'
       tags:
         - 'M03: Events and Tickets'
         - 'M06: Notifications'
@@ -670,75 +431,11 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 
 
-##JOIN EVENT
-  /events/{event_id}/join:
-    post:
-      operationId: R304
-      summary: 'R304: Join Event'
-      description: 'Allows a member to join an event and be added as a participant. Access: MBR'
-      tags:
-        - 'M03: Events and Tickets'
-      parameters:
-        - in: path
-          name: event_id
-          schema:
-            type: integer
-          required: true
-          description: 'Unique identifier of the event'
-          responses:
-            '200':
-              description: 'Successfully joined the event. Member is added as a participant.'
-              content:
-                application/json:
-                  $ref: '#/components/schemas/UserEvent'
-            '400':
-              $ref: '#/components/responses/BadRequest'
-            '401':
-              $ref: '#/components/responses/Unauthorized'
-            '404':
-              $ref: '#/components/responses/NotFound'
-            '409':
-              description: 'User is already a participant.'
-            '500':
-              $ref: '#/components/responses/InternalServerError'
-
-
-##LEAVE EVENT     
-  /events/{event_id}/leave:
-    post:
-      operationId: R305
-      summary: 'R305: Leave Event'
-      description: 'Allows a member to leave an event and be removed as a participant. Access: MBR'
-      tags:
-        - 'M03: Events and Tickets'
-      parameters:
-        - in: path
-          name: event_id
-          schema:
-            type: integer
-          required: true
-          description: 'Unique identifier of the event'
-      responses:
-        '200':
-          description: 'Successfully left the event. Member is removed from the participant list.'
-          content:
-            application/json:
-              $ref: '#/components/schemas/UserEvent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
-  /events/{event_id}/view:
-
+  /event/{event_id}/:
   ##VIEW EVENT
     get:
-      operationId: R306
-      summary: 'R306: View Event Details'
+      operationId: R304
+      summary: 'R304: View Event Details'
       description: 'Retrieves detailed information about a specific event, including media, ratings, and other necessary data. Access: MBR, ADM'
       tags:
         - 'M03: Events and Tickets'
@@ -766,11 +463,11 @@ paths:
           $ref: '#/components/responses/InternalServerError'
  
   ## PURCHASE TICKET
-  /events/{event_id}/purchase:
+  /event/{event_id}/buy-ticket:
     post:
-      operationId: R307
-      summary: 'R307: Purchase Tickets for an Event'
-      description: 'Allows a member to purchase tickets for a specific event. Access: MBR, ART.'
+      operationId: R305
+      summary: 'R305: Purchase Tickets for an Event'
+      description: 'Allows a member to purchase a ticket for a specific event. Access: MBR, ART.'
       tags:
         - 'M03: Events and Tickets'
       parameters:
@@ -781,17 +478,9 @@ paths:
           required: true
           description: 'Unique identifier of the event'
         - in: query
-          name: quantity
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 10
-            default: 1
-          required: true
-          description: 'Number of tickets to purchase. Maximum is 10 tickets per order.'
       responses:
         '200':
-          description: 'Tickets purchased successfully.'
+          description: 'Ticket purchased successfully.'
           content:
             application/json:
               schema:
