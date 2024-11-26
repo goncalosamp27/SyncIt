@@ -16,10 +16,10 @@ class Visitor
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() || Auth::guard('admin')->check()) {
-            return redirect()->route('home');
+        if (!(Auth::check() || Auth::guard('admin')->check())) {
+            return $next($request);
         }
 
-        return $next($request); // Adjust this as needed
+        return redirect()->route('login'); // Adjust this as needed
     }
 }
