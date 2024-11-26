@@ -1075,23 +1075,6 @@ components:
         price: 20.00
         capacity: 500
         refund_policy: 100
-
-    UserEvent:
-      type: object
-      properties:
-        event_id:
-          type: integer
-          description: 'ID of the event'
-        username:
-          type: string
-          description: 'Username of the participant'
-        status:
-          type: string
-          description: 'Participation status (e.g., left)'
-    example:
-      event_id: 101
-      username: 'john_doe'
-      status: 'left'
   
     User:
       type: object
@@ -1119,11 +1102,11 @@ components:
           description: 'Email address of the member'
           required: true
       example:
-        - username: 'john_doe123'
-          bio: 'A software developer passionate about EDM.'
-          image: 'https://example.com/images/john_doe123.png'
-          name: 'John Doe'
-          email: 'john.doe@example.com'
+        username: 'john_doe123'
+        bio: 'A software developer passionate about EDM.'
+        image: 'https://example.com/images/john_doe123.png'
+        name: 'John Doe'
+        email: 'john.doe@example.com'
 
     Ticket:
       type: object
@@ -1142,12 +1125,9 @@ components:
           description: 'Date and time the ticket was purchased'
           required: true
       example:
-        - ticket_id: 1001
-          event_id: 301
-          purchase_date: '2024-04-01T14:30:00Z'
-        - ticket_id: 1002
-          event_id: 302
-          purchase_date: '2024-05-10T16:45:00Z'
+        ticket_id: 1001
+        event_id: 301
+        purchase_date: '2024-04-01T14:30:00Z'
 
   responses:
       BadRequest:
