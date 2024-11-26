@@ -45,7 +45,6 @@ paths:
       description: 'Processes the login form submission. Access: VST'
       tags:
         - 'M01: Authentication'
- 
       requestBody:
         required: true
         content:
@@ -53,9 +52,9 @@ paths:
             schema:
               type: object
               properties:
-                email_or_username:          # <!--- form field name
+                email_or_username:          
                   type: string
-                password:    # <!--- form field name
+                password:
                   type: string
               required:
                 - email_or_username
@@ -185,10 +184,21 @@ paths:
                   description: 'Failure.'
 
     ## EDIT PROFILE  
-  /edit_profile:   
-    put:
+  /edit_profile:
+    get:
       operationId: R202
-      summary: 'R202: Edit Profile'
+      summary: 'R202: Edit Profile Form'
+      description: 'Provide edit profile form. Access: OWN'
+      tags:
+        - 'M02: Users'
+      responses:
+        '200':
+          description: 'Ok. Show edit profile UI'
+        '500':
+          $ref: '#/components/responses/InternalServerError'   
+    put:
+      operationId: R203
+      summary: 'R203: Edit Profile'
       description: 'Allows a member to edit their profile information. Access: OWN.'
       tags:
         - 'M02: Users'
@@ -213,9 +223,9 @@ paths:
 
   /tickets:
     get:
-      operationId: R203
-      summary: 'R203: View user tickets'
-      description: 'Show a list of tickets purchased by the user. Access: OWN, ADM'
+      operationId: R204
+      summary: 'R204: View user tickets'
+      description: 'Show a list of tickets purchased by the user. Access: OWN'
       tags:
         - 'M02: Users'
         - 'M03: Events and Tickets'
@@ -250,8 +260,33 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-#################################EVENTS AND TICKETS####################################
-##SEARCH EVENTS
+    put:
+      operationId: R205
+      summary: 'R205: Refund Ticket'
+      description: 'Allows a member to refund a ticket. Access: OWN.'
+      tags:
+        - 'M02: Users'
+        - 'M03: Events and Tickets'
+      requestBody:
+        required: true
+        description: 'Member profile details to be updated.'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: 'Ticket refunded successfully.'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
   /events/search:
     get:
       operationId: R301
@@ -347,10 +382,33 @@ paths:
             $ref: '#/components/responses/InternalServerError'
 
 ##INVITE TO EVENT
-  /create-invitation:
-    post:
+  /event/{event_id}/participants:
+    get:
       operationId: R303
-      summary: 'R303: Invite Users to Event by Username'
+        summary: 'R303: View event participants'
+        description: 'Show the list of participants of an event. Access: OWN'
+        tags:
+          - 'M02: Users'
+          - 'M03: Events and Tickets'
+        parameters:
+          - in: path
+            name: event_id
+            schema:
+              type: integer
+            required: true
+            description: 'Unique identifier of the event'
+        responses:
+          '200':
+            description: 'List of event participants retrieved successfully.'
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Event'
+    post:
+      operationId: R304
+      summary: 'R304: Invite Users to Event by Username'
       description: 'Allows an artist to invite members to their event using their usernames. The invite is sent as an in-app notification. Access: OWN'
       tags:
         - 'M03: Events and Tickets'
@@ -369,12 +427,18 @@ paths:
             schema:
               type: object
               properties:
-                usernames:
-                  type: array
-                  items:
-                    type: string
-                  description: 'List of usernames to invite to the event'
-                  required: 'true'
+                username:
+                  type: string
+                  description: 'Username of the Member to be invited'
+                text:
+                  type: string
+                  description: 'Optional media files (images or videos) for the event'
+              required:
+                - title
+                - date
+                - description
+                - type_of_event
+                
 
       responses:
         '200':
