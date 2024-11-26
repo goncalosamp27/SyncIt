@@ -1130,43 +1130,43 @@ components:
         purchase_date: '2024-04-01T14:30:00Z'
 
   responses:
-      BadRequest:
-        description: 'Bad Request. The request could not be understood or was missing required parameters.'
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                error:
-                  type: string
-                  example: 'Invalid request parameters.'
-      Unauthorized:
-        description: 'Unauthorized. Authentication is required to access this resource.'
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                error:
-                  type: string
-                  example: 'User is not authenticated.'
-      NotFound:
-        description: 'Not Found. The requested resource could not be found.'
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                error:
-                  type: string
-                  example: 'Resource not found.'
-      InternalServerError:
-        description: 'Internal Server Error. An unexpected error occurred on the server.'
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                error:
-                  type: string
-                  example: 'Something went wrong on the server.'
+    BadRequest:
+      description: 'Bad Request. The request could not be understood or was missing required parameters.'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: 'Invalid request parameters.'
+    Unauthorized:
+      description: 'Unauthorized. Authentication is required to access this resource.'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: 'User is not authenticated.'
+    NotFound:
+      description: 'Not Found. The requested resource could not be found.'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: 'Resource not found.'
+    InternalServerError:
+      description: 'Internal Server Error. An unexpected error occurred on the server.'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: 'Something went wrong on the server.'
