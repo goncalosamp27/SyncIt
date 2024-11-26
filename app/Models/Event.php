@@ -110,6 +110,7 @@ class Event extends Model
 
         return $eventsWithFeedback;
     }
+
     public static function getEventsByTags(array $tagIds)
     {
         // Get event IDs that match the tag filter criteria
@@ -118,5 +119,6 @@ class Event extends Model
         // Retrieve events where event_id is in the filtered event IDs
         return self::whereIn('event_id', $eventIds)->get();
     }
+
 
 }
