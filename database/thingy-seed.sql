@@ -741,26 +741,26 @@ VALUES
 
 INSERT INTO admin (email, password)
 VALUES 
-    ('admin1@example.com', 'adminpass1'),
-    ('admin2@example.com', 'adminpass2'),
-    ('admin3@example.com', 'adminpass3'),
-    ('admin4@example.com', 'adminpass4'),
-    ('admin5@example.com', 'adminpass5'),
-    ('admin6@example.com', 'adminpass6'),
-    ('admin7@example.com', 'adminpass7'),
-    ('admin8@example.com', 'adminpass8'),
-    ('admin9@example.com', 'adminpass9'),
-    ('admin10@example.com', 'adminpass10'),
-    ('admin11@example.com', 'adminpass11'),
-    ('admin12@example.com', 'adminpass12'),
-    ('admin13@example.com', 'adminpass13'),
-    ('admin14@example.com', 'adminpass14'),
-    ('admin15@example.com', 'adminpass15'),
-    ('admin16@example.com', 'adminpass16'),
-    ('admin17@example.com', 'adminpass17'),
-    ('admin18@example.com', 'adminpass18'),
-    ('admin19@example.com', 'adminpass19'),
-    ('admin20@example.com', 'adminpass20');
+    ('admin1@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin2@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin3@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin4@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin5@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin6@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin7@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin8@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin9@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin10@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin11@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin12@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin13@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin14@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin15@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin16@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin17@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin18@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin19@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin20@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO');
 
 
 INSERT INTO following (artist_id, member_id)

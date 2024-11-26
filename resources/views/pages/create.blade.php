@@ -186,5 +186,6 @@
         <button type="submit" class="btn btn-primary">Create Event</button>
     </form>
 </div>
+@include('partials.go-back')
 </div>
 @endsection
