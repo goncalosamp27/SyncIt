@@ -96,6 +96,9 @@ paths:
                 302Success:
                   description: 'Successful logout. Redirect to home page.'
                   value: '/home'
+                302Error:
+                  description: 'Failed logout. Redirect to login form.'
+                  value: '/login'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -215,17 +218,42 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
-      responses:
-        '200':
-          description: 'Profile updated successfully.'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        responses:
+          '200':
+            description: 'Profile updated successfully.'
+            headers:
+              Location:
+                description: 'Redirects to the updated profile page.'
+                type: string
+                example: '/home'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+            headers:
+              Location:
+                description: 'Redirect to the error page for the bad request.'
+                type: string
+                example: '/error/bad-request'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+            headers:
+              Location:
+                description: 'Redirect to the login page or authorization error page.'
+                type: string
+                example: '/login'
+          '404':
+            $ref: '#/components/responses/NotFound'
+            headers:
+              Location:
+                description: 'Redirect to the error page for the resource not found.'
+                type: string
+                example: '/error/not-found'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+            headers:
+              Location:
+                description: 'Redirect to the general error page for server errors.'
+                type: string
+                example: '/error/internal-server'
 
   /tickets:
     get:
@@ -273,14 +301,39 @@ paths:
       responses:
         '200':
           description: 'Ticket refunded successfully.'
+          headers:
+            Location:
+              description: 'Redirects to the tickets list or the refund success page.'
+              type: string
+              example: '/tickets'
         '400':
           $ref: '#/components/responses/BadRequest'
+          headers:
+            Location:
+              description: 'Redirect to the error page for the bad request.'
+              type: string
+              example: '/error/bad-request'
         '401':
           $ref: '#/components/responses/Unauthorized'
+          headers:
+            Location:
+              description: 'Redirect to the login page or authorization error page.'
+              type: string
+              example: '/login'
         '404':
           $ref: '#/components/responses/NotFound'
+          headers:
+            Location:
+              description: 'Redirect to the error page for the resource not found.'
+              type: string
+              example: '/error/not-found'
         '500':
           $ref: '#/components/responses/InternalServerError'
+          headers:
+            Location:
+              description: 'Redirect to the general error page for server errors.'
+              type: string
+              example: '/error/internal-server'
 
 
   /events/search:
@@ -405,20 +458,41 @@ paths:
                   - setting
                   - location
         responses:
-          '201':
+          '200':
             description: 'Event created successfully.'
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Event'
+            headers:
+              Location:
+                description: 'Redirect to the newly created event details.'
+                type: string
+                example: '/event/{event_id}'
           '400':
             $ref: '#/components/responses/BadRequest'
+            headers:
+              Location:
+                description: 'Redirect to the error page for bad request.'
+                type: string
+                example: '/error/bad-request'
           '401':
             $ref: '#/components/responses/Unauthorized'
+            headers:
+              Location:
+                description: 'Redirect to the login page or authorization error page.'
+                type: string
+                example: '/login'
           '404':
             $ref: '#/components/responses/NotFound'
+            headers:
+              Location:
+                description: 'Redirect to the error page for not found.'
+                type: string
+                example: '/error/not-found'
           '500':
             $ref: '#/components/responses/InternalServerError'
+            headers:
+              Location:
+                description: 'Redirect to the error page for internal server error.'
+                type: string
+                example: '/error/internal-server'
 
 ##INVITE TO EVENT
   /event/{event_id}/participants:
@@ -464,7 +538,7 @@ paths:
             type: string
           required: true
           description: 'Username of the member to invite'
-            requestBody:
+      requestBody:
         required: true
         content:
           application/json:
@@ -482,34 +556,11 @@ paths:
       responses:
         '200':
           description: 'Invitations sent successfully.'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  event_id:
-                    type: integer
-                    description: 'ID of the event'
-                  invited:
-                    type: array
-                    items:
-                      type: string
-                    description: 'List of successfully invited usernames'
-                  failed:
-                    type: array
-                    items:
-                      type: string
-                    description: 'List of usernames where the invitation failed (e.g., user not found)'
-                  notifications:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        username:
-                          type: string
-                        notification_status:
-                          type: string
-                          description: 'Status of the notification (e.g., sent, failed)'
+          headers:
+            Location:
+              description: 'URL to redirect to the event details page.'
+              type: string
+              example: '/notifications'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -566,14 +617,19 @@ paths:
           required: true
           description: 'Unique identifier of the event'
       responses:
-        '200':
-          description: 'Ticket purchased successfully.'
-          content:
-            application/json:
+        '302':
+          description: 'Redirect after processing the purchase information.'
+          headers:
+            Location:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Ticket'
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful authentication. Redirect to member ticket page.'
+                  value: '/tickets'
+                302Failure:
+                  description: 'Failed authentication. Redirect to login form.'
+                  value: '/login'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -610,14 +666,39 @@ paths:
       responses:
         '200':
           description: 'Event details updated successfully.'
+          headers:
+            Location:
+              description: 'Redirects to the updated event page.'
+              type: string
+              example: '/event/{event_id}'
         '400':
           $ref: '#/components/responses/BadRequest'
+          headers:
+            Location:
+              description: 'Redirect to the error page for bad request.'
+              type: string
+              example: '/error/bad-request'
         '401':
           $ref: '#/components/responses/Unauthorized'
+          headers:
+            Location:
+              description: 'Redirect to the login page or authorization error page.'
+              type: string
+              example: '/login'
         '404':
           $ref: '#/components/responses/NotFound'
+          headers:
+            Location:
+              description: 'Redirect to the error page for resource not found.'
+              type: string
+              example: '/error/not-found'
         '500':
           $ref: '#/components/responses/InternalServerError'
+          headers:
+            Location:
+              description: 'Redirect to the error page for internal server errors.'
+              type: string
+              example: '/error/internal-server'
 
 ## MANAGE EVENT PARTICIPANTS
 
@@ -653,12 +734,19 @@ paths:
                 - member_id
                 - event_id
       responses:
-        '200':
-          description: "Member successfully added to the event."
-          content:
-            application/json:
+        '302':
+          description: 'Redirect after processing the adding the member.'
+          headers:
+            Location:
               schema:
-                $ref: '#/components/schemas/Ticket'
+                type: string
+              examples:
+                302Success:
+                  description: 'Invite sent . Redirect to participants page.'
+                  value: '/events/{event_id}/participants'
+                302Failure:
+                  description: 'Invite failed. Redirect to participants page.'
+                  value: '/events/{event_id}/participants'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -670,8 +758,7 @@ paths:
         '409':
           description: "Conflict. The member is already registered for this event."
   
-  # Remove participant from event
-  /events/{event_id}/participants:
+# Remove participant from event
     delete:
       operationId: R310
       summary: "R310: Remove a member from an event's participant list"
@@ -743,7 +830,7 @@ paths:
                 name: 'John Doe'
                 email: 'john.doe@example.com'
                 picture: 'url.png'
-                email: 'example@gmail.com'
+                password: '12345678'
 
       responses:
         '302':
@@ -784,7 +871,7 @@ paths:
             type: string
           required: true
           description: 'Search term to look for matching usernames or names'
-        example: 'John Doe'
+      example: 'John Doe'
       responses:
         '200':
           description: 'Ok. Return a list of users matching the search criteria.'
@@ -830,18 +917,35 @@ paths:
       responses:
         '200':
           description: 'User updated successfully.'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
+          
         '400':
           $ref: '#/components/responses/BadRequest'
+          headers:
+            Location:
+              description: 'Redirect to the error page for bad request.'
+              type: string
+              example: '/error/bad-request'
         '401':
           $ref: '#/components/responses/Unauthorized'
+          headers:
+            Location:
+              description: 'Redirect to the login page or authorization error page.'
+              type: string
+              example: '/login'
         '404':
           $ref: '#/components/responses/NotFound'
+          headers:
+            Location:
+              description: 'Redirect to the error page for user not found.'
+              type: string
+              example: '/error/not-found'
         '500':
           $ref: '#/components/responses/InternalServerError'
+          headers:
+            Location:
+              description: 'Redirect to the error page for internal server errors.'
+              type: string
+              example: '/error/internal-server'
 
 
 ###############################NOTIFICATIONS####################################
@@ -882,15 +986,40 @@ paths:
               $ref: '#/components/schemas/Ticket'
       responses:
         '200':
-          description: 'Ticket refunded successfully.'
+          description: 'Notification deleted successfully.'
+          headers:
+            Location:
+              description: 'Redirect to the list of notifications after deletion.'
+              type: string
+              example: '/notifications'
         '400':
           $ref: '#/components/responses/BadRequest'
+          headers:
+            Location:
+              description: 'Redirect to the error page for bad request.'
+              type: string
+              example: '/error/bad-request'
         '401':
           $ref: '#/components/responses/Unauthorized'
+          headers:
+            Location:
+              description: 'Redirect to the login page or authorization error page.'
+              type: string
+              example: '/login'
         '404':
           $ref: '#/components/responses/NotFound'
+          headers:
+            Location:
+              description: 'Redirect to the error page for notification not found.'
+              type: string
+              example: '/error/not-found'
         '500':
           $ref: '#/components/responses/InternalServerError'
+          headers:
+            Location:
+              description: 'Redirect to the error page for internal server errors.'
+              type: string
+              example: '/error/internal-server'
 
 components:
   schemas:
