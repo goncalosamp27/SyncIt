@@ -626,7 +626,7 @@ CREATE INDEX event_fts_location_idx ON event USING GIN (fts_location);
 
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
 VALUES 
-    ('anonymous', 'Anonymous User', 'anonymousemail@example.com', 'anonymous123', 'anonymous', 'default_user.png', 'Active'),
+    ('edgar', 'LBAW Teacher', 'lbaw@example.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
     ('salsadancer', 'Salsa Dance Lover', 'salsadancer@example.com', 'salsadancer123', 'Salsa moves are life!', 'default_user.png', 'Active'),
     ('techbeat', 'Tech Beat DJ', 'techbeat@example.com', 'technosecure99', 'Living for the beats', 'default_user.png', 'Active'),
     ('folksinger', 'Folk Music Singer', 'folksinger@example.com', 'folkpass1234', 'Folk music and stories', 'default_user.png', 'Active'),
@@ -741,7 +741,7 @@ VALUES
 
 INSERT INTO admin (email, password)
 VALUES 
-    ('admin1@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('edgar@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
     ('admin2@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
     ('admin3@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
     ('admin4@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
