@@ -48,7 +48,6 @@ Route::controller(EventController::class)->group(function () {
     Route::get('/future-events', 'showTagsPerTypeFuture')->name('future-events');
     Route::get('/events/search', 'search')->name('events.search');
     Route::get('/event/{event_id}/participants', 'tickets')->name('participants');
-    
     Route::middleware(['notAdmin', 'auth'])->group(function () {
         Route::get('/events/create', 'create')->name('events.create');
         Route::post('/events/store', 'store')->name('events.store');
