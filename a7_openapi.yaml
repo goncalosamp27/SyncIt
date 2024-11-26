@@ -254,7 +254,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/Ticket'
       responses:
         '200':
           description: 'Ticket refunded successfully.'
