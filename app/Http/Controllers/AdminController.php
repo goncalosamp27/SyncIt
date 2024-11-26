@@ -50,22 +50,4 @@ class AdminController extends Controller
         
         return redirect()->route('admin')->with('success', 'Member updated successfully!');
     }
-
-    public function search(Request $request)
-    {
-        $searchTerm = $request->input('search');
-
-        $members =  Member::select('member.*')
-            ->whereRaw("fts_username @@ plainto_tsquery('english', ?)", [$searchTerm])
-            ->orWhereRaw("fts_display_name @@ plainto_tsquery('english', ?)", [$searchTerm])
-            ->get();
-    
-        return view('pages.admin', [
-            'members' => $members,
-        ]);
-    }
-
-    public function createMember(){
-        return view('auth.register');
-    }
 }

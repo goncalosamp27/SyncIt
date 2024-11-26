@@ -6,6 +6,8 @@ use Illuminate\View\View;
 
 use App\Models\Event;
 use App\Models\Tag;
+use App\Models\Ticket;
+use Illuminate\Support\Carbon;
 
 class EditEventController extends Controller
 {   
@@ -41,7 +43,7 @@ class EditEventController extends Controller
         $event->update($validated);
         $eventDate = $request->input('event_date');
         $eventTime = $request->input('event_time');
-        $eventDateTime = $eventDate . ' ' . $eventTime;
+        $eventDateTime = Carbon::createFromFormat('Y-m-d H:i', "$eventDate $eventTime");
 
         if ($request->hasFile('event_media')) {
             $path = $request->file('event_media')->store('events', 'public');
@@ -57,19 +59,32 @@ class EditEventController extends Controller
         return redirect()->route('event', ['event_id' => $event_id])->with('success', 'Member updated successfully!');
     }
 
-    public function participants($event_id)
+    public function tickets($event_id)
     {
         $event = Event::findOrFail($event_id);
-    
-        $this->authorize('edit', $event);
+        $tickets = $event->tickets();
 
-        $participants = $event->tickets->map(function ($ticket) {
-            return $ticket->member;
-        });
-    
+        $tickets = $event->tickets()->with('member')->get();
         return view('pages.manage-participants', [
-            'participants' => $participants
+            'event' => $event,
+            'tickets' => $tickets
         ]);
+    }
+
+    public function deleteParticipant($event_id, $ticket_id)
+    {
+        try 
+        {
+            $ticket = Ticket::findOrFail($ticket_id);
+            $member = $ticket->member; 
+            $ticket->delete();
+            return redirect()->route('participants', ['event_id' => $event_id ])->with('success', "@{$member->username}'s Ticket #{$ticket_id} deleted successfully!");
+        }
+
+        catch (\Exception $e) 
+        {
+            return redirect()->route('participants', ['event_id' => $event_id ])->with('error', "Failed to delete {$member->username}'s ticket.");
+        }   
     }
 
 	public function create()
@@ -134,7 +149,7 @@ class EditEventController extends Controller
 		$tagsDance = Tag::type(['Dance'])->get();
 		$tagsMood = Tag::type(['Mood'])->get();
 		$tagsSettings = Tag::type(['Settings'])->get();
-        $events = Event::where('event_date', '<', now())->get();
+        $events = Event::where('event_date', '<', Carbon::now())->get();
 
         return view('pages.events', [
             'events' => $events,
@@ -151,7 +166,7 @@ class EditEventController extends Controller
 		$tagsDance = Tag::type(['Dance'])->get();
 		$tagsMood = Tag::type(['Mood'])->get();
 		$tagsSettings = Tag::type(['Settings'])->get();
-        $events = Event::where('event_date', '>',  now())->get();
+        $events = Event::where('event_date', '>', Carbon::now())->get();
 
         return view('pages.events', [
             'events' => $events,

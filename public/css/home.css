@@ -7,11 +7,15 @@
     box-shadow: 0 0 0.5rem var(--primary-color);
 }
 
+.slogan{
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .slogan-container {
 	margin-top: 2em;
 	margin-bottom: 4em;
-	margin-left: auto;
-	margin-right: auto;
     display: grid;
 	align-items: center;
 	text-align: center;
@@ -22,7 +26,7 @@
     color: var(--white-color);
     padding: 2rem;
     overflow: hidden;
-	width:70rem;
+	width:100%;
 	border-radius: 3em;
 	box-shadow: 0em 0em 2em rgb(0,0,0,0.8);
 }
@@ -82,6 +86,7 @@
     height: 20rem;
     border-radius: 2.5em;
 	box-shadow: 0 0 1rem rgba(0, 0, 0, 0.8);
+    max-width: 30rem;
 }	
  
 .home-page-bottom{

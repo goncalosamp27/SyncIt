@@ -42,8 +42,10 @@
         <div class="events-section">
           <h2>Upcoming Events:</h2>
           <div class="events-list">
-          @foreach ($artist->events->where('event_date', '>', now())->take(2) as $event)
-              @include('partials.event-card', ['event' => $event])
+          @foreach ($artist->events->take(2) as $event)
+            @if (strtotime($event->event_date) > time())
+                @include('partials.event-card', ['event' => $event])
+            @endif
           @endforeach
 
           </div>
@@ -56,9 +58,11 @@
         <div class="events-section">
           <h2>Past Events:</h2>
           <div class="events-list">
-          @foreach ($artist->events->where('event_date', '<', now())->take(2) as $event)
-              @include('partials.event-card', ['event' => $event])
-          @endforeach
+            @foreach ($artist->events->take(2) as $event)
+              @if (strtotime($event->event_date) < time())
+                  @include('partials.event-card', ['event' => $event])
+              @endif
+            @endforeach
           </div>
           <a href="{{ route('your-events') }}">
 				    @include('partials.show-more')
@@ -66,6 +70,7 @@
         </div>
       </div>
     </div>
+    @include('partials.go-back')
   </div>
 @endsection
 
