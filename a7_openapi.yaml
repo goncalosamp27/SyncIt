@@ -304,8 +304,10 @@ paths:
           headers:
             Location:
               description: 'Redirects to the tickets list or the refund success page.'
-              type: string
-              example: '/tickets'
+              schema:
+                type: string
+                example: '/tickets'
+
         '400':
           $ref: '#/components/responses/BadRequest'
           headers:
@@ -463,8 +465,9 @@ paths:
             headers:
               Location:
                 description: 'Redirect to the newly created event details.'
-                type: string
-                example: '/event/{event_id}'
+                schema:
+                  type: url
+                  example: '/event/{event_id}'
           '400':
             $ref: '#/components/responses/BadRequest'
             headers:
@@ -559,8 +562,9 @@ paths:
           headers:
             Location:
               description: 'URL to redirect to the event details page.'
-              type: string
-              example: '/notifications'
+              schema:
+                type: string
+                example: '/notifications'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -669,8 +673,9 @@ paths:
           headers:
             Location:
               description: 'Redirects to the updated event page.'
-              type: string
-              example: '/event/{event_id}'
+              schema:
+                type: string
+                example: '/event/{event_id}'
         '400':
           $ref: '#/components/responses/BadRequest'
           headers:
@@ -908,12 +913,13 @@ paths:
             type: integer
             format: int64
           description: 'ID of the user to update'
-        - in: body
-          name: data
-          required: true
-          description: 'User data to be updated'
-          schema:
-            $ref: '#/components/schemas/User'
+      requestBody:
+        required: true
+        description: 'User data to be updated'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
       responses:
         '200':
           description: 'User updated successfully.'
@@ -990,8 +996,9 @@ paths:
           headers:
             Location:
               description: 'Redirect to the list of notifications after deletion.'
-              type: string
-              example: '/notifications'
+              schema:
+                type: string
+                example: '/notifications'
         '400':
           $ref: '#/components/responses/BadRequest'
           headers:
