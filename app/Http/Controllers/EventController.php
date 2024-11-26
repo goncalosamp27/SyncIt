@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Event;
 use App\Models\Tag;
 use App\Models\Ticket;
+use App\Models\EventTag;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use DateTime;
@@ -246,25 +247,30 @@ class EventController extends Controller
     //function to filter events 
     public function filterEvents(Request $request)
     {
-        $tags = $request->input('tags', []);
-        $tagIds = array_filter([
-            $tags['dance_tag'] ?? null,
-            $tags['music_tag'] ?? null,
-            $tags['mood_tag'] ?? null,
-            $tags['setting_tag'] ?? null,
-        ]);
+        // Collect tag IDs from different filters
+        $tagIds = array_merge(
+            ...array_map(
+                fn($tags) => is_array($tags) ? $tags : [$tags],
+                [
+                    $request->input('dance_tags', []),
+                    $request->input('music_tags', []),
+                    $request->input('mood_tags', []),
+                    $request->input('setting_tags', [])
+                ]
+            )
+        );
+
+        // Fetch events using the updated logic
         $events = Event::getEventsByTags($tagIds);
         $eventIds = $events->pluck('event_id');
         return response()->json([
             'success' => true,
-            'event_ids' => $eventIds
+            'events' => $eventIds,
         ]);
     }
 
     public function updateFutureEventsPage(Request $request)
     {
-
-
         // If the request contains specific event IDs to filter
         if ($request->has('event_ids') && !empty($request->input('event_ids'))) {
             $eventIds = $request->input('event_ids');

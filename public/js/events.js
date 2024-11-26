@@ -4,90 +4,96 @@ document.addEventListener('DOMContentLoaded', function () {
     applyFiltersButton.addEventListener('click', function () {
         console.log("Button was clicked");
 
-        // Capture the selected tags when the button is clicked
-        const selectedTags = {
-            dance_tag: document.querySelector('input[name="dance_tag"]:checked')?.value,
-            music_tag: document.querySelector('input[name="music_tag"]:checked')?.value,
-            mood_tag: document.querySelector('input[name="mood_tag"]:checked')?.value,
-            setting_tag: document.querySelector('input[name="setting_tag"]:checked')?.value,
+        // Utility function to get selected values for a given name
+        const getSelectedValues = (name) => {
+            return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(input => input.value);
         };
+
+        // Collect selected tags for each category
+        const selectedTags = {
+            dance_tags: getSelectedValues('dance_tag'),
+            music_tags: getSelectedValues('music_tag'),
+            mood_tags: getSelectedValues('mood_tag'),
+            setting_tags: getSelectedValues('setting_tag'),
+        };
+
+        console.log('Selected Tags:', selectedTags);
 
         // Step 1: Fetch filtered event IDs based on selected tags
         fetch(filterEventsUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             },
-            body: JSON.stringify({ tags: selectedTags }) // Send the selected tags to filter events
+            body: JSON.stringify(selectedTags) // Send the selected tags to the server
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch filtered events');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("Filtered events: ", data);
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch filtered events');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Filtered events: ", data);
 
-            if (data.success && data.event_ids.length > 0) {
-                const eventIds = data.event_ids;
-                console.log(eventIds);
+                if (data.success && data.event_ids && data.event_ids.length > 0) {
+                    const eventIds = data.event_ids;
+                    console.log("Event IDs to update: ", eventIds);
 
-                // Step 2: Fetch updated event data based on the event IDs
-                fetch(updateEventsUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({ event_ids: eventIds }) // Send the filtered event IDs to update events
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch updated events');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Updated events: ", data);
+                    // Step 2: Fetch updated event data based on the event IDs
+                    fetch(updateEventsUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        },
+                        body: JSON.stringify({ event_ids: eventIds }) // Send the filtered event IDs to update events
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to fetch updated events');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log("Updated events: ", data);
 
-                    if (data.success) {
-                        // Step 3: Dynamically create the event cards and append to the grid
-                        const eventsGrid = document.querySelector('.events-grid');
-                        eventsGrid.innerHTML = ''; // Clear the current grid before adding new cards
+                            if (data.success) {
+                                // Dynamically update the events grid
+                                const eventsGrid = document.querySelector('.events-grid');
+                                eventsGrid.innerHTML = ''; // Clear the grid before adding new cards
 
-                        // Loop through each event and generate HTML
-                        data.events.forEach(event => {
-                            const eventCardHTML = createEventCardHTML(event);
-                            eventsGrid.innerHTML += eventCardHTML; // Append each generated card to the grid
+                                // Loop through each event and generate HTML
+                                data.events.forEach(event => {
+                                    const eventCardHTML = createEventCardHTML(event);
+                                    eventsGrid.innerHTML += eventCardHTML; // Append each card to the grid
+                                });
+                            } else {
+                                console.error("No events found based on selected filters.");
+                                const eventsGrid = document.querySelector('.events-grid');
+                                eventsGrid.innerHTML = '<p>No events found for the selected filters.</p>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error fetching updated events:", error);
                         });
-
-                        // Optionally, log the events data
-                        console.log(data.events);
-                    } else {
-                        console.error("No events found based on selected filters.");
-                        const eventsGrid = document.querySelector('.events-grid');
-                        eventsGrid.innerHTML = '<p>No events found for the selected filters.</p>';
-                    }
-                })
-            } else {
-                console.error("No events found based on selected filters.");
-                const eventsGrid = document.querySelector('.events-grid');
-                eventsGrid.innerHTML = '<p>No events found for the selected filters.</p>';
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching filtered events:", error);
-        });
+                } else {
+                    console.log("No events found for the selected filters.");
+                    const eventsGrid = document.querySelector('.events-grid');
+                    eventsGrid.innerHTML = '<p>No events found for the selected filters.</p>';
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching filtered events:", error);
+            });
     });
 });
-
 // Function to generate event card HTML
 function createEventCardHTML(event) {
     // Check if the essential event data is defined
-    const eventRoute = "event/" + event.event_id ;  // Fallback to '#' if route is undefined
-    const eventImageUrl = event.event_media || '/default-image.jpg';  // Fallback to default image
+    const eventRoute = "event/" + event.event_id;  // Fallback to '#' if route is undefined
+    const eventImageUrl = "storage/events/" + event.event_media || 'storage/events/default-image.jpg';
     const eventName = event.event_name || 'Unknown Event';
     const eventLocation = event.location || 'Location not provided';
     const eventDate = formatEventDate(event.event_date);
@@ -120,7 +126,7 @@ function createEventCardHTML(event) {
 // Function to format the event date
 function formatEventDate(eventDate) {
     if (!eventDate) return 'Date not available';
-    
+
     const date = new Date(eventDate);
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()} ${date.getHours() >= 12 ? 'PM' : 'AM'}`;
 }
