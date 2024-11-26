@@ -17,9 +17,8 @@ tags:
   - name: 'M01: Authentication'
   - name: 'M02: Users'
   - name: 'M03: Events and Tickets'
-  - name: 'M04: Polls and Comments'
-  - name: 'M05: Administration'
-  - name: 'M06: Notifications'
+  - name: 'M04: Administration'
+  - name: 'M05: Notifications'
 
 
 paths:
@@ -801,11 +800,11 @@ paths:
 
   /admin/register:
     post:
-      operationId: R501
-      summary: 'R501: Create User Account'
+      operationId: R401
+      summary: 'R401: Create User Account'
       description: 'Creates a new user account with specified details. Access: ADM'
       tags:
-        - 'M05: Administration'
+        - 'M04: Administration'
       requestBody:
         required: true
         content:
@@ -864,11 +863,11 @@ paths:
 
   /admin/search:
     get:
-      operationId: R502
-      summary: 'R502: Search for Users'
+      operationId: R402
+      summary: 'R402: Search for Users'
       description: 'Search for users based on query parameters. Access: ADM'
       tags:
-        - 'M05: Administration'
+        - 'M04: Administration'
       parameters:
         - in: query
           name: search_term
@@ -900,11 +899,11 @@ paths:
 
   /admin/edit/member/{id}:
     put:
-      operationId: R503
-      summary: 'R503: Edit User Account'
+      operationId: R403
+      summary: 'R403: Edit User Account'
       description: 'Edit user account information. Access: ADM'
       tags:
-        - 'M05: Administration'
+        - 'M04: Administration'
       parameters:
         - in: path
           name: userId
@@ -959,11 +958,11 @@ paths:
 ##SEE NOTIFICATIONS
   /notifications:
     get:
-      operationId: R601
-      summary: 'R601: User notifications page.'
+      operationId: R501
+      summary: 'R501: User notifications page.'
       description: 'Show user notifications page. Access: MBR'
       tags:
-        - 'M06: Notifications'
+        - 'M05: Notifications'
 
       responses:
         '200':
@@ -978,11 +977,11 @@ paths:
                 302Failure:
                   description: 'Failure. User not logged in.'
     put:
-      operationId: R602
-      summary: 'R602: Delete Notification'
+      operationId: R502
+      summary: 'R502: Delete Notification'
       description: 'Allows a member to refund a ticket. Access: OWN.'
       tags:
-        - 'M06: Notifications'
+        - 'M05: Notifications'
       requestBody:
         required: true
         description: 'Notification_id to be deleted'
