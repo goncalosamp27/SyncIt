@@ -137,10 +137,14 @@ paths:
                   type: string
                   format: binary
                 bio:
-                  type: string  
+                  type: string 
+                password:
+                  type: string 
               required:
                 - email
                 - password
+                - name
+                - display_name
 
       responses:
         '302':
@@ -166,7 +170,8 @@ paths:
         - 'M02: Users'
       responses:
         '200':
-          description: 'Ok. Show view profile UI'
+          $ref: '#/components/schemas/User'
+          description: 'Ok. Show profile UI'
         '302':
           description: 'Redirect if user is not logged'
           headers:
@@ -187,7 +192,14 @@ paths:
         - 'M02: Users'
       responses:
         '200':
-          description: 'Ok. Show edit profile UI'
+          $ref: '#/components/schemas/User'
+          description: 'Ok. Show form with user info as form values'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'        
         '500':
           $ref: '#/components/responses/InternalServerError'   
     put:
@@ -221,7 +233,6 @@ paths:
       summary: 'R204: View user tickets'
       description: 'Show a list of tickets purchased by the user. Access: OWN'
       tags:
-        - 'M02: Users'
         - 'M03: Events and Tickets'
       responses:
         '200':
@@ -246,15 +257,19 @@ paths:
       summary: 'R205: Refund Ticket'
       description: 'Allows a member to refund a ticket. Access: OWN.'
       tags:
-        - 'M02: Users'
         - 'M03: Events and Tickets'
       requestBody:
         required: true
-        description: 'Member profile details to be updated.'
+        description: 'Ticket details for the refund request.'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Ticket'
+              type: object
+              properties:
+                ticket_id:
+                  type: integer
+                  description: 'Unique identifier of the ticket being refunded.'
+                  required: true
       responses:
         '200':
           description: 'Ticket refunded successfully.'
@@ -284,18 +299,6 @@ paths:
           schema:
             type: string
           required: false
-        - in: query
-          name: category
-          description: 'Category of the event'
-          schema:
-            type: string
-          required: false
-        - in: query
-          name: tag
-          description: 'Tag of the event'
-          schema:
-            type: string
-          required: false
       responses:
         '200':
           description: Success
@@ -312,7 +315,6 @@ paths:
         summary: 'R302: Create Event Form'
         description: 'Provide create event form. Access: MBM ART'
         tags:
-          - 'M02: Users'
           - 'M03: Events and Tickets'
         responses:
           '200':
@@ -348,15 +350,60 @@ paths:
                   type_of_event:
                     type: string
                     description: 'Indicates if the event is public or private'
+                  price:
+                    type: float
+                    description: 'Price of the event'   
+                  capacity:
+                    type: float
+                    description: 'Max capacity of the event (tickets available)'                                        
                   media:
                     type: string
                     format: binary
                     description: 'Optional media files (images or videos) for the event'
+                  refund_policy:
+                    type: integer
+                    description: 'Percentage of the price to return in case of refund'
+                  main_tag:
+                    type: string
+                    description: 'Type of the event'
+                      enum:
+                        - dance
+                        - music
+                  subgenre:
+                    type: string
+                    description: 'Subgenre of the event'
+                  mood:
+                    type: string
+                    description: 'Subgenre of the event'
+                  setting:
+                    type: string
+                    description: 'Subgenre of the event'   
+                example:
+                  title: 'Summer Dance Party'
+                  description: 'A vibrant night of salsa dancing with live music, perfect for all levels of dancers.'
+                  location: 'Sunset Club, Miami, USA'
+                  date: '2024-07-20T19:30:00Z'
+                  type_of_event: 'Public'
+                  price: 25.00
+                  capacity: 300
+                  media: 'https://example.com/media/event_1.jpg'
+                  refund_policy: 100
+                  main_tag: 'dance'
+                  subgenre: 'salsa'
+                  mood: 'energetic'
+                  setting: 'theatre'
                 required:
                   - title
                   - date
                   - description
                   - type_of_event
+                  - capacity 
+                  - price
+                  - main_tag
+                  - subgenre
+                  - mood
+                  - setting
+                  - location
         responses:
           '201':
             description: 'Event created successfully.'
@@ -380,7 +427,6 @@ paths:
       summary: 'R304: View event participants'
       description: 'Show the list of participants of an event and invite button + form. Access: OWN'
       tags:
-        - 'M02: Users'
         - 'M03: Events and Tickets'
       parameters:
         - in: path
@@ -397,7 +443,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Event'
+                  $ref: '#/components/schemas/User'
     post:
       operationId: R305
       summary: 'R305: Invite Users to Event by Username'
@@ -412,7 +458,13 @@ paths:
             type: integer
           required: true
           description: 'Unique identifier of the event'
-      requestBody:
+        - in: query
+          name: username
+          schema:
+            type: string
+          required: true
+          description: 'Username of the member to invite'
+            requestBody:
         required: true
         content:
           application/json:
@@ -422,14 +474,11 @@ paths:
                 username:
                   type: string
                   description: 'Username of the Member to be invited'
-                text:
+                message:
                   type: string
-                  description: 'Optional media files (images or videos) for the event'
+                  description: 'Personalized message to be sent to the invited member'
               required:
-                - title
-                - date
-                - description
-                - type_of_event
+                - username
       responses:
         '200':
           description: 'Invitations sent successfully.'
@@ -502,7 +551,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
  
   ## PURCHASE TICKET
-  /event/{event_id}/buy-ticket:
+  /event/{event_id}:
     post:
       operationId: R307
       summary: 'R307: Purchase Tickets for an Event'
@@ -537,7 +586,7 @@ paths:
           description: 'Conflict. There are not enough tickets available or you have requested more tickets than the maximum allowed.'
 
   ## EDIT EVENT
-  /events/{event_id}/edit:
+  /events/edit/{event_id}:
     put:
       operationId: R308
       summary: 'R308: Edit Event Details'
@@ -622,7 +671,7 @@ paths:
           description: "Conflict. The member is already registered for this event."
   
   # Remove participant from event
-  /events/{event_id}/participants/{ticket_id}:
+  /events/{event_id}/participants:
     delete:
       operationId: R310
       summary: "R310: Remove a member from an event's participant list"
@@ -636,7 +685,7 @@ paths:
             type: integer
           required: true
           description: "Unique identifier of the event"
-        - in: path
+        - in: query
           name: ticket_id
           schema:
             type: integer
@@ -654,15 +703,11 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-
-###############################POLLS AND COMMENTS####################################
-
-
 ###############################ADMINISTRATION####################################
 
  ##CREATE USER ACCOUNTS
 
-  /admin/user:
+  /admin/register:
     post:
       operationId: R501
       summary: 'R501: Create User Account'
@@ -678,18 +723,27 @@ paths:
               parameters:
                 name:
                   type: string
+                display_name:
+                  type: string    
                 email:
                   type: string
                 picture:
                   type: string
                   format: binary
+                bio:
+                  type: string 
+                password:
+                  type: string 
               required:
                 - email
                 - password
+                - name
+                - display_name
               example:
                 name: 'John Doe'
                 email: 'john.doe@example.com'
-                picture: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...'
+                picture: 'url.png'
+                email: 'example@gmail.com'
 
       responses:
         '302':
@@ -700,8 +754,8 @@ paths:
                 type: string
               examples:
                 302Success:
-                  description: 'Successful authentication. Redirect to user profile.'
-                  value: '/users/{id}'
+                  description: 'Successful authentication. Redirect to home.'
+                  value: '/home'
                 302Failure:
                   description: 'Failed authentication. Redirect to login form.'
                   value: '/login'
@@ -725,36 +779,12 @@ paths:
         - 'M05: Administration'
       parameters:
         - in: query
-          name: username
+          name: search_term
           schema:
             type: string
-          required: false
-          description: 'Filter users by username'
-        - in: query
-          name: name
-          schema:
-            type: string
-          required: false
-          description: 'Filter users by name'
-        - in: query
-          name: limit
-          schema:
-            type: integer
-            default: 10
-          required: false
-          description: 'Limit the number of results returned'
-        - in: query
-          name: page
-          schema:
-            type: integer
-            default: 1
-          required: false
-          description: 'Page number for pagination'
-      example:
-        username: 'john_doe'
-        name: 'John Doe'
-        limit: 10
-        page: 1
+          required: true
+          description: 'Search term to look for matching usernames or names'
+        example: 'John Doe'
       responses:
         '200':
           description: 'Ok. Return a list of users matching the search criteria.'
@@ -776,7 +806,7 @@ paths:
 
  ##EDIT USER ACCOUNTS
 
-  /admin/users/{userId}:
+  /admin/edit/member/{id}:
     put:
       operationId: R503
       summary: 'R503: Edit User Account'
@@ -821,7 +851,7 @@ paths:
     get:
       operationId: R601
       summary: 'R601: User notifications page.'
-      description: 'Show user notifications page. Access: MBR, ADM'
+      description: 'Show user notifications page. Access: MBR'
       tags:
         - 'M06: Notifications'
 
@@ -875,7 +905,7 @@ components:
           description: 'Detailed description of the event'
         type:
           type: string
-          description: 'Category of the event (e.g., Dance, Music, Workshop, etc.)'
+          description: 'Visibility of the event (Public, Private)'
         date:
           type: string
           format: date-time
@@ -883,45 +913,32 @@ components:
         location:
           type: string
           description: 'Location of the event'
-        media_urls:
-          type: array
-          items:
-            type: string
-            format: uri
-          description: 'URLs for event media (e.g., images, videos)'
-        is_public:
-          type: boolean
-          description: 'Indicates whether the event is public or private'
-        tags:
-          type: array
-          items:
-            type: string
-          description: 'Tags related to the event'
+        media_url:
+          type: string
+          format: uri
+          description: 'URL for event image'
         price:
           type: number
           format: float
-          description: 'Price of the event, if applicable (e.g., ticket price)'
-        ticket_limit:
+          description: 'Price of the event'
+        capacity:
           type: integer
           description: 'The maximum number of tickets available for this event'
         refund_policy:
           type: integer
           description: 'Refund percentage of the ticket price'
+        artist_id:
+          type: integer
+          description: 'Owner of the event'
       example:
         title: 'Salsa Night with Live Music'
         description: 'Join us for an evening of vibrant salsa dancing and live music under the stars.'
-        type: 'Dance'
+        type: 'Public'
         date: '2024-12-15T20:00:00Z'
         location: 'Havana Club, Miami, USA'
-        media_urls:
-          - 'https://example.com/media/event101/image1.jpg'
-          - 'https://example.com/media/event101/image2.png'
-        is_public: true
-        tags:
-          - 'Salsa'
-          - 'Live Music'
+        media_url: 'https://example.com/media/event101/image1.jpg'
         price: 20.00
-        ticket_limit: 500
+        capacity: 500
         refund_policy: 100
 
     UserEvent:
@@ -947,7 +964,7 @@ components:
         username:
           type: string
           description: 'Username of the member'
-          required: false
+          required: true
         bio:
           type: string
           description: 'Biography of the member'
@@ -960,28 +977,18 @@ components:
         name:
           type: string
           description: 'Full name of the member'
-          required: false
+          required: true
         email:
           type: string
           format: email
           description: 'Email address of the member'
-          required: false
-        phone:
-          type: string
-          description: 'Phone number of the member'
-          required: false
-        address:
-          type: string
-          description: 'Physical address of the member'
-          required: false
+          required: true
       example:
         - username: 'john_doe123'
-          bio: 'A software developer passionate about open-source projects.'
+          bio: 'A software developer passionate about EDM.'
           image: 'https://example.com/images/john_doe123.png'
           name: 'John Doe'
           email: 'john.doe@example.com'
-          phone: '123456789'
-          address: '123 Main St, Springfield, IL, 62701'
 
     Ticket:
       type: object
@@ -989,41 +996,22 @@ components:
         ticket_id:
           type: integer
           description: 'Unique identifier of the ticket'
+          required: true
         event_id:
           type: integer
           description: 'Unique identifier of the event'
-        event_title:
-          type: string
-          description: 'Title of the event'
-        event_date:
-          type: string
-          format: date-time
-          description: 'Date and time of the event'
-        seat:
-          type: string
-          description: 'Seat information (if applicable)'
-        price:
-          type: number
-          format: float
-          description: 'Price of the ticket'
+          required: true
         purchase_date:
           type: string
           format: date-time
           description: 'Date and time the ticket was purchased'
+          required: true
       example:
         - ticket_id: 1001
           event_id: 301
-          event_title: 'Classical Strings Night'
-          event_date: '2024-05-12T19:00:00Z'
-          seat: 'A15'
-          price: 45.00
           purchase_date: '2024-04-01T14:30:00Z'
         - ticket_id: 1002
           event_id: 302
-          event_title: 'Samba Dance Gala'
-          event_date: '2024-06-20T21:00:00Z'
-          seat: 'VIP2'
-          price: 120.00
           purchase_date: '2024-05-10T16:45:00Z'
 
   responses:
