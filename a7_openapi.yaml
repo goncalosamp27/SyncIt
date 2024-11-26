@@ -164,12 +164,6 @@ paths:
       description: 'Show the individual user profile. Access: MBR, OWN, ART, ADM'
       tags:
         - 'M02: Users'
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
       responses:
         '200':
           description: 'Ok. Show view profile UI'
@@ -229,19 +223,6 @@ paths:
       tags:
         - 'M02: Users'
         - 'M03: Events and Tickets'
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: 'Unique identifier of the user'
-        - in: query
-          name: offset
-          schema:
-            type: integer
-          required: false
-          description: 'Optional offset for pagination'
       responses:
         '200':
           description: 'List of tickets retrieved successfully.'
@@ -325,11 +306,22 @@ paths:
                 items:
                   $ref: '#/components/schemas/Event'
 
-##CREATE EVENT
   /create:
-      post:
+      get:
         operationId: R302
-        summary: 'R302: Create Event with Media'
+        summary: 'R302: Create Event Form'
+        description: 'Provide create event form. Access: MBM ART'
+        tags:
+          - 'M02: Users'
+          - 'M03: Events and Tickets'
+        responses:
+          '200':
+            description: 'Ok. Show event Creation UI'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      post:
+        operationId: R303
+        summary: 'R303: Create Event'
         description: 'Allows a member to create a new event with an optional media upload (image). Access: MBR'
         tags:
           - 'M03: Events and Tickets'
@@ -384,31 +376,31 @@ paths:
 ##INVITE TO EVENT
   /event/{event_id}/participants:
     get:
-      operationId: R303
-        summary: 'R303: View event participants'
-        description: 'Show the list of participants of an event. Access: OWN'
-        tags:
-          - 'M02: Users'
-          - 'M03: Events and Tickets'
-        parameters:
-          - in: path
-            name: event_id
-            schema:
-              type: integer
-            required: true
-            description: 'Unique identifier of the event'
-        responses:
-          '200':
-            description: 'List of event participants retrieved successfully.'
-            content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Event'
-    post:
       operationId: R304
-      summary: 'R304: Invite Users to Event by Username'
+      summary: 'R304: View event participants'
+      description: 'Show the list of participants of an event and invite button + form. Access: OWN'
+      tags:
+        - 'M02: Users'
+        - 'M03: Events and Tickets'
+      parameters:
+        - in: path
+          name: event_id
+          schema:
+            type: integer
+          required: true
+          description: 'Unique identifier of the event'
+      responses:
+        '200':
+          description: 'List of event participants retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+    post:
+      operationId: R305
+      summary: 'R305: Invite Users to Event by Username'
       description: 'Allows an artist to invite members to their event using their usernames. The invite is sent as an in-app notification. Access: OWN'
       tags:
         - 'M03: Events and Tickets'
@@ -438,8 +430,6 @@ paths:
                 - date
                 - description
                 - type_of_event
-                
-
       responses:
         '200':
           description: 'Invitations sent successfully.'
@@ -471,20 +461,6 @@ paths:
                         notification_status:
                           type: string
                           description: 'Status of the notification (e.g., sent, failed)'
-              example:
-                event_id: 123
-                invited:
-                  - 'john_doe'
-                  - 'jane_smith'
-                failed:
-                  - 'unknown_user'
-                notifications:
-                  - username: 'john_doe'
-                    notification_status: 'sent'
-                  - username: 'jane_smith'
-                    notification_status: 'sent'
-                  - username: 'unknown_user'
-                    notification_status: 'failed'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -496,10 +472,9 @@ paths:
 
 
   /event/{event_id}/:
-  ##VIEW EVENT
     get:
-      operationId: R304
-      summary: 'R304: View Event Details'
+      operationId: R306
+      summary: 'R306: View Event Details'
       description: 'Retrieves detailed information about a specific event, including media, ratings, and other necessary data. Access: MBR, ADM'
       tags:
         - 'M03: Events and Tickets'
@@ -529,8 +504,8 @@ paths:
   ## PURCHASE TICKET
   /event/{event_id}/buy-ticket:
     post:
-      operationId: R305
-      summary: 'R305: Purchase Tickets for an Event'
+      operationId: R307
+      summary: 'R307: Purchase Tickets for an Event'
       description: 'Allows a member to purchase a ticket for a specific event. Access: MBR, ART.'
       tags:
         - 'M03: Events and Tickets'
@@ -541,7 +516,6 @@ paths:
             type: integer
           required: true
           description: 'Unique identifier of the event'
-        - in: query
       responses:
         '200':
           description: 'Ticket purchased successfully.'
@@ -587,9 +561,6 @@ paths:
       responses:
         '200':
           description: 'Event details updated successfully.'
-          content:
-            schema:
-              $ref: '#/components/schemas/Event'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -626,7 +597,12 @@ paths:
                 member_id:
                   type: integer
                   description: "The unique identifier of the member being added to the event"
-                  required: true
+                event_id:
+                  type: integer
+                  description: "The unique identifier of the event"
+              required:
+                - member_id
+                - event_id
       responses:
         '200':
           description: "Member successfully added to the event."
