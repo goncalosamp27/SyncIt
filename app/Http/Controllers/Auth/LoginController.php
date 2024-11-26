@@ -22,11 +22,11 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
-        if (Auth::check() || Auth::guard('admin')->check()) {
-            return redirect()->route('home');
-        } 
-        return view('auth.login');
-
+        if (Auth::check()) {
+            return redirect('/login');
+        } else {
+            return view('auth.login');
+        }
     }
 
     /**
