@@ -38,6 +38,7 @@
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
+        
         <!-- Event Time -->
         <div class="create-event-input">
             <label for="event_time" class="form-label">Event Time:</label>
@@ -186,6 +187,5 @@
         <button type="submit" class="btn btn-primary">Create Event</button>
     </form>
 </div>
-@include('partials.go-back')
 </div>
 @endsection

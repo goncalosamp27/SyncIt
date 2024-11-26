@@ -21,8 +21,8 @@ class MemberController extends Controller
 
         // Validate inputs
         $validated = $request->validate([
-            'display_name' => 'required|string|max:50',
-            'username' => 'required|string|max:50',
+            'display_name' => 'required|string|max:255',
+            'username' => 'required|string|max:255',
             'email' => 'required|email',
             'bio' => 'nullable|string',
             'profile_pic_url' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -37,6 +37,6 @@ class MemberController extends Controller
             $member->save();
         }
         
-        return redirect()->route('home')->with('success', "Your profile was updated successfully!");
+        return redirect()->route('home')->with('success', 'Member updated successfully!');
     }
 }
