@@ -51,4 +51,11 @@ class EventTag extends Model
             ->toArray(); // Convert to array of event IDs
     }
 
+    public static function getTagsByEventId($eventId)
+    {
+        return self::where('event_id', $eventId)
+            ->pluck('tag_id');  // This retrieves an array of tag_ids associated with the event_id
+    }
+
+
 }

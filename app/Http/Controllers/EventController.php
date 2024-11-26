@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Event;
 use App\Models\Tag;
 use App\Models\Ticket;
+use App\Models\EventTag;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use DateTime;
@@ -253,25 +254,60 @@ class EventController extends Controller
     //function to filter events 
     public function filterEvents(Request $request)
     {
-        $tags = $request->input('tags', []);
-        $tagIds = array_filter([
-            $tags['dance_tag'] ?? null,
-            $tags['music_tag'] ?? null,
-            $tags['mood_tag'] ?? null,
-            $tags['setting_tag'] ?? null,
-        ]);
+        $tagIds = $request->input('tags', []);  // Get the tag IDs from the request
+
+        // Get the events based on selected tags
         $events = Event::getEventsByTags($tagIds);
-        $eventIds = $events->pluck('event_id');
+
+        // Initialize an empty array to store tags and their colors for each event
+        $tagsArray = [];
+
+        // Loop through the events to get tags for each event
+        foreach ($events as $event) {
+            // Get the tag_ids associated with the current event using the getTagsByEventId method
+            $tagIdsForEvent = EventTag::getTagsByEventId($event->event_id);
+
+            // Initialize an array to store the tag names and their associated colors
+            $tagsForEventArray = [];
+
+            // Loop through each tag_id to retrieve the tag name and color
+            foreach ($tagIdsForEvent as $tagId) {
+                // Get the tag name using the getTagNameById method
+                $tagName = Tag::getTagNameById($tagId);
+
+                // Get the tag color using the getTagColorById method
+                $tagColor = Tag::getTagColorById($tagId);
+
+                // Add the tag name and color to the tags array for this event
+                $tagsForEventArray[] = [
+                    'tag_name' => $tagName,
+                    'color' => $tagColor,  // Return the tag color
+                ];
+            }
+
+            // Add the tags for the current event to the tagsArray
+            $tagsArray[] = [
+                'event_id' => $event->event_id,
+                'tags' => $tagsForEventArray,  // Associated tags with names and colors
+            ];
+        }
+
+        // Return the response with events and tags
         return response()->json([
             'success' => true,
-            'event_ids' => $eventIds
+            'events' => $events,  // Return the events
+            'tags' => $tagsArray,  // Return the tags with names and colors for each event
         ]);
     }
 
+
+
+
+
+
+
     public function updateFutureEventsPage(Request $request)
     {
-
-
         // If the request contains specific event IDs to filter
         if ($request->has('event_ids') && !empty($request->input('event_ids'))) {
             $eventIds = $request->input('event_ids');
@@ -279,6 +315,7 @@ class EventController extends Controller
             // Get filtered events by IDs
             $events = Event::whereIn('event_id', $eventIds)->get();
         }
+
         return response()->json([
             'success' => true,
             'events' => $events,
