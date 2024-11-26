@@ -3,7 +3,7 @@
 @section('content')
     <div class="edit-page">
         <h1>Edit Event</h1>
-        <form action="{{ route('edit.event', ['event_id' => $event->event_id]) }}" method="POST" enctype="multipart/form-data">
+        <form  action="{{ url('/event/edit/' . $event->event_id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT') <!-- For updating -->
 
@@ -146,5 +146,6 @@
             <a href="{{ route('event', ['event_id' => $event->event_id]) }}" class="discard-button">Discard Changes</a>
 
         </form>
+        @include('partials.go-back')
     </div>
 @endsection

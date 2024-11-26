@@ -11,6 +11,7 @@ use App\Models\Member;
 use App\Models\Artist;
 use App\Models\EventTag;
 use Exception;
+use Carbon\Carbon;
 
 class CreateEventController extends Controller
 {
@@ -66,7 +67,7 @@ class CreateEventController extends Controller
         // Extract event_date and event_time
         $eventDate = $request->input('event_date');
         $eventTime = $request->input('event_time');
-        $eventDateTime = date('Y-m-d H:i:s', strtotime("$eventDate $eventTime")); // Convert Unix timestamp to MySQL-compatible datetime format
+        $eventDateTime = Carbon::createFromFormat('Y-m-d H:i', "$eventDate $eventTime");
         $defaultImage = 'default_event.png';
 
         $member = Auth::user();
@@ -124,7 +125,7 @@ class CreateEventController extends Controller
         try {
             // Create and save the event
             $event = new Event($eventData);
-            $event = new Event($eventData); 
+            $event = new Event($eventData);
                 if ($request->hasFile('event_files')) {
                     $path = $request->file('event_files')->store('events', 'public');
                     $event->event_media = basename($path);
