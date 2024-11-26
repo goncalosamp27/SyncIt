@@ -421,9 +421,9 @@ paths:
                   main_tag:
                     type: string
                     description: 'Type of the event'
-                      enum:
-                        - dance
-                        - music
+                    enum:
+                      - dance
+                      - music
                   subgenre:
                     type: string
                     description: 'Subgenre of the event'
