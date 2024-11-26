@@ -69,5 +69,4 @@ class Tag extends Model
         return $tag->tag_id;
 
     }
-    
 }

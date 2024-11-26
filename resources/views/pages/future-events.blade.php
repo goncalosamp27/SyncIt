@@ -1,5 +1,3 @@
-
-<!-- 
 @extends('layouts.app')
 
 @section('content')
@@ -56,9 +54,6 @@
       @endforeach
     </div>
   </div>
-
-  {{-- Apply Filters Button --}}
-  <button id="apply-filters" class="filter-button">Apply Filters</button>
 </div>
 
 {{-- Events Grid --}}
@@ -66,11 +61,10 @@
   @if ($events->isEmpty())
     <p>No events found for the selected tags.</p>
   @else
-    @foreach ($futureevents as $event)
-      @include('partials.event-card', ['event' => $event])
-    @endforeach
+      @foreach ($futureevents as $event)
+          @include('partials.event-card', ['event' => $event])
+      @endforeach
   @endif
 </div>
 
 @endsection
--->

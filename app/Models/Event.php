@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Carbon;
 
 class Event extends Model
 {
@@ -14,7 +13,7 @@ class Event extends Model
     protected $table = 'event';
 
     public $timestamps = false;
-
+ 
     protected $primaryKey = 'event_id';
 
     protected $fillable = [
@@ -32,19 +31,19 @@ class Event extends Model
     ];
 
     public static function validate($data)
-    {
+    {   
         $validator = Validator::make($data, [
             'event_name' => 'required|string|max:100',
-            'event_date' => 'required|date|after_or_equal:tomorrow',
+            'event_date' => 'required|date|after_or_equal:tomorrow',  
             'location' => 'required|string|max:100',
             'description' => 'required|string',
-            'refund' => 'required|numeric|between:0,100',
-            'price' => 'required|numeric|min:0',
-            'type_of_event' => 'required|in:Public,Private',
+            'refund' => 'required|numeric|between:0,100',  
+            'price' => 'required|numeric|min:0',  
+            'type_of_event' => 'required|in:Public,Private',  
             'rating' => 'required|numeric|between:0,5',
             'capacity' => 'required|numeric|min:10',
             'event_media' => 'required|string|max:100',
-            'artist_id' => 'required|string'
+            'artist_id' => 'required|string'   
         ]);
         return $validator;
     }
@@ -64,8 +63,7 @@ class Event extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id');
-    }
-
+    }   
 
     // Accessor for ticket count
     public function getTicketCountAttribute()
@@ -75,11 +73,11 @@ class Event extends Model
 
     public static function upcomingEvents()
     {
-        return self::where('event_date', '>', Carbon::now())->get();
+        return self::where('event_date', '>', now())->get();
     }
     public static function pastEvents()
     {
-        return self::where('event_date', '<', Carbon::now())->get();
+        return self::where('event_date', '<', now())->get();
     }
 
     public static function createEvent($data)
@@ -91,33 +89,4 @@ class Event extends Model
         }
         return self::create($data);
     }
-    //get feedback by given tags
-    // In Event.php model
-
-    public static function getFeedbackByTags(array $tagIds)
-    {
-        // Retrieve events that have the given tags
-        $events = self::whereHas('tags', function ($query) use ($tagIds) {
-            $query->whereIn('tags.tag_id', $tagIds); // Filter events by tag IDs (using tag_id)
-        }) ->get();
-
-        // Prepare a collection of events and their feedback
-        $eventsWithFeedback = $events->map(function ($event) {
-            return [
-                'event' => $event,
-                'feedback' => $event->feedback // Get the feedback for the event
-            ];
-        });
-
-        return $eventsWithFeedback;
-    }
-    public static function getEventsByTags(array $tagIds)
-    {
-        // Get event IDs that match the tag filter criteria
-        $eventIds = EventTag::getEventIdsByTags($tagIds);
-
-        // Retrieve events where event_id is in the filtered event IDs
-        return self::whereIn('event_id', $eventIds)->get();
-    }
-
 }
