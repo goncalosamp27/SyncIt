@@ -817,7 +817,7 @@ paths:
 ###############################NOTIFICATIONS####################################
 
 ##SEE NOTIFICATIONS
-  /home/notifications:
+  /notifications:
     get:
       operationId: R601
       summary: 'R601: User notifications page.'
@@ -837,7 +837,30 @@ paths:
               example:
                 302Failure:
                   description: 'Failure. User not logged in.'
-
+    put:
+      operationId: R602
+      summary: 'R602: Delete Notification'
+      description: 'Allows a member to refund a ticket. Access: OWN.'
+      tags:
+        - 'M06: Notifications'
+      requestBody:
+        required: true
+        description: 'Notification_id to be deleted'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+      responses:
+        '200':
+          description: 'Ticket refunded successfully.'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
 components:
   schemas:
