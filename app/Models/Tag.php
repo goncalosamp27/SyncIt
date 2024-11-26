@@ -69,7 +69,19 @@ class Tag extends Model
         return $tag->tag_id;
 
     }
+    public static function getTagNameById($tagId)
+    {
+        // Retrieve the tag based on the provided tag_id
+        $tag = self::find($tagId);
+        return $tag->tag_name;
+    }
 
-    
+    public static function getTagColorById($tagId)
+    {
+        // Retrieve the tag based on the provided tag_id
+        $tag = self::find($tagId);
+        return $tag->color;
+
+    }
 
 }
