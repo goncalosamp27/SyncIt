@@ -526,7 +526,7 @@ paths:
       description: 'Allows an artist to invite members to their event using their usernames. The invite is sent as an in-app notification. Access: OWN'
       tags:
         - 'M03: Events and Tickets'
-        - 'M06: Notifications'
+        - 'M05: Notifications'
       parameters:
         - in: path
           name: event_id
