@@ -48,7 +48,7 @@ class EventController extends Controller
             }
 
             // Validate event date
-            if (!$event->event_date || Carbon::parse($event->event_date)->isPast()) {
+            if (!$event->event_date || strtotime($event->event_date) < time()) {
                 return redirect()->route('your-events')->with('error', "Cannot delete past events.");
             }
 
@@ -206,10 +206,10 @@ class EventController extends Controller
     {
         // Fetch tags where tag_name is 'Music' or 'Dance' (Genres)
         $tagsMusic = Tag::type(['Music'])->get();
-        $tagsDance = Tag::type(['Dance'])->get();
-        $tagsMood = Tag::type(['Mood'])->get();
-        $tagsSettings = Tag::type(['Settings'])->get();
-        $events = Event::where('event_date', '<', Carbon::now())->get();
+		$tagsDance = Tag::type(['Dance'])->get();
+		$tagsMood = Tag::type(['Mood'])->get();
+		$tagsSettings = Tag::type(['Settings'])->get();
+        $events = Event::where('event_date', '<', now())->get();
 
         return view('pages.events', [
             'events' => $events,
@@ -223,13 +223,10 @@ class EventController extends Controller
     {
         // Fetch tags of different types
         $tagsMusic = Tag::type(['Music'])->get();
-        $tagsDance = Tag::type(['Dance'])->get();
-        $tagsMood = Tag::type(['Mood'])->get();
-        $tagsSettings = Tag::type(['Settings'])->get();
-        // Current datetime for filtering future events
-        $currentDateTime = (new DateTime())->format('Y-m-d H:i:s');
-
-        $events = Event::where('event_date', '>', $currentDateTime)->get();
+		$tagsDance = Tag::type(['Dance'])->get();
+		$tagsMood = Tag::type(['Mood'])->get();
+		$tagsSettings = Tag::type(['Settings'])->get();
+        $events = Event::where('event_date', '>', now())->get();
 
         return view('pages.events', [
             'events' => $events,

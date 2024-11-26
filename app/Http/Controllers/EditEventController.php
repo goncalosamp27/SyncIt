@@ -43,7 +43,7 @@ class EditEventController extends Controller
         $event->update($validated);
         $eventDate = $request->input('event_date');
         $eventTime = $request->input('event_time');
-        $eventDateTime = Carbon::createFromFormat('Y-m-d H:i', "$eventDate $eventTime");
+        $eventDateTime = $eventDate . ' ' . $eventTime;
 
         if ($request->hasFile('event_media')) {
             $path = $request->file('event_media')->store('events', 'public');
@@ -149,7 +149,7 @@ class EditEventController extends Controller
 		$tagsDance = Tag::type(['Dance'])->get();
 		$tagsMood = Tag::type(['Mood'])->get();
 		$tagsSettings = Tag::type(['Settings'])->get();
-        $events = Event::where('event_date', '<', Carbon::now())->get();
+        $events = Event::where('event_date', '<', now())->get();
 
         return view('pages.events', [
             'events' => $events,
@@ -166,7 +166,7 @@ class EditEventController extends Controller
 		$tagsDance = Tag::type(['Dance'])->get();
 		$tagsMood = Tag::type(['Mood'])->get();
 		$tagsSettings = Tag::type(['Settings'])->get();
-        $events = Event::where('event_date', '>', Carbon::now())->get();
+        $events = Event::where('event_date', '>',  now())->get();
 
         return view('pages.events', [
             'events' => $events,

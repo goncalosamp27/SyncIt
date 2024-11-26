@@ -38,6 +38,7 @@
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
+        
         <!-- Event Time -->
         <div class="create-event-input">
             <label for="event_time" class="form-label">Event Time:</label>

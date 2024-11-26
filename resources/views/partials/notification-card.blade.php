@@ -2,7 +2,7 @@
     <div class="invitation-card">
         <div class="invitation-data">
             <div class="invitation-date">
-                {{ \Carbon\Carbon::parse($notification->notification_date)->format('d/m/Y - h:i A') }}
+                {{ date('d/m/Y - h:i A', strtotime($notification->notification_date)) }}
             </div>
             <div class = "invitation-username">
              <span class = "invitation-username">@</span>{{ $notification->invitationNotification->invitation->event->artist->member->username }}
