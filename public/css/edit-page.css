@@ -8,7 +8,6 @@
     background-color: var(--black-color);
     color: var(--text-color);
     border-radius: 8px;
-    margin-bottom: 2rem;
 }
 
 .edit-page .form-group {
@@ -50,7 +49,6 @@
     background-color: var(--primary-color);
     color: var(--text-color);
     border: none;
-    margin-bottom: 1rem;
 }
 
 .edit-page .save-button:hover, .edit-page .discard-button:hover {

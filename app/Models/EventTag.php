@@ -31,24 +31,4 @@ class EventTag extends Model
         $eventTag->save();
     }
 
-    // Function to get events containing exactly the given tag_ids
-    public static function getEventIdsByTags(array $tagIds)
-    {
-        // Ensure that we only proceed if the array is not empty
-        if (empty($tagIds)) {
-            return [];
-        }
-
-        // Use Eloquent to query the events related to the given tags
-        return self::whereIn('tag_id', $tagIds)
-            ->get() // Get all matching rows
-            ->groupBy('event_id') // Group by event_id to get distinct events
-            ->filter(function ($group) use ($tagIds) {
-                // Only keep groups where the count of distinct tags matches the input tags count
-                return $group->pluck('tag_id')->unique()->count() === count($tagIds);
-            })
-            ->keys() // Get the event_ids (grouped keys)
-            ->toArray(); // Convert to array of event IDs
-    }
-
 }
