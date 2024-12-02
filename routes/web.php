@@ -14,6 +14,7 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\EditEventController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\CommentController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -70,6 +71,20 @@ Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
     ->name('buy-ticket')
     ->middleware('auth');
 Route::post('/events/getTags', [EventController::class, 'getTags'])->name('events.filters.tags');
+
+Route::controller(CommentController::class)->middleware(['auth'])->group(function () {
+    Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::post('/post/{post_id}/comments', 'store')->name('comments.store');
+    Route::get('/post/{post_id}/comments', 'index')->name('comments.index');
+    Route::put('/post/{post_id}/comments/{comment_id}', 'update')->name('comments.update');
+    Route::delete('/post/{post_id}/comments/{comment_id}', 'destroy')->name('comments.destroy');
+});
+
+Route::controller(CommentVoteController::class)->middleware(['auth'])->group(function () {
+    Route::post('/comments/{comment_id}/upvote', 'upvote')->name('comments.upvote');
+    Route::post('/comments/{comment_id}/downvote', 'downvote')->name('comments.downvote');
+    Route::delete('/comments/{comment_id}/vote', 'removeVote')->name('comments.removeVote');
+});
 
 //AJAX
 Route::post('/future-events/updateFutureEventsPage', [EventController::class, 'updateFutureEventsPage'])->name('future-events-update');

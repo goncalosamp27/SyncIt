@@ -20,8 +20,10 @@ class EventController extends Controller
     {
         // Get the event card.
         $event = Event::findOrFail($event_id);
+        $comments = $event->comments ?: collect();
         return view('pages.event', [
-            'event' => $event
+            'event' => $event,
+            'comments' => $comments 
         ]);
     }
 

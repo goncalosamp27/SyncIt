@@ -121,18 +121,23 @@
 		<div class="purple-line"></div>
 		
 		<div class="event-page-comments">
-			<h1>XXX Comments:</h1>
-			<div class="event-page-text">
-				<div class="add-your-own-comment">
-					<img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Profile Picture" class="profile-pic">
-    				<input type="text" placeholder="Add your comment..." class="comment-input">
-    				<button class="post-button">Post</button>
-				</div>
-
-				@include('partials.comment')
-				@include('partials.reply-comment')
+			<h1>{{ count($comments ?? []) }} Comments:</h1>
+    		<div class="add-your-own-comment">
+        		<img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Profile Picture" class="profile-pic">
+        		<input type="text" placeholder="Add your comment..." id="new-comment" class="comment-input">
+        		<button class="post-button" onclick="postComment()">Post</button>
+    		</div>
+			<div id="comment-list">
+				@if ($comments && $comments->isNotEmpty())
+					@foreach($comments as $comment)
+						@include('partials.comment', ['comment' => $comment])
+					@endforeach
+				@else
+					<p>No comments yet.</p>
+				@endif
 			</div>
 		</div>
+
 		@include('partials.go-back')
 	</div>	
 @endsection	
