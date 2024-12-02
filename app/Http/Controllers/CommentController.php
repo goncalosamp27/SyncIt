@@ -39,28 +39,24 @@ class CommentController extends Controller
         // Get the event by ID
         $event = Event::findOrFail($request->event_id);
 
-        // Create a new comment
         $comment = new Comment();
-        $comment->event_id = $request->event_id;
-        $comment->text = $request->text;
-        $comment->member_id = auth()->id; // Assuming the user is logged in
+        $comment->text = $request->input('text');
+        $comment->event_id = $request->input('event_id');
+        $comment->member_id = auth()->id();  
         $comment->save();
 
-        // Return the new comment data to the frontend
         return response()->json([
             'success' => true,
-            'username' => auth()->user()->username,
-            'text' => $comment
+            'comment' => $comment,
         ]);
     }
-
+ 
     // Delete a comment.
     public function destroy($comment_id)
     {
         try {
             $comment = Comment::findOrFail($comment_id);
 
-            // Ensure only the comment owner or an admin can delete the comment
             if ($comment->member_id != Auth::id()) {
                 return redirect()->back()->with('error', 'You do not have permission to delete this comment.');
             }
@@ -83,7 +79,6 @@ class CommentController extends Controller
         try {
             $comment = Comment::findOrFail($comment_id);
 
-            // Ensure only the comment owner can update the comment
             if ($comment->member_id != Auth::id()) {
                 return redirect()->back()->with('error', 'You do not have permission to edit this comment.');
             }
