@@ -1,6 +1,6 @@
 --show search_path;
 --ALTER ROLE postgres 
-set search_path to Syncit;
+set search_path to syncit;
 
 DROP TABLE IF EXISTS member CASCADE;
 DROP TABLE IF EXISTS artist CASCADE;

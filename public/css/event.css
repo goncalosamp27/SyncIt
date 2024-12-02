@@ -465,3 +465,23 @@ form.buy-tickets-form {
 .take-me-button-member:hover {
     background: var(--hover-color);
 }
+
+
+.delete-button-form {
+    margin-left: 14.2rem;
+    margin-top: -6rem;
+    position: absolute; /* Position the form/button inside the event card */
+}
+
+.delete-button {
+    padding: 0.5rem 1rem;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+.delete-button:hover {
+    background-color: #d32f2f;
+}
