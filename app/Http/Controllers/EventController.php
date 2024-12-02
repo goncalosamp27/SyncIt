@@ -135,7 +135,6 @@ class EventController extends Controller
             'refund',
             'price',
             'type_of_event',
-            'rating',
             'artist_id',
         ]));
 

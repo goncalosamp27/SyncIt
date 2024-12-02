@@ -239,6 +239,13 @@ CREATE TABLE invitation_notification (
     FOREIGN KEY (invitation_id) REFERENCES invitation(invitation_id) ON DELETE CASCADE
 );
 
+CREATE TABLE event_notification(
+    notification_id INT PRIMARY KEY,
+    event_id INT NOT NULL,
+    FOREIGN KEY (notification_id) REFERENCES notification(notification_id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE
+);
+
 CREATE TABLE follow_notification(
     notification_id INT PRIMARY KEY,
     follower_id INT NOT NULL,
@@ -621,6 +628,43 @@ FOR EACH ROW EXECUTE FUNCTION event_fts_trigger();
 CREATE INDEX event_fts_name_idx ON event USING GIN (fts_name);
 CREATE INDEX event_fts_location_idx ON event USING GIN (fts_location);
 
+
+-- Create a function that handles event changes
+CREATE OR REPLACE FUNCTION notify_event_changes()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Check if any of the monitored fields have changed
+    IF NEW.location <> OLD.location OR 
+       NEW.event_date <> OLD.event_date OR 
+       NEW.event_name <> OLD.event_name OR 
+       NEW.description <> OLD.description OR 
+       NEW.capacity <> OLD.capacity OR 
+       NEW.event_media <> OLD.event_media THEN
+
+        -- Insert a notification for each member registered for the event
+        INSERT INTO notification (notification_message, notification_date, member_id)
+        SELECT 'Event details changed', CURRENT_TIMESTAMP, member_id
+        FROM ticket
+        WHERE event_id = NEW.event_id;
+
+        -- Link notifications to the event
+        INSERT INTO event_notification (notification_id, event_id)
+        SELECT notification_id, NEW.event_id
+        FROM notification
+        WHERE notification_date = CURRENT_TIMESTAMP;
+
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a trigger that calls the function on UPDATE of monitored fields
+CREATE TRIGGER trigger_notify_event_changes
+AFTER UPDATE OF location, event_date, event_name, description, capacity, event_media
+ON event
+FOR EACH ROW
+EXECUTE FUNCTION notify_event_changes();
 
 
 
