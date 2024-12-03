@@ -23,16 +23,9 @@ class Notification extends Model
             'notification_date' => 'required|date',  
             'member_id' => 'required|exists:member,member_id',  
         ]);
-
         return $validator;
     }
-    public function member()
-    {
-        return $this->belongsTo(Member::class, 'member_id', 'member_id');
-    }
-
-    public function invitationNotification()
-    {
-        return $this->hasOne(InvitationNotification::class, 'notification_id');
-    }
+    public function member(){return $this->belongsTo(Member::class, 'member_id', 'member_id');}
+    public function invitationNotification(){return $this->hasOne(InvitationNotification::class, 'notification_id');}
+    public function eventNotification(){return $this->hasOne(EventNotification::class, 'notification_id');}
 }

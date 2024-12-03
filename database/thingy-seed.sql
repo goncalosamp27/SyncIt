@@ -489,16 +489,15 @@ RETURNS TRIGGER AS $$
 DECLARE
     new_notification_id INT;  -- Variable to hold the new notification ID
 BEGIN
-    -- Insert the notification and get the new notification_id in one step
+
     INSERT INTO notification (notification_message, notification_date, member_id)
     VALUES (
         'You have a new invitation: ' || NEW.invitation_message,
         CURRENT_TIMESTAMP,
         NEW.member_id
     )
-    RETURNING notification_id INTO new_notification_id;  -- Capture the new notification ID
+    RETURNING notification_id INTO new_notification_id; 
 
-    -- Insert the notification record into invitation_notification
     INSERT INTO invitation_notification (notification_id, invitation_id)
     VALUES (new_notification_id, NEW.invitation_id);  -- Link notification with the invitation
 
@@ -629,36 +628,95 @@ CREATE INDEX event_fts_location_idx ON event USING GIN (fts_location);
 CREATE OR REPLACE FUNCTION notify_event_changes()
 RETURNS TRIGGER AS $$
 DECLARE
+    ticket_member_id INT;
     new_notification_id INT;
 BEGIN
+    -- Check if any of the monitored fields have changed
     IF NEW.location <> OLD.location OR 
        NEW.event_date <> OLD.event_date OR 
        NEW.event_name <> OLD.event_name OR 
        NEW.description <> OLD.description OR 
        NEW.capacity <> OLD.capacity OR 
        NEW.event_media <> OLD.event_media THEN
-        -- Create a single notification for all members
-        INSERT INTO notification (notification_message, notification_date, member_id)
-        SELECT DISTINCT 'Event details changed', CURRENT_TIMESTAMP, ticket.member_id
-        FROM ticket
-        WHERE ticket.event_id = NEW.event_id
-        RETURNING notification_id INTO new_notification_id;
 
-        -- Link the notification to the event once
-        INSERT INTO event_notification (notification_id, event_id)
-        VALUES (new_notification_id, NEW.event_id);
+        -- Loop through each member with tickets for the event
+        FOR ticket_member_id IN
+            SELECT DISTINCT ticket.member_id
+            FROM ticket
+            WHERE ticket.event_id = NEW.event_id
+        LOOP
+            -- Check if a similar notification already exists
+            IF NOT EXISTS (
+                SELECT 1
+                FROM notification n
+                JOIN event_notification en ON n.notification_id = en.notification_id
+                WHERE n.member_id = ticket_member_id
+                  AND en.event_id = NEW.event_id
+                  AND n.notification_message = 'Event details changed'
+                  AND n.notification_date >= CURRENT_TIMESTAMP - INTERVAL '1 minute'
+            ) THEN
+                -- Insert the notification only if it doesn't exist
+                INSERT INTO notification (notification_message, notification_date, member_id)
+                VALUES ('Event details changed', CURRENT_TIMESTAMP, ticket_member_id)
+                RETURNING notification_id INTO new_notification_id;
+
+                -- Link the notification to the event
+                INSERT INTO event_notification (notification_id, event_id)
+                VALUES (new_notification_id, NEW.event_id);
+            END IF;
+        END LOOP;
+
     END IF;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trigger_notify_event_changes ON event;
+
 CREATE TRIGGER trigger_notify_event_changes
 AFTER UPDATE OF location, event_date, event_name, description, capacity, event_media
 ON event
 FOR EACH ROW
 EXECUTE FUNCTION notify_event_changes();
 
+CREATE OR REPLACE FUNCTION clean_orphaned_notifications()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM notification
+    WHERE notification_id = OLD.notification_id;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_event_notification_delete
+AFTER DELETE ON event_notification
+FOR EACH ROW
+EXECUTE FUNCTION clean_orphaned_notifications();
+
+CREATE TRIGGER after_invitation_notification_delete
+AFTER DELETE ON invitation_notification
+FOR EACH ROW
+EXECUTE FUNCTION clean_orphaned_notifications();
+
+CREATE TRIGGER after_follow_notification_delete
+AFTER DELETE ON follow_notification
+FOR EACH ROW
+EXECUTE FUNCTION clean_orphaned_notifications();
+
+CREATE TRIGGER after_comment_notification_delete
+AFTER DELETE ON comment_notification
+FOR EACH ROW
+EXECUTE FUNCTION clean_orphaned_notifications();
+
+CREATE TRIGGER after_poll_notification_delete
+AFTER DELETE ON poll_notification
+FOR EACH ROW
+EXECUTE FUNCTION clean_orphaned_notifications();
+
+CREATE TRIGGER after_restriction_notification_delete
+AFTER DELETE ON restriction_notification
+FOR EACH ROW
+EXECUTE FUNCTION clean_orphaned_notifications();
 
 /*
 CREATE OR REPLACE FUNCTION notify_event_tomorrow()
