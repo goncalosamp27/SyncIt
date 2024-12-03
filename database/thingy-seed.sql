@@ -569,9 +569,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
-
-
 -- Trigger for comment table
 CREATE TRIGGER after_comment_insert
 AFTER INSERT ON comment
@@ -684,30 +681,6 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
-
-CREATE OR REPLACE FUNCTION generate_tomorrow_notifications()
-RETURNS void AS $$
-BEGIN
-    -- Insert notifications for ticket holders of tomorrow's events
-    INSERT INTO notification (notification_message, notification_date, member_id)
-    SELECT 
-        'The event you signed for is tomorrow! Don''t miss it!', 
-        CURRENT_TIMESTAMP, 
-        member_id
-    FROM ticket
-    WHERE event_id IN (
-        SELECT event_id
-        FROM event
-        WHERE event_date::date = CURRENT_DATE + INTERVAL '1 day'
-    );
-
-    -- Link the notifications to the events
-    INSERT INTO event_notification (notification_id, event_id)
-    SELECT n.notification_id, e.event_id
-    FROM notification n
-    JOIN ticket t ON n.membe
-
 
 
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
