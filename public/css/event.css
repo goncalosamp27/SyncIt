@@ -339,9 +339,6 @@
     transform: scale(0.95); /* Slight shrink on click */
 }
 
-
-
-
 .participants-header {
     display: flex;
     align-items: center;

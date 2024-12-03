@@ -82,7 +82,9 @@ Route::controller(TicketController::class)->middleware(['notAdmin', 'auth'])->gr
     Route::post('/event/buy-ticket', 'buyTicket')->name('buy-ticket');
     Route::post('/tickets/{ticket_id}', 'refundTicket')->name('refund-ticket');
     Route::get('/tickets', 'ticketAndEventData')->name('tickets');
+    Route::get('/attended', 'ticketAndEventData2')->name('attended-events');
 });
+
 
 Route::post('/create-invitation', [InvitationController::class, 'create'])->middleware(['notAdmin', 'auth'])->name('create-invitation');
 

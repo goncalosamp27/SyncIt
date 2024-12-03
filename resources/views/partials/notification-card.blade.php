@@ -22,7 +22,9 @@
             @include('partials.event-card', ['event' => $notification->invitationNotification->invitation->event])
         </div>
     </div>    
-@else
+@elseif ($notification -> eventNotification)
+    
+@else 
     <h1>You have notifications but none of them are invitations.</h1>
     <h2>Wait for the next update :D</h2>
 @endif
