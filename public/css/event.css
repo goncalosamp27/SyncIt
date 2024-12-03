@@ -87,10 +87,15 @@
 	margin-top: 2rem;
 }
 
+
 .small-line{
 	height: 0.1rem;
 	margin-top: 1rem;
 	background-color: var(--primary-color);
+}
+
+.ticket-buttons{
+    margin-top: 2rem;
 }
 
 .buy-tickets-btn {
@@ -236,6 +241,22 @@
     text-decoration: line-through; /* Crossed text */
 }
 
+.request-btn{
+    color:#fff;
+    background-color: var(--primary-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 0.8rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border-style: none;
+}
+
+.request-btn:hover{
+    background-color: var(--hover-color);
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
+}
+
 /* Purchased button styling */
 .purchased-btn {
     background-color: var(--hover-color);
@@ -252,6 +273,16 @@
 .purchased-btn:hover {
     transform: none; /* No hover effect for purchased button */
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow remains */
+}
+
+.disabled-btn{
+    background-color: var(--gray-color);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    cursor: not-allowed;
 }
 
 .buy-tickets-btn {

@@ -309,7 +309,6 @@ CREATE TABLE restriction_notification (
 CREATE OR REPLACE FUNCTION anonymize_data() RETURNS TRIGGER AS
 $BODY$
 BEGIN
-
     IF TG_TABLE_NAME = 'member' THEN
         UPDATE comment
         SET member_id = 1 -- DEFAULT USER
