@@ -87,6 +87,7 @@ Route::controller(TicketController::class)->middleware(['notAdmin', 'auth'])->gr
 
 
 Route::post('/create-invitation', [InvitationController::class, 'create'])->middleware(['notAdmin', 'auth'])->name('create-invitation');
+Route::post('/create-invitation2', [InvitationController::class, 'create2'])->middleware(['notAdmin', 'auth'])->name('create-invitation2');
 
 Route::controller(NotificationController::class)->middleware(['notAdmin', 'auth'])->group(function () {
     Route::get('/notifications', 'getNotifications')->name('notifications');

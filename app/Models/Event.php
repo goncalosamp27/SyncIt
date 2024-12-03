@@ -54,6 +54,11 @@ class Event extends Model
         return $this->hasMany(Ticket::class, 'event_id', 'event_id');
     }
 
+    public function requests()
+    {
+        return $this->hasMany(JoinRequest::class, 'event_id', 'event_id');
+    }
+
     // Many Events belong to 1 Artist
     public function artist()
     {
@@ -119,6 +124,4 @@ class Event extends Model
         // Retrieve events where event_id is in the filtered event IDs
         return self::whereIn('event_id', $eventIds)->get();
     }
-
-
 }

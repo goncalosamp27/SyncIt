@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Event;
 use App\Models\Tag;
 use App\Models\Ticket;
+use App\Models\JoinRequest;
 use App\Models\EventTag;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -91,14 +92,16 @@ class EventController extends Controller
     {
         $event = Event::findOrFail($event_id);
         $tickets = $event->tickets();
+        $requests = $event->requests();
 
+        $requests = $event->requests()->with('member')->get();
         $tickets = $event->tickets()->with('member')->get();
         return view('pages.manage-participants', [
             'event' => $event,
+            'requests' => $requests,
             'tickets' => $tickets
         ]);
     }
-
 
     public function create()
     {
