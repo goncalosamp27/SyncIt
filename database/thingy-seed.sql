@@ -666,6 +666,48 @@ ON event
 FOR EACH ROW
 EXECUTE FUNCTION notify_event_changes();
 
+CREATE OR REPLACE FUNCTION notify_event_tomorrow()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Insert notifications for ticket holders
+    INSERT INTO notification (notification_message, notification_date, member_id)
+    SELECT 'The event you signed for is tomorrow! Don''t miss it!', CURRENT_TIMESTAMP, member_id
+    FROM ticket
+    WHERE ticket.event_id = NEW.event_id;
+
+    -- Link notifications to the event
+    INSERT INTO event_notification (notification_id, event_id)
+    SELECT n.notification_id, NEW.event_id
+    FROM notification n
+    WHERE n.notification_date = CURRENT_TIMESTAMP;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION generate_tomorrow_notifications()
+RETURNS void AS $$
+BEGIN
+    -- Insert notifications for ticket holders of tomorrow's events
+    INSERT INTO notification (notification_message, notification_date, member_id)
+    SELECT 
+        'The event you signed for is tomorrow! Don''t miss it!', 
+        CURRENT_TIMESTAMP, 
+        member_id
+    FROM ticket
+    WHERE event_id IN (
+        SELECT event_id
+        FROM event
+        WHERE event_date::date = CURRENT_DATE + INTERVAL '1 day'
+    );
+
+    -- Link the notifications to the events
+    INSERT INTO event_notification (notification_id, event_id)
+    SELECT n.notification_id, e.event_id
+    FROM notification n
+    JOIN ticket t ON n.membe
+
 
 
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
