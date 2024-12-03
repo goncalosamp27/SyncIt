@@ -27,6 +27,7 @@ DROP TABLE IF EXISTS event_image CASCADE;
 DROP TABLE IF EXISTS join_request CASCADE;
 DROP TABLE IF EXISTS join_request_notification CASCADE;
 DROP TABLE IF EXISTS vote_comment CASCADE;
+DROP TABLE IF EXISTS event_notification CASCADE;
 
 DROP DOMAIN IF EXISTS email_domain CASCADE;
 DROP DOMAIN IF EXISTS price_domain CASCADE;
@@ -625,424 +626,41 @@ FOR EACH ROW EXECUTE FUNCTION event_fts_trigger();
 CREATE INDEX event_fts_name_idx ON event USING GIN (fts_name);
 CREATE INDEX event_fts_location_idx ON event USING GIN (fts_location);
 
-
--- Create a function that handles event changes
-You said:
-unterminated dollar-quoted string at or near "$$
-BEGIN
-    -- Insert notifications for ticket holders of tomorrow's events
-    INSERT INTO notification (notification_message, notification_date, member_id)
-    SELECT 
-        'The event you signed for is tomorrow! Don''t miss it!', 
-        CURRENT_TIMESTAMP, 
-        member_id
-    FROM ticket
-    WHERE event_id IN (
-        SELECT event_id
-        FROM event
-        WHERE event_date::date = CURRENT_DATE + INTERVAL '1 day'
-    );
-
-    -- Link the notifications to the events
-    INSERT INTO event_notification (notification_id, event_id)
-    SELECT n.notification_id, e.event_id
-    FROM notification n
-    JOIN ticket t ON n.member
-ChatGPT said:
-ChatGPT
-
-The error you're encountering, "unterminated dollar-quoted string," typically happens when the end of a $$-quoted block is missing. PostgreSQL uses $$ as a delimiter to encapsulate blocks of code or multi-line strings, and every opening $$ must have a corresponding closing $$.
-
-From your query, the $$ block begins after $$ BEGIN, but it does not have a corresponding closing $$. The JOIN statement at the end of your query is incomplete, which likely interrupted the proper termination of the $$ block.
-
-Here’s the corrected code:
-
-DO $$
-BEGIN
-    -- Insert notifications for ticket holders of tomorrow's events
-    INSERT INTO notification (notification_message, notification_date, member_id)
-    SELECT 
-        'The event you signed for is tomorrow! Don''t miss it!', 
-        CURRENT_TIMESTAMP, 
-        member_id
-    FROM ticket
-    WHERE event_id IN (
-        SELECT event_id
-        FROM event
-        WHERE event_date::date = CURRENT_DATE + INTERVAL '1 day'
-    );
-
-    -- Link the notifications to the events
-    INSERT INTO event_notification (notification_id, event_id)
-    SELECT n.notification_id, e.event_id
-    FROM notification n
-    JOIN ticket t ON n.member_id = t.member_id
-    JOIN event e ON t.event_id = e.event_id
-    WHERE e.event_date::date = CURRENT_DATE + INTERVAL '1 day';
-END;
-$$;
-
-Key Fixes:
-
-    Completed the JOIN logic: Finished the JOIN statement by correctly linking notification, ticket, and event.
-    Added the closing $$ delimiter: Placed $$ after END; to properly terminate the DO block.
-    Ensured logical WHERE clauses: Made sure the WHERE clause filters by tomorrow's date to match the intent of your query.
-
-Now, the code should execute without syntax errors.
-You said:
-public static function validate($data)
-    {
-        $validator = Validator::make($data, [
-            'event_name' => 'required|string|max:100',
-            'event_date' => 'required|date|after_or_equal:tomorrow',
-            'location' => 'required|string|max:100',
-            'description' => 'required|string',
-            'refund' => 'required|numeric|between:0,100',
-            'price' => 'required|numeric|min:0',
-            'type_of_event' => 'required|in:Public,Private',
-            'rating' => 'required|numeric|between:0,5',
-            'capacity' => 'required|numeric|min:10',
-            'event_media' => 'required|string|max:100',
-            'artist_id' => 'required|string'
-        ]);
-        return $validator;
-    }
-
-how can I say that the minimum event_date is 24 hours from now on without using Carbon
-ChatGPT said:
-ChatGPT
-
-To validate that the event_date is at least 24 hours from now without using Carbon, you can achieve this by using a custom validation rule in Laravel. Here’s how you can modify your code:
-
-public static function validate($data)
-{
-    $validator = Validator::make($data, [
-        'event_name' => 'required|string|max:100',
-        'event_date' => [
-            'required',
-            'date',
-            function ($attribute, $value, $fail) {
-                $currentTimePlus24Hours = strtotime('+24 hours');
-                if (strtotime($value) < $currentTimePlus24Hours) {
-                    $fail('The ' . $attribute . ' must be at least 24 hours from now.');
-                }
-            },
-        ],
-        'location' => 'required|string|max:100',
-        'description' => 'required|string',
-        'refund' => 'required|numeric|between:0,100',
-        'price' => 'required|numeric|min:0',
-        'type_of_event' => 'required|in:Public,Private',
-        'rating' => 'required|numeric|between:0,5',
-        'capacity' => 'required|numeric|min:10',
-        'event_media' => 'required|string|max:100',
-        'artist_id' => 'required|string',
-    ]);
-
-    return $validator;
-}
-
-Explanation of Changes:
-
-    Custom Rule for event_date:
-        Used a Closure to define a custom validation logic.
-        Converted the current time plus 24 hours to a timestamp using strtotime('+24 hours').
-        Compared the timestamp of the provided event_date using strtotime($value).
-
-    Failure Message:
-        If the validation fails, the $fail function is invoked with a custom error message.
-
-This approach avoids using external date libraries like Carbon and directly relies on PHP's strtotime function to handle date and time operations.
-You said:
-@if ($ticket->event->event_date >= $nowMinusOneDay)
-            <form action="{{ route('refund-ticket', ['ticket_id' => $ticket->ticket_id]) }}" method="POST">
-                @csrf
-                <button class="refund-button" type="submit">Click to refund</button>
-            </form>  
-        @else
-            <button class="no-refund-button" disabled>Refund unavaiable<button>
-        @endif
-  
-
-i want to check also if the event is in the past
-ChatGPT said:
-ChatGPT
-
-To check if the event is in the past in addition to your existing condition, you can modify your @if statement to explicitly compare the event date with the current date and time. Here's the updated code:
-
-@if ($ticket->event->event_date >= $nowMinusOneDay && $ticket->event->event_date >= now())
-    <form action="{{ route('refund-ticket', ['ticket_id' => $ticket->ticket_id]) }}" method="POST">
-        @csrf
-        <button class="refund-button" type="submit">Click to refund</button>
-    </form>  
-@else
-    <button class="no-refund-button" disabled>Refund unavailable</button>
-@endif
-
-Explanation:
-
-    Additional Check for Past Events:
-        Added && $ticket->event->event_date >= now() to ensure the event date is in the future or at least the current time.
-        The now() function in Laravel provides the current date and time.
-
-    Logic:
-        The refund is available if the event's date is greater than or equal to both:
-            $nowMinusOneDay (24 hours ago from now, as per your logic).
-            now() (current time, ensuring it's not in the past).
-
-    Else Condition:
-        If either condition is not met (i.e., the event is more than a day ago or is in the past), the refund button is disabled.
-
-This ensures that refunds are available only for events that are still upcoming and within the allowed refund period.
-You said:
- I cant use carbon
-ChatGPT said:
-ChatGPT
-
-If you can't use Carbon, you can rely on PHP's built-in strtotime() function or the date() function to achieve the same logic. Here's the updated code:
-
-@php
-    $now = date('Y-m-d H:i:s'); // Get the current date and time
-    $nowMinusOneDay = date('Y-m-d H:i:s', strtotime('-1 day')); // 24 hours ago
-@endphp
-
-@if ($ticket->event->event_date >= $nowMinusOneDay && $ticket->event->event_date >= $now)
-    <form action="{{ route('refund-ticket', ['ticket_id' => $ticket->ticket_id]) }}" method="POST">
-        @csrf
-        <button class="refund-button" type="submit">Click to refund</button>
-    </form>  
-@else
-    <button class="no-refund-button" disabled>Refund unavailable</button>
-@endif
-
-Explanation:
-
-    Using strtotime() and date():
-        date('Y-m-d H:i:s'): Fetches the current date and time in a standard format.
-        strtotime('-1 day'): Computes the timestamp for 24 hours ago.
-        date('Y-m-d H:i:s', strtotime('-1 day')): Converts the timestamp for 24 hours ago back into a formatted date string.
-
-    Comparison Logic:
-        $ticket->event->event_date >= $nowMinusOneDay: Ensures the event date is at least 24 hours in the future.
-        $ticket->event->event_date >= $now: Ensures the event is not in the past.
-
-    Why This Works Without Carbon:
-        PHP's strtotime() and date() are powerful and sufficient for basic date and time manipulations.
-
-This solution avoids using Carbon and relies entirely on PHP's native date handling.
-You said:
-Route [attended-events] not defined.
-ChatGPT said:
-ChatGPT
-
-The error "Route [attended-events] not defined" indicates that Laravel could not find a route with the name attended-events in your application. To resolve this issue, follow these steps:
-1. Check if the Route Exists
-
-Ensure you have defined a route named attended-events in your web.php or api.php routes file. For example:
-
-Route::get('/attended-events', [EventController::class, 'attendedEvents'])->name('attended-events');
-
-2. Verify the Route's Name
-
-Make sure the name() method is used to name the route as attended-events. For instance, if you're using a route group or controller method, the named route might be missing:
-
-// Correct Example
-Route::get('/attended-events', [EventController::class, 'attendedEvents'])->name('attended-events');
-
-3. Ensure the Controller and Method Exist
-
-If the route exists, confirm that the controller (EventController in this case) and the method (attendedEvents) are correctly defined.
-
-// Example Controller Method
-public function attendedEvents()
-{
-    // Your logic for attended events
-}
-
-4. Update the Reference in the View
-
-If the route is correctly defined, use the route() helper in your Blade view to reference it:
-
-<a href="{{ route('attended-events') }}">View Attended Events</a>
-
-5. Clear Cache (If Necessary)
-
-If you've recently added or updated the route, clear the route cache to ensure Laravel recognizes the changes:
-
-php artisan route:clear
-
-6. Debugging Tips
-
-    Run the php artisan route:list command to see all defined routes and verify that attended-events is listed.
-    Check for typos in the route name or the way it's referenced.
-
-If these steps are followed, the error should be resolved, and the application will correctly recognize the attended-events route.
-You said:
-@if ($ticket->event->event_date >= $nowMinusOneDay)
-            <form action="{{ route('refund-ticket', ['ticket_id' => $ticket->ticket_id]) }}" method="POST">
-                @csrf
-                <button class="refund-button" type="submit">Click to refund</button>
-            </form>  
-        @elseif ($ticket->event->event_date <= $now)
-            <button class="no-refund-button-attended" disabled>Refund unavaiable<button>
-        @else
-            <button class="no-refund-button" disabled>Refund unavaiable<button>
-        @endif
-ChatGPT said:
-ChatGPT
-
-Your logic contains an inconsistency that might cause undesired behavior. Specifically, the second @elseif condition might never trigger due to overlapping or improper conditions. Here's a corrected version of your Blade code with clarified logic:
-Corrected Code
-
-@php
-    $now = date('Y-m-d H:i:s'); // Current date and time
-
-You said:
-@if ($ticket->event->event_date >= $nowMinusOneDay)
-            <form action="{{ route('refund-ticket', ['ticket_id' => $ticket->ticket_id]) }}" method="POST">
-                @csrf
-                <button class="refund-button" type="submit">Click to refund</button>
-            </form>  
-        @elseif ($ticket->event->event_date <= $now)
-            <button class="no-refund-button-attended" disabled>Refund unavaiable<button>
-        @else
-            <button class="no-refund-button" disabled>Refund unavaiable<button>
-        @endif
-
-I cant refund a ticket if it happens in less than 24 hours
-I cant refund a ticket also if it already hapenned
-fix my logic
-ChatGPT said:
-ChatGPT
-
-To fix your logic, the conditions should correctly distinguish between the cases where the event is in the past, within 24 hours, or eligible for a refund. Here's the corrected code:
-Corrected Code with Fixed Logic
-
-@php
-    $now = date('Y-m-d H:i:s'); // Current date and time
-    $nowPlus24Hours = date('Y-m-d H:i:s', strtotime('+24 hours')); // 24 hours from now
-@endphp
-
-@if ($ticket->event->event_date >= $nowPlus24Hours)
-    <!-- Event is more than 24 hours away, refund available -->
-    <form action="{{ route('refund-ticket', ['ticket_id' => $ticket->ticket_id]) }}" method="POST">
-        @csrf
-        <button class="refund-button" type="submit">Click to refund</button>
-    </form>  
-@elseif ($ticket->event->event_date < $now)
-    <!-- Event has already happened -->
-    <button class="no-refund-button-attended" disabled>Refund unavailable</button>
-@else
-    <!-- Event is within 24 hours -->
-    <button class="no-refund-button" disabled>Refund unavailable</button>
-@endif
-
-Explanation:
-
-    Define Time Ranges:
-        $now: Current date and time.
-        $nowPlus24Hours: 24 hours from now, calculated using strtotime('+24 hours').
-
-    Condition Breakdown:
-        Refund Eligible ($ticket->event->event_date >= $nowPlus24Hours)
-            The event date is at least 24 hours away.
-            Refund is allowed, so display the refund button.
-        Event in the Past ($ticket->event->event_date < $now)
-            The event date is earlier than the current time.
-            Refund is not allowed, and the "Refund unavailable" button for attended events is displayed.
-        Event Within 24 Hours
-            Covers the remaining cases: the event is in less than 24 hours but has not yet occurred.
-            Refund is unavailable, and the "Refund unavailable" button is displayed.
-
-Key Improvements:
-
-    Removed overlapping conditions to ensure clarity and correctness.
-    Simplified the logic to ensure mutually exclusive conditions.
-    Added comments to clarify the purpose of each condition.
-
-This logic will now correctly handle all scenarios for refund eligibility.
-You said:
-CREATE OR REPLACE FUNCTION notify_event_changes()
-RETURNS TRIGGER AS $$
-BEGIN
-    -- Check if any of the monitored fields have changed
-    IF NEW.location <> OLD.location OR 
-       NEW.event_date <> OLD.event_date OR 
-       NEW.event_name <> OLD.event_name OR 
-       NEW.description <> OLD.description OR 
-       NEW.capacity <> OLD.capacity OR 
-       NEW.event_media <> OLD.event_media THEN
-
-        -- Insert a notification for each member registered for the event
-        INSERT INTO notification (notification_message, notification_date, member_id)
-        SELECT 'Event details changed', CURRENT_TIMESTAMP, member_id
-        FROM ticket
-        WHERE event_id = NEW.event_id;
-
-        -- Link notifications to the event
-        INSERT INTO event_notification (notification_id, event_id)
-        SELECT notification_id, NEW.event_id
-        FROM notification
-        WHERE notification_date = CURRENT_TIMESTAMP;
-
-    END IF;
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Create a trigger that calls the function on UPDATE of monitored fields
-CREATE TRIGGER trigger_notify_event_changes
-AFTER UPDATE OF location, event_date, event_name, description, capacity, event_media
-ON event
-FOR EACH ROW
-EXECUTE FUNCTION notify_event_changes();
-
-
-this trigger is inserting two notifications but I only want one
-ChatGPT said:
-ChatGPT
-
-The issue of inserting duplicate notifications in your trigger likely arises because the notification table's notification_id is being generated twice for the same event update. To resolve this issue, you can use a RETURNING clause when inserting into the notification table, and directly use the returned notification_id to insert into the event_notification table. This ensures only one notification is created and linked.
-
-Here’s the corrected trigger function:
-
 CREATE OR REPLACE FUNCTION notify_event_changes()
 RETURNS TRIGGER AS $$
 DECLARE
     new_notification_id INT;
 BEGIN
-    -- Check if any of the monitored fields have changed
     IF NEW.location <> OLD.location OR 
        NEW.event_date <> OLD.event_date OR 
        NEW.event_name <> OLD.event_name OR 
        NEW.description <> OLD.description OR 
        NEW.capacity <> OLD.capacity OR 
        NEW.event_media <> OLD.event_media THEN
-
-        -- Insert a notification and get its ID
+        -- Create a single notification for all members
         INSERT INTO notification (notification_message, notification_date, member_id)
-        SELECT 'Event details changed', CURRENT_TIMESTAMP, member_id
+        SELECT DISTINCT 'Event details changed', CURRENT_TIMESTAMP, ticket.member_id
         FROM ticket
-        WHERE event_id = NEW.event_id
+        WHERE ticket.event_id = NEW.event_id
         RETURNING notification_id INTO new_notification_id;
 
-        -- Link the single notification to the event
+        -- Link the notification to the event once
         INSERT INTO event_notification (notification_id, event_id)
         VALUES (new_notification_id, NEW.event_id);
-
     END IF;
-
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trigger_notify_event_changes ON event;
 CREATE TRIGGER trigger_notify_event_changes
 AFTER UPDATE OF location, event_date, event_name, description, capacity, event_media
 ON event
 FOR EACH ROW
 EXECUTE FUNCTION notify_event_changes();
 
+
+/*
 CREATE OR REPLACE FUNCTION notify_event_tomorrow()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -1061,7 +679,7 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
+*/
 
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
 VALUES 
