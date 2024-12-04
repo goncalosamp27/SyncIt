@@ -49,7 +49,6 @@ class InvitationController extends Controller
         $request->validate([
             'member_id' => 'required|exists:member,member_id',
             'event_id' => 'required|exists:event,event_id',
-            'request_id' => 'required|exists:join_request,request_id'
         ]);
 
         $member = Member::findOrFail($request->input('member_id'));
@@ -61,7 +60,8 @@ class InvitationController extends Controller
 		}
 
 		$event = Event::findOrFail($request->input('event_id'));
-
+        
+        /*
 		$existingInvitation = Invitation::where('event_id', $request->input('event_id'))
         ->where('member_id', $member->member_id)
         ->first();
@@ -69,6 +69,7 @@ class InvitationController extends Controller
 		if ($existingInvitation) {
 			return redirect()->back()->with('error', "This member has already been invited to this event.");
 		}
+        */
         
         $invitation = new Invitation();
         $invitation->invitation_message = null;
@@ -76,9 +77,6 @@ class InvitationController extends Controller
         $invitation->event_id = $request->input('event_id');
         $invitation->member_id = $request->input('member_id');
         $invitation->save();
-
-        $joinRequest = JoinRequest::findOrFail($request->input('request_id'));
-        $joinRequest->delete();
 
         return redirect()->back()->with('success', 'Join request accepted and invitation sent successfully!');
     }

@@ -98,7 +98,6 @@
                             @csrf
                             <input type = "hidden" name = "member_id" value = "{{ $member -> member_id }}">
                             <input type="hidden" name="event_id" value="{{ $event->event_id }}">
-                            <input type = "hidden" name="request_id" value = "{{ $request -> request_id}}">
                             <button class="remove-participant" type="submit">
                                 Invite
                             </button>
