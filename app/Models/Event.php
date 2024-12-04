@@ -47,31 +47,13 @@ class Event extends Model
         ]);
         return $validator;
     }
-    //Relationships
-    // 1 Event has many Tickets
-    public function tickets()
-    {
-        return $this->hasMany(Ticket::class, 'event_id', 'event_id');
-    }
+    
+    public function tickets(){return $this->hasMany(Ticket::class, 'event_id', 'event_id');}
+    public function invitations(){return $this->hasMany(Invitation::class, 'event_id', 'event_id');}
+    public function requests(){return $this->hasMany(JoinRequest::class, 'event_id', 'event_id');}
+    public function artist(){return $this->belongsTo(Artist::class, 'artist_id', 'artist_id');}
+    public function tags(){return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id');}
 
-    public function requests()
-    {
-        return $this->hasMany(JoinRequest::class, 'event_id', 'event_id');
-    }
-
-    // Many Events belong to 1 Artist
-    public function artist()
-    {
-        return $this->belongsTo(Artist::class, 'artist_id', 'artist_id');
-    }
-
-    public function tags()
-    {
-        return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id');
-    }
-
-
-    // Accessor for ticket count
     public function getTicketCountAttribute()
     {
         return $this->tickets()->count();
