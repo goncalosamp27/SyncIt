@@ -80,3 +80,54 @@ document.addEventListener('DOMContentLoaded', function () {
         alert('Edit functionality not implemented yet');
     };
 });
+
+function postComment() {
+    const commentText = document.getElementById('new-comment').value;
+    const eventId = commentUrl.match(/\/event\/(\d+)\/comments/)[1]; // Extract event_id from the commentUrl
+
+    console.log("Event ID:", eventId);
+    console.log("Comment Text Retrieved:", commentText);
+
+    if (commentText === '') {
+        console.warn("Comment text is empty.");
+        alert("Please write a comment.");
+        return;
+    }
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    console.log("CSRF Token Retrieved:", csrfToken);
+
+    const requestData = { text: commentText, event_id: eventId };
+    console.log("Request Data Prepared:", requestData);
+
+    fetch(commentUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+        },
+        body: JSON.stringify(requestData),
+    })
+    .then(response => {
+        console.log("Fetch Response Status:", response.status);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("Response Data:", data);
+
+        if (data.success) {
+            alert('Comment posted!');
+            console.info("Comment posted successfully. Reloading the page.");
+            window.location.reload(); // Reload page to show new comment
+        } else {
+            console.error("Server indicated failure to post comment:", data);
+            alert('Failed to post comment');
+        }
+    })
+    .catch(error => {
+        console.error('Error occurred during fetch:', error);
+    });
+}
