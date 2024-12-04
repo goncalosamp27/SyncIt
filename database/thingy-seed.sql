@@ -747,7 +747,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER after_invitation_insert
+CREATE TRIGGER after_invitation_insert2
 AFTER INSERT ON invitation
 FOR EACH ROW
 EXECUTE FUNCTION delete_join_requests_on_invitation();
