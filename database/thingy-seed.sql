@@ -706,8 +706,12 @@ BEGIN
     INSERT INTO event_notification (notification_id, event_id)
     SELECT n.notification_id, e.event_id
     FROM notification n
-    JOIN ticket t ON n.membe
+    JOIN ticket t ON n.member_id = t.member_id -- Fixed JOIN condition
+    JOIN event e ON t.event_id = e.event_id
+    WHERE e.event_date::date = CURRENT_DATE + INTERVAL '1 day';
 
+END;
+$$ LANGUAGE plpgsql;
 
 
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
