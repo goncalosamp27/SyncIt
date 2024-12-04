@@ -2,12 +2,15 @@
 
 @section('content')
 	<script src="{{ asset('js/app.js') }}" defer></script>
-
-	<script src="{{ asset('js/comment.js') }}"></script>
+	<script src="{{ asset('js/comment.js') }}" defer></script>
 	<script>
 		const commentUrl = @json(route('comments.store', ['event_id' => $event->event_id]));
+		const getCommentsUrl = @json(route('comments.index', ['event_id' => $event->event_id]));
 		console.log("Comment URL:", commentUrl);
+		console.log("getComment URL:", getCommentsUrl);
 	</script>
+	
+	
 
 	<div class="event-page-content">
 		<div class="event-page-info">
@@ -131,17 +134,12 @@
     		<div class="add-your-own-comment">
         		<img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Profile Picture" class="profile-pic">
         		<input type="text" placeholder="Add your comment..." id="new-comment" class="comment-input">
-        		<button class="post-button" onclick="postComment()">Post</button>
+        		<button class="post-button" data-event-id="{{ $event->event_id }}" onclick="postComment(this)">Post</button>
     		</div>
 			<div id="comment-list">
-				@if ($comments && $comments->isNotEmpty())
-					@foreach($comments as $comment)
-						@include('partials.comment', ['comment' => $comment])
-					@endforeach
-				@else
-					<p>No comments yet.</p>
-				@endif
+				@include('partials.comment-list', ['comments' => $comments])
 			</div>
+			
 		</div>
 
 		@include('partials.go-back')
