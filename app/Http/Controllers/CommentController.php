@@ -32,7 +32,7 @@ class CommentController extends Controller
     {
         // Validate the incoming request
         $request->validate([
-            'event_id' => 'required|exists:events,event_id',
+            'event_id' => 'required|exists:event,event_id',
             'text' => 'required|string|max:500',
         ]);
 
@@ -43,6 +43,7 @@ class CommentController extends Controller
         $comment->text = $request->input('text');
         $comment->event_id = $request->input('event_id');
         $comment->member_id = auth()->id();  
+        $comment->comment_date = now();  
         $comment->save();
 
         return response()->json([
