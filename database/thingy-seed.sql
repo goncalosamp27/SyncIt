@@ -26,6 +26,7 @@ DROP TABLE IF EXISTS restriction_notification CASCADE;
 DROP TABLE IF EXISTS event_image CASCADE;
 DROP TABLE IF EXISTS join_request CASCADE;
 DROP TABLE IF EXISTS vote_comment CASCADE;
+DROP TABLE IF EXISTS event_notification CASCADE;
 
 DROP DOMAIN IF EXISTS email_domain CASCADE;
 DROP DOMAIN IF EXISTS price_domain CASCADE;
@@ -717,6 +718,11 @@ $$ LANGUAGE plpgsql;
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
 VALUES 
     ('edgar', 'LBAW Teacher', 'lbaw@example.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
+    ('goncalo', 'goncalo', 'goncalo@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
+    ('xavi', 'xavi', 'xavi@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
+    ('dawen', 'dawen', 'dawen@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
+    ('sofia', 'sofia', 'sofia@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
+    
     ('salsadancer', 'Salsa Dance Lover', 'salsadancer@example.com', 'salsadancer123', 'Salsa moves are life!', 'default_user.png', 'Active'),
     ('techbeat', 'Tech Beat DJ', 'techbeat@example.com', 'technosecure99', 'Living for the beats', 'default_user.png', 'Active'),
     ('folksinger', 'Folk Music Singer', 'folksinger@example.com', 'folkpass1234', 'Folk music and stories', 'default_user.png', 'Active'),
