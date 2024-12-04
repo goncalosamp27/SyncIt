@@ -11,6 +11,27 @@ use Exception;
 
 class CommentController extends Controller
 {
+    public function index($event_id)
+{
+    try {
+        $comments = Comment::where('event_id', $event_id)
+            ->with('member') // Load related member data
+            ->orderBy('comment_date', 'desc') // Explicitly order by comment_date
+            ->get();
+
+        Log::info('Fetched comments:', $comments->toArray());
+
+        return view('partials.comment-list', compact('comments'))->render();
+    } catch (Exception $e) {
+        Log::error('Failed to retrieve comments: ' . $e->getMessage());
+        return response()->json([
+            'error' => 'Failed to load comments.',
+            'details' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+
     //Display comments related to a specific event.
     public function showComments($event_id)
     {
@@ -42,8 +63,8 @@ class CommentController extends Controller
         $comment = new Comment();
         $comment->text = $request->input('text');
         $comment->event_id = $request->input('event_id');
+        $comment->comment_date = now();
         $comment->member_id = auth()->id();  
-        $comment->comment_date = now();  
         $comment->save();
 
         return response()->json([
