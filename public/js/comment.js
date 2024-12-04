@@ -81,24 +81,19 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 });
 
-function postComment() {
+
+
+function postComment(button) {
     const commentText = document.getElementById('new-comment').value;
-    const eventId = commentUrl.match(/\/event\/(\d+)\/comments/)[1]; // Extract event_id from the commentUrl
+    const eventId = button.getAttribute('data-event-id'); // Get the event ID from the button
 
-    console.log("Event ID:", eventId);
-    console.log("Comment Text Retrieved:", commentText);
-
-    if (commentText === '') {
-        console.warn("Comment text is empty.");
+    if (commentText.trim() === '') {
         alert("Please write a comment.");
         return;
     }
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    console.log("CSRF Token Retrieved:", csrfToken);
-
     const requestData = { text: commentText, event_id: eventId };
-    console.log("Request Data Prepared:", requestData);
 
     fetch(commentUrl, {
         method: 'POST',
@@ -108,26 +103,47 @@ function postComment() {
         },
         body: JSON.stringify(requestData),
     })
-    .then(response => {
-        console.log("Fetch Response Status:", response.status);
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log("Response Data:", data);
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert('Comment posted!');
+                document.getElementById('new-comment').value = ''; // Clear input
+                fetchComments(); // Fetch comments dynamically
+            } else {
+                alert('Failed to post comment');
+            }
+        })
+        .catch(error => {
+            console.error('Error occurred:', error);
+        });
+}
 
-        if (data.success) {
-            //alert('Comment posted!');
-            console.info("Comment posted successfully. Reloading the page.");
-            window.location.reload(); // Reload page to show new comment
-        } else {
-            console.error("Server indicated failure to post comment:", data);
-            alert('Failed to post comment');
+
+function fetchComments() {
+    const eventId = commentUrl.match(/\/event\/(\d+)\/comments/)[1]; // Extract event_id
+
+    fetch(getCommentsUrl)
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                console.error('Error fetching comments:', data);
+                throw new Error(data.error);
+            });
         }
+        return response.text();
+    })
+    .then(html => {
+        document.getElementById('comment-list').innerHTML = html;
     })
     .catch(error => {
-        console.error('Error occurred during fetch:', error);
+        console.error('Error occurred:', error);
     });
+
 }
+
+
