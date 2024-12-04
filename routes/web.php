@@ -86,6 +86,10 @@ Route::controller(CommentVoteController::class)->middleware(['auth'])->group(fun
     Route::delete('/comments/{comment_id}/vote', 'removeVote')->name('comments.removeVote');
 });
 
+Route::controller(ReplyController::class)->middleware(['auth'])->group(function () {
+    Route::post('/reply/store', 'store')->name('reply.store');
+});
+
 
 //AJAX
 Route::post('/future-events/updateFutureEventsPage', [EventController::class, 'updateFutureEventsPage'])->name('future-events-update');
