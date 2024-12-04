@@ -483,23 +483,23 @@ EXECUTE FUNCTION follow_handler();
 CREATE OR REPLACE FUNCTION invitation_handler()
 RETURNS TRIGGER AS $$
 DECLARE
-    new_notification_id INT;  -- Variable to hold the new notification ID
+    new_notification_id INT;
 BEGIN
-
     INSERT INTO notification (notification_message, notification_date, member_id)
     VALUES (
-        'You have a new invitation: ' || NEW.invitation_message,
+        COALESCE('You have a new invitation: ' || NEW.invitation_message, 'You have a new invitation.'),
         CURRENT_TIMESTAMP,
         NEW.member_id
     )
     RETURNING notification_id INTO new_notification_id; 
 
     INSERT INTO invitation_notification (notification_id, invitation_id)
-    VALUES (new_notification_id, NEW.invitation_id);  -- Link notification with the invitation
+    VALUES (new_notification_id, NEW.invitation_id);
 
-    RETURN NEW;  -- Return the new invitation row
+    RETURN NEW;  
 END;
 $$ LANGUAGE plpgsql;
+
 
 
 

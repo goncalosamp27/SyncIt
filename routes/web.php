@@ -19,16 +19,6 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 
 use App\Models\Artist;
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
 Route::redirect('/', '/home');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -88,7 +78,6 @@ Route::controller(TicketController::class)->middleware(['notAdmin', 'auth'])->gr
     Route::get('/tickets', 'ticketAndEventData')->name('tickets');
     Route::get('/attended', 'ticketAndEventData2')->name('attended-events');
 });
-
 
 Route::post('/create-invitation', [InvitationController::class, 'create'])->middleware(['notAdmin', 'auth'])->name('create-invitation');
 Route::post('/create-invitation2', [InvitationController::class, 'create2'])->middleware(['notAdmin', 'auth'])->name('create-invitation2');
