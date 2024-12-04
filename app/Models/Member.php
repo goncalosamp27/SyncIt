@@ -36,7 +36,7 @@ class Member extends Authenticatable
             'password' => 'required|min:8|max:100',
             'member_status' => 'required|in:Active,Suspended,Banned',
             'bio' => 'nullable|regex:/^[A-Za-z0-9_.,?!\s]*$/|max:200',
-            'profile_pic_url' => 'nullable|url|max:200',
+            'profile_pic_url' => 'required|string|max:100',
         ]);
 
         return $validator;
