@@ -2,16 +2,17 @@
 
 @section('content')
     <div class="admin_page">
-        <h1> Member search </h1>
+        <div class="participants-header">
 
-        <div class="search-bar">
-            <button type="submit" class="search-button">🔍</button>
-            <input 
-                type="text" 
-                class="search-input" 
-                placeholder="Search by name, username, or email..." 
-            />
+        <h1> Member search </h1>
+        <a class="add-participant-btn" href="{{ route('create.member') }}">➕</a>
         </div>
+
+		<form method="GET" action="{{ route('members.search') }}" class="search-bar">
+				<button type="submit" class="search-button">🔍</button>
+				<input type="text" name="search" placeholder="Search by name or username" value="{{ request('search') }}">
+				<button class="search-btn" type="submit">Search</button>
+		</form>
 
         @foreach ($members as $member)
             <div class="member-card">

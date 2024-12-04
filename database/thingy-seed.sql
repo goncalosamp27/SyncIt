@@ -1,6 +1,6 @@
 --show search_path;
 --ALTER ROLE postgres 
-SET search_path TO thingy;
+set search_path to syncit;
 
 DROP TABLE IF EXISTS member CASCADE;
 DROP TABLE IF EXISTS artist CASCADE;
@@ -237,6 +237,13 @@ CREATE TABLE invitation_notification (
     invitation_id INT NOT NULL,
     FOREIGN KEY (notification_id) REFERENCES notification(notification_id) ON DELETE CASCADE,
     FOREIGN KEY (invitation_id) REFERENCES invitation(invitation_id) ON DELETE CASCADE
+);
+
+CREATE TABLE event_notification(
+    notification_id INT PRIMARY KEY,
+    event_id INT NOT NULL,
+    FOREIGN KEY (notification_id) REFERENCES notification(notification_id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE
 );
 
 CREATE TABLE follow_notification(
@@ -622,11 +629,90 @@ CREATE INDEX event_fts_name_idx ON event USING GIN (fts_name);
 CREATE INDEX event_fts_location_idx ON event USING GIN (fts_location);
 
 
+-- Create a function that handles event changes
+CREATE OR REPLACE FUNCTION notify_event_changes()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Check if any of the monitored fields have changed
+    IF NEW.location <> OLD.location OR 
+       NEW.event_date <> OLD.event_date OR 
+       NEW.event_name <> OLD.event_name OR 
+       NEW.description <> OLD.description OR 
+       NEW.capacity <> OLD.capacity OR 
+       NEW.event_media <> OLD.event_media THEN
+
+        -- Insert a notification for each member registered for the event
+        INSERT INTO notification (notification_message, notification_date, member_id)
+        SELECT 'Event details changed', CURRENT_TIMESTAMP, member_id
+        FROM ticket
+        WHERE event_id = NEW.event_id;
+
+        -- Link notifications to the event
+        INSERT INTO event_notification (notification_id, event_id)
+        SELECT notification_id, NEW.event_id
+        FROM notification
+        WHERE notification_date = CURRENT_TIMESTAMP;
+
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a trigger that calls the function on UPDATE of monitored fields
+CREATE TRIGGER trigger_notify_event_changes
+AFTER UPDATE OF location, event_date, event_name, description, capacity, event_media
+ON event
+FOR EACH ROW
+EXECUTE FUNCTION notify_event_changes();
+
+CREATE OR REPLACE FUNCTION notify_event_tomorrow()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Insert notifications for ticket holders
+    INSERT INTO notification (notification_message, notification_date, member_id)
+    SELECT 'The event you signed for is tomorrow! Don''t miss it!', CURRENT_TIMESTAMP, member_id
+    FROM ticket
+    WHERE ticket.event_id = NEW.event_id;
+
+    -- Link notifications to the event
+    INSERT INTO event_notification (notification_id, event_id)
+    SELECT n.notification_id, NEW.event_id
+    FROM notification n
+    WHERE n.notification_date = CURRENT_TIMESTAMP;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION generate_tomorrow_notifications()
+RETURNS void AS $$
+BEGIN
+    -- Insert notifications for ticket holders of tomorrow's events
+    INSERT INTO notification (notification_message, notification_date, member_id)
+    SELECT 
+        'The event you signed for is tomorrow! Don''t miss it!', 
+        CURRENT_TIMESTAMP, 
+        member_id
+    FROM ticket
+    WHERE event_id IN (
+        SELECT event_id
+        FROM event
+        WHERE event_date::date = CURRENT_DATE + INTERVAL '1 day'
+    );
+
+    -- Link the notifications to the events
+    INSERT INTO event_notification (notification_id, event_id)
+    SELECT n.notification_id, e.event_id
+    FROM notification n
+    JOIN ticket t ON n.membe
+
 
 
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
 VALUES 
-    ('anonymous', 'Anonymous User', 'anonymousemail@example.com', 'anonymous123', 'anonymous', 'default_user.png', 'Active'),
+    ('edgar', 'LBAW Teacher', 'lbaw@example.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
     ('salsadancer', 'Salsa Dance Lover', 'salsadancer@example.com', 'salsadancer123', 'Salsa moves are life!', 'default_user.png', 'Active'),
     ('techbeat', 'Tech Beat DJ', 'techbeat@example.com', 'technosecure99', 'Living for the beats', 'default_user.png', 'Active'),
     ('folksinger', 'Folk Music Singer', 'folksinger@example.com', 'folkpass1234', 'Folk music and stories', 'default_user.png', 'Active'),
@@ -741,26 +827,26 @@ VALUES
 
 INSERT INTO admin (email, password)
 VALUES 
-    ('admin1@example.com', 'adminpass1'),
-    ('admin2@example.com', 'adminpass2'),
-    ('admin3@example.com', 'adminpass3'),
-    ('admin4@example.com', 'adminpass4'),
-    ('admin5@example.com', 'adminpass5'),
-    ('admin6@example.com', 'adminpass6'),
-    ('admin7@example.com', 'adminpass7'),
-    ('admin8@example.com', 'adminpass8'),
-    ('admin9@example.com', 'adminpass9'),
-    ('admin10@example.com', 'adminpass10'),
-    ('admin11@example.com', 'adminpass11'),
-    ('admin12@example.com', 'adminpass12'),
-    ('admin13@example.com', 'adminpass13'),
-    ('admin14@example.com', 'adminpass14'),
-    ('admin15@example.com', 'adminpass15'),
-    ('admin16@example.com', 'adminpass16'),
-    ('admin17@example.com', 'adminpass17'),
-    ('admin18@example.com', 'adminpass18'),
-    ('admin19@example.com', 'adminpass19'),
-    ('admin20@example.com', 'adminpass20');
+    ('edgar@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin2@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin3@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin4@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin5@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin6@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin7@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin8@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin9@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin10@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin11@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin12@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin13@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin14@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin15@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin16@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin17@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin18@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin19@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO'),
+    ('admin20@example.com', '$2y$10$tDb8S937SDi.v1FBEj.VUuGTF7Nql20pSbKJewnIPnO2aF4q091EO');
 
 
 INSERT INTO following (artist_id, member_id)

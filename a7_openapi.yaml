@@ -17,9 +17,8 @@ tags:
   - name: 'M01: Authentication'
   - name: 'M02: Users'
   - name: 'M03: Events and Tickets'
-  - name: 'M04: Polls and Comments'
-  - name: 'M05: Administration'
-  - name: 'M06: Notifications'
+  - name: 'M04: Administration'
+  - name: 'M05: Notifications'
 
 
 paths:
@@ -45,7 +44,6 @@ paths:
       description: 'Processes the login form submission. Access: VST'
       tags:
         - 'M01: Authentication'
- 
       requestBody:
         required: true
         content:
@@ -53,12 +51,12 @@ paths:
             schema:
               type: object
               properties:
-                email:          # <!--- form field name
+                email_or_username:          
                   type: string
-                password:    # <!--- form field name
+                password:
                   type: string
               required:
-                - email
+                - email_or_username
                 - password
  
       responses:
@@ -95,7 +93,10 @@ paths:
                 type: string
               examples:
                 302Success:
-                  description: 'Successful logout. Redirect to login form.'
+                  description: 'Successful logout. Redirect to home page.'
+                  value: '/home'
+                302Error:
+                  description: 'Failed logout. Redirect to login form.'
                   value: '/login'
         '500':
           $ref: '#/components/responses/InternalServerError'
@@ -130,14 +131,22 @@ paths:
               properties:
                 name:
                   type: string
+                display_name:
+                  type: string    
                 email:
                   type: string
                 picture:
                   type: string
                   format: binary
+                bio:
+                  type: string 
+                password:
+                  type: string 
               required:
                 - email
                 - password
+                - name
+                - display_name
 
       responses:
         '302':
@@ -148,221 +157,25 @@ paths:
                 type: string
               examples:
                 302Success:
-                  description: 'Successful authentication. Redirect to user profile.'
-                  value: '/users/{id}'
+                  description: 'Successful authentication. Redirect to home page.'
+                  value: '/home'
                 302Failure:
-                  description: 'Failed authentication. Redirect to login form.'
-                  value: '/login'
+                  description: 'Failed authentication. Redirect to Registration form.'
+                  value: '/register'
 
-###VERIFY EMAIL
-  /verify-email/send:
-    post: 
-      operationId: R106
-      summary: 'R106: Send Verification Email'
-      description: 'Sends a verification email with a confirmation link to the user. Access: VST'
-      tags:
-        - 'M01: Authentication'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  format: email
-                  description: 'The email address to send the verification link'
-        responses:
-          '302':
-            description: 'Redirect to success or error page.'
-            headers:
-              Location:
-                schema:
-                  type: string
-                examples:
-                  success:
-                    value: '/verify-email/confirm' 
-                  error:
-                    value: '/verify-email/error'
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '401':
-            $ref: '#/components/responses/Unauthorized'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
-
-  /verify-email/confirm:
-    get:
-      operationId: R107
-      summary: 'R107: Confirm Email Address'
-      tags:
-        - 'M01: Authentication'
-      parameters:
-        - in: query
-          name: token
-          schema:
-            type: string
-          required: true
-      responses:
-        '302':
-          description: 'Redirect after confirmation.'
-          headers:
-            Location:
-              schema:
-                type: string
-              examples:
-                success:
-                  value: '/homepage'
-                error:
-                  value: '/verify-email/error'
-
-  /verify-email/status:
-    get:
-      operationId: R108
-      summary: 'R108: Check Email Confirmation Status'
-      description: 'Checks if the users email is confirmed. Access: VST'
-      tags:
-        - 'M01: Authentication'
-      parameters:
-        - in: query
-          name: email
-          schema:
-            type: string
-          required: true
-          description: 'Email address to check confirmation status'
-      responses:
-        '200':
-          description: 'Returns the email confirmation status.'
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  email:
-                    type: string
-                  confirmed:
-                    type: boolean
-                example:
-                  email: 'user@example.com'
-                  confirmed: true
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'   
-
-## RESET PASSWORD
-  /reset-password/request:
-    post:
-      operationId: R109
-      summary: 'R109: Request Password Reset'
-      description: 'Allows a member to request a password reset using their username. Access: PUB'
-      tags:
-        - 'M01: Authentication'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                  description: 'Username of the member requesting the password reset'
-              required:
-                - username
-      responses:
-        '200':
-          description: 'Password reset request received. Verification token sent.'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
-  /reset-password/verify:
-    get:
-      operationId: R110
-      summary: 'R110: Verify Password Reset Token'
-      description: 'Verifies the password reset token sent to the user. Access: PUB'
-      tags:
-        - 'M01: Authentication'
-      parameters:
-        - in: query
-          name: token
-          schema:
-            type: string
-          required: true
-          description: 'Unique token for password reset verification'
-      responses:
-        '200':
-          description: 'Token is valid. Proceed to reset password.'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
-  /reset-password/update:
-    post:
-      operationId: R111
-      summary: 'R111: Update Password'
-      description: 'Allows a member to set a new password after verification. Access: PUB'
-      tags:
-        - 'M01: Authentication'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                token:
-                  type: string
-                  description: 'Verification token for password reset'
-                new_password:
-                  type: string
-                  description: 'The new password for the user account'
-              required:
-                - token
-                - new_password
-      responses:
-        '200':
-          description: 'Password updated successfully.'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'      
-
-######################################USERS###########################################
-
-  /users/{id}:
-  ##VIEW PROFILE
+  /*:
     get:
       operationId: R201
       summary: 'R201: View user profile'
-      description: 'Show the individual user profile. Access: VST, MBR, OWN, ART, ADM'
+      description: 'Show the individual user profile. Access: MBR, OWN, ART, ADM'
       tags:
         - 'M02: Users'
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
       responses:
         '200':
-          description: 'Ok. Show view profile UI'
+          $ref: '#/components/schemas/User'
+          description: 'Ok. Show profile UI'
         '302':
-          description: 'Redirect if user is not logged in or other user doesn’t exist'
+          description: 'Redirect if user is not logged'
           headers:
             Location:
               schema:
@@ -371,10 +184,29 @@ paths:
                 302Failure:
                   description: 'Failure.'
 
-    ## EDIT PROFILE   
-    put:
+    ## EDIT PROFILE  
+  /edit_profile:
+    get:
       operationId: R202
-      summary: 'R202: Edit Profile'
+      summary: 'R202: Edit Profile Form'
+      description: 'Provide edit profile form. Access: OWN'
+      tags:
+        - 'M02: Users'
+      responses:
+        '200':
+          $ref: '#/components/schemas/User'
+          description: 'Ok. Show form with user info as form values'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'        
+        '500':
+          $ref: '#/components/responses/InternalServerError'   
+    put:
+      operationId: R203
+      summary: 'R203: Edit Profile'
       description: 'Allows a member to edit their profile information. Access: OWN.'
       tags:
         - 'M02: Users'
@@ -385,40 +217,50 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
-      responses:
-        '200':
-          description: 'Profile updated successfully.'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+        responses:
+          '200':
+            description: 'Profile updated successfully.'
+            headers:
+              Location:
+                description: 'Redirects to the updated profile page.'
+                type: string
+                example: '/home'
+          '400':
+            $ref: '#/components/responses/BadRequest'
+            headers:
+              Location:
+                description: 'Redirect to the error page for the bad request.'
+                type: string
+                example: '/error/bad-request'
+          '401':
+            $ref: '#/components/responses/Unauthorized'
+            headers:
+              Location:
+                description: 'Redirect to the login page or authorization error page.'
+                type: string
+                example: '/login'
+          '404':
+            $ref: '#/components/responses/NotFound'
+            headers:
+              Location:
+                description: 'Redirect to the error page for the resource not found.'
+                type: string
+                example: '/error/not-found'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+            headers:
+              Location:
+                description: 'Redirect to the general error page for server errors.'
+                type: string
+                example: '/error/internal-server'
 
-  ##VIEW FUTURE EVENTS
-  /users/{id}/tickets:
+  /tickets:
     get:
-      operationId: R203
-      summary: 'R203: View user tickets'
-      description: 'Show a list of tickets purchased by the user. Access: OWN, ADM'
+      operationId: R204
+      summary: 'R204: View user tickets'
+      description: 'Show a list of tickets purchased by the user. Access: OWN'
       tags:
-        - 'M02: Users'
         - 'M03: Events and Tickets'
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: 'Unique identifier of the user'
-        - in: query
-          name: offset
-          schema:
-            type: integer
-          required: false
-          description: 'Optional offset for pagination'
       responses:
         '200':
           description: 'List of tickets retrieved successfully.'
@@ -437,51 +279,64 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  ##VIEW PAST EVENTS
-  /users/{id}/events/past:
-    get:
-      operationId: R204
-      summary: 'R204: View user past events'
-      description: 'Show a list of past events attended or created by the user. Access: OWN, ADM'
+    put:
+      operationId: R205
+      summary: 'R205: Refund Ticket'
+      description: 'Allows a member to refund a ticket. Access: OWN.'
       tags:
-        - 'M02: Users'
         - 'M03: Events and Tickets'
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: 'Unique identifier of the user'
-        - in: query
-          name: offset
-          schema:
-            type: integer
-          required: false
-          description: 'Optional offset for pagination'
+      requestBody:
+        required: true
+        description: 'Ticket details for the refund request.'
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ticket_id:
+                  type: integer
+                  description: 'Unique identifier of the ticket being refunded.'
+                  required: true
       responses:
         '200':
-          description: 'List of past events retrieved successfully.'
-          content:
-            application/json:
+          description: 'Ticket refunded successfully.'
+          headers:
+            Location:
+              description: 'Redirects to the tickets list or the refund success page.'
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Event'
+                type: string
+                example: '/tickets'
+
         '400':
           $ref: '#/components/responses/BadRequest'
+          headers:
+            Location:
+              description: 'Redirect to the error page for the bad request.'
+              type: string
+              example: '/error/bad-request'
         '401':
           $ref: '#/components/responses/Unauthorized'
+          headers:
+            Location:
+              description: 'Redirect to the login page or authorization error page.'
+              type: string
+              example: '/login'
         '404':
           $ref: '#/components/responses/NotFound'
+          headers:
+            Location:
+              description: 'Redirect to the error page for the resource not found.'
+              type: string
+              example: '/error/not-found'
         '500':
           $ref: '#/components/responses/InternalServerError'
+          headers:
+            Location:
+              description: 'Redirect to the general error page for server errors.'
+              type: string
+              example: '/error/internal-server'
 
 
-
-#################################EVENTS AND TICKETS####################################
-
-##SEARCH EVENTS
   /events/search:
     get:
       operationId: R301
@@ -498,18 +353,6 @@ paths:
           schema:
             type: string
           required: false
-        - in: query
-          name: category
-          description: 'Category of the event'
-          schema:
-            type: string
-          required: false
-        - in: query
-          name: tag
-          description: 'Tag of the event'
-          schema:
-            type: string
-          required: false
       responses:
         '200':
           description: Success
@@ -520,12 +363,22 @@ paths:
                 items:
                   $ref: '#/components/schemas/Event'
 
-##CREATE EVENT
-  /events/creation:
-      post:
+  /create:
+      get:
         operationId: R302
-        summary: 'R302: Create Event with Media'
-        description: 'Allows a member to create a new event with optional media uploads (images). Access: MBR'
+        summary: 'R302: Create Event Form'
+        description: 'Provide create event form. Access: MBM ART'
+        tags:
+          - 'M03: Events and Tickets'
+        responses:
+          '200':
+            description: 'Ok. Show event Creation UI'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+      post:
+        operationId: R303
+        summary: 'R303: Create Event'
+        description: 'Allows a member to create a new event with an optional media upload (image). Access: MBR'
         tags:
           - 'M03: Events and Tickets'
         requestBody:
@@ -548,52 +401,109 @@ paths:
                     type: string
                     format: date-time
                     description: 'Date and time of the event in ISO 8601 format'
-                  duration:
-                    type: integer
-                    description: 'Duration of the event in minutes'
-                  is_public:
-                    type: boolean
+                  type_of_event:
+                    type: string
                     description: 'Indicates if the event is public or private'
-                  participants:
-                    type: array
-                    items:
-                      type: string
-                    description: 'List of participant emails to invite'
+                  price:
+                    type: float
+                    description: 'Price of the event'   
+                  capacity:
+                    type: float
+                    description: 'Max capacity of the event (tickets available)'                                        
                   media:
-                    type: array
-                    items:
-                      type: string
-                      format: binary
+                    type: string
+                    format: binary
                     description: 'Optional media files (images or videos) for the event'
+                  refund_policy:
+                    type: integer
+                    description: 'Percentage of the price to return in case of refund'
+                  main_tag:
+                    type: string
+                    description: 'Type of the event'
+                    enum:
+                      - dance
+                      - music
+                  subgenre:
+                    type: string
+                    description: 'Subgenre of the event'
+                  mood:
+                    type: string
+                    description: 'Subgenre of the event'
+                  setting:
+                    type: string
+                    description: 'Subgenre of the event'   
+                example:
+                  title: 'Summer Dance Party'
+                  description: 'A vibrant night of salsa dancing with live music, perfect for all levels of dancers.'
+                  location: 'Sunset Club, Miami, USA'
+                  date: '2024-07-20T19:30:00Z'
+                  type_of_event: 'Public'
+                  price: 25.00
+                  capacity: 300
+                  media: 'https://example.com/media/event_1.jpg'
+                  refund_policy: 100
+                  main_tag: 'dance'
+                  subgenre: 'salsa'
+                  mood: 'energetic'
+                  setting: 'theatre'
                 required:
                   - title
                   - date
-                  - is_public
+                  - description
+                  - type_of_event
+                  - capacity 
+                  - price
+                  - main_tag
+                  - subgenre
+                  - mood
+                  - setting
+                  - location
         responses:
-          '201':
+          '200':
             description: 'Event created successfully.'
-            content:
-              application/json:
+            headers:
+              Location:
+                description: 'Redirect to the newly created event details.'
                 schema:
-                  $ref: '#/components/schemas/Event'
+                  type: url
+                  example: '/event/{event_id}'
           '400':
             $ref: '#/components/responses/BadRequest'
+            headers:
+              Location:
+                description: 'Redirect to the error page for bad request.'
+                type: string
+                example: '/error/bad-request'
           '401':
             $ref: '#/components/responses/Unauthorized'
+            headers:
+              Location:
+                description: 'Redirect to the login page or authorization error page.'
+                type: string
+                example: '/login'
           '404':
             $ref: '#/components/responses/NotFound'
+            headers:
+              Location:
+                description: 'Redirect to the error page for not found.'
+                type: string
+                example: '/error/not-found'
           '500':
             $ref: '#/components/responses/InternalServerError'
+            headers:
+              Location:
+                description: 'Redirect to the error page for internal server error.'
+                type: string
+                example: '/error/internal-server'
 
 ##INVITE TO EVENT
-  /events/{event_id}/invite:
-    post:
-      operationId: R303
-      summary: 'R303: Invite Users to Event by Username'
-      description: 'Allows an artist to invite friends to their event using their usernames. The invite is sent as an in-app notification. Access: OWN'
+  /event/{event_id}/participants:
+    get:
+      operationId: R304
+      summary: 'R304: View event participants'
+      description: 'Show the list of participants of an event and invite button + form. Access: OWN'
       tags:
         - 'M03: Events and Tickets'
-        - 'M06: Notifications'
       parameters:
         - in: path
           name: event_id
@@ -601,6 +511,35 @@ paths:
             type: integer
           required: true
           description: 'Unique identifier of the event'
+      responses:
+        '200':
+          description: 'List of event participants retrieved successfully.'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      operationId: R305
+      summary: 'R305: Invite Users to Event by Username'
+      description: 'Allows an artist to invite members to their event using their usernames. The invite is sent as an in-app notification. Access: OWN'
+      tags:
+        - 'M03: Events and Tickets'
+        - 'M05: Notifications'
+      parameters:
+        - in: path
+          name: event_id
+          schema:
+            type: integer
+          required: true
+          description: 'Unique identifier of the event'
+        - in: query
+          name: username
+          schema:
+            type: string
+          required: true
+          description: 'Username of the member to invite'
       requestBody:
         required: true
         content:
@@ -608,58 +547,23 @@ paths:
             schema:
               type: object
               properties:
-                usernames:
-                  type: array
-                  items:
-                    type: string
-                  description: 'List of usernames to invite to the event'
-                  required: 'true'
-
+                username:
+                  type: string
+                  description: 'Username of the Member to be invited'
+                message:
+                  type: string
+                  description: 'Personalized message to be sent to the invited member'
+              required:
+                - username
       responses:
         '200':
           description: 'Invitations sent successfully.'
-          content:
-            application/json:
+          headers:
+            Location:
+              description: 'URL to redirect to the event details page.'
               schema:
-                type: object
-                properties:
-                  event_id:
-                    type: integer
-                    description: 'ID of the event'
-                  invited:
-                    type: array
-                    items:
-                      type: string
-                    description: 'List of successfully invited usernames'
-                  failed:
-                    type: array
-                    items:
-                      type: string
-                    description: 'List of usernames where the invitation failed (e.g., user not found)'
-                  notifications:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        username:
-                          type: string
-                        notification_status:
-                          type: string
-                          description: 'Status of the notification (e.g., sent, failed)'
-              example:
-                event_id: 123
-                invited:
-                  - 'john_doe'
-                  - 'jane_smith'
-                failed:
-                  - 'unknown_user'
-                notifications:
-                  - username: 'john_doe'
-                    notification_status: 'sent'
-                  - username: 'jane_smith'
-                    notification_status: 'sent'
-                  - username: 'unknown_user'
-                    notification_status: 'failed'
+                type: string
+                example: '/notifications'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -670,72 +574,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 
 
-##JOIN EVENT
-  /events/{event_id}/join:
-    post:
-      operationId: R304
-      summary: 'R304: Join Event'
-      description: 'Allows a member to join an event and be added as a participant. Access: MBR'
-      tags:
-        - 'M03: Events and Tickets'
-      parameters:
-        - in: path
-          name: event_id
-          schema:
-            type: integer
-          required: true
-          description: 'Unique identifier of the event'
-          responses:
-            '200':
-              description: 'Successfully joined the event. Member is added as a participant.'
-              content:
-                application/json:
-                  $ref: '#/components/schemas/UserEvent'
-            '400':
-              $ref: '#/components/responses/BadRequest'
-            '401':
-              $ref: '#/components/responses/Unauthorized'
-            '404':
-              $ref: '#/components/responses/NotFound'
-            '409':
-              description: 'User is already a participant.'
-            '500':
-              $ref: '#/components/responses/InternalServerError'
-
-
-##LEAVE EVENT     
-  /events/{event_id}/leave:
-    post:
-      operationId: R305
-      summary: 'R305: Leave Event'
-      description: 'Allows a member to leave an event and be removed as a participant. Access: MBR'
-      tags:
-        - 'M03: Events and Tickets'
-      parameters:
-        - in: path
-          name: event_id
-          schema:
-            type: integer
-          required: true
-          description: 'Unique identifier of the event'
-      responses:
-        '200':
-          description: 'Successfully left the event. Member is removed from the participant list.'
-          content:
-            application/json:
-              $ref: '#/components/schemas/UserEvent'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
-  /events/{event_id}/view:
-
-  ##VIEW EVENT
+  /event/{event_id}/:
     get:
       operationId: R306
       summary: 'R306: View Event Details'
@@ -766,11 +605,11 @@ paths:
           $ref: '#/components/responses/InternalServerError'
  
   ## PURCHASE TICKET
-  /events/{event_id}/purchase:
+  /event/{event_id}:
     post:
       operationId: R307
       summary: 'R307: Purchase Tickets for an Event'
-      description: 'Allows a member to purchase tickets for a specific event. Access: MBR, ART.'
+      description: 'Allows a member to purchase a ticket for a specific event. Access: MBR, ART.'
       tags:
         - 'M03: Events and Tickets'
       parameters:
@@ -780,24 +619,20 @@ paths:
             type: integer
           required: true
           description: 'Unique identifier of the event'
-        - in: query
-          name: quantity
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 10
-            default: 1
-          required: true
-          description: 'Number of tickets to purchase. Maximum is 10 tickets per order.'
       responses:
-        '200':
-          description: 'Tickets purchased successfully.'
-          content:
-            application/json:
+        '302':
+          description: 'Redirect after processing the purchase information.'
+          headers:
+            Location:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Ticket'
+                type: string
+              examples:
+                302Success:
+                  description: 'Successful authentication. Redirect to member ticket page.'
+                  value: '/tickets'
+                302Failure:
+                  description: 'Failed authentication. Redirect to login form.'
+                  value: '/login'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -810,7 +645,7 @@ paths:
           description: 'Conflict. There are not enough tickets available or you have requested more tickets than the maximum allowed.'
 
   ## EDIT EVENT
-  /events/{event_id}/edit:
+  /events/edit/{event_id}:
     put:
       operationId: R308
       summary: 'R308: Edit Event Details'
@@ -834,17 +669,40 @@ paths:
       responses:
         '200':
           description: 'Event details updated successfully.'
-          content:
-            schema:
-              $ref: '#/components/schemas/Event'
+          headers:
+            Location:
+              description: 'Redirects to the updated event page.'
+              schema:
+                type: string
+                example: '/event/{event_id}'
         '400':
           $ref: '#/components/responses/BadRequest'
+          headers:
+            Location:
+              description: 'Redirect to the error page for bad request.'
+              type: string
+              example: '/error/bad-request'
         '401':
           $ref: '#/components/responses/Unauthorized'
+          headers:
+            Location:
+              description: 'Redirect to the login page or authorization error page.'
+              type: string
+              example: '/login'
         '404':
           $ref: '#/components/responses/NotFound'
+          headers:
+            Location:
+              description: 'Redirect to the error page for resource not found.'
+              type: string
+              example: '/error/not-found'
         '500':
           $ref: '#/components/responses/InternalServerError'
+          headers:
+            Location:
+              description: 'Redirect to the error page for internal server errors.'
+              type: string
+              example: '/error/internal-server'
 
 ## MANAGE EVENT PARTICIPANTS
 
@@ -873,14 +731,26 @@ paths:
                 member_id:
                   type: integer
                   description: "The unique identifier of the member being added to the event"
-                  required: true
+                event_id:
+                  type: integer
+                  description: "The unique identifier of the event"
+              required:
+                - member_id
+                - event_id
       responses:
-        '200':
-          description: "Member successfully added to the event."
-          content:
-            application/json:
+        '302':
+          description: 'Redirect after processing the adding the member.'
+          headers:
+            Location:
               schema:
-                $ref: '#/components/schemas/Ticket'
+                type: string
+              examples:
+                302Success:
+                  description: 'Invite sent . Redirect to participants page.'
+                  value: '/events/{event_id}/participants'
+                302Failure:
+                  description: 'Invite failed. Redirect to participants page.'
+                  value: '/events/{event_id}/participants'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -892,8 +762,7 @@ paths:
         '409':
           description: "Conflict. The member is already registered for this event."
   
-  # Remove participant from event
-  /events/{event_id}/participants/{ticket_id}:
+# Remove participant from event
     delete:
       operationId: R310
       summary: "R310: Remove a member from an event's participant list"
@@ -907,7 +776,7 @@ paths:
             type: integer
           required: true
           description: "Unique identifier of the event"
-        - in: path
+        - in: query
           name: ticket_id
           schema:
             type: integer
@@ -925,21 +794,17 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-
-###############################POLLS AND COMMENTS####################################
-
-
 ###############################ADMINISTRATION####################################
 
  ##CREATE USER ACCOUNTS
 
-  /admin/user:
+  /admin/register:
     post:
-      operationId: R501
-      summary: 'R501: Create User Account'
+      operationId: R401
+      summary: 'R401: Create User Account'
       description: 'Creates a new user account with specified details. Access: ADM'
       tags:
-        - 'M05: Administration'
+        - 'M04: Administration'
       requestBody:
         required: true
         content:
@@ -949,18 +814,27 @@ paths:
               parameters:
                 name:
                   type: string
+                display_name:
+                  type: string    
                 email:
                   type: string
                 picture:
                   type: string
                   format: binary
+                bio:
+                  type: string 
+                password:
+                  type: string 
               required:
                 - email
                 - password
+                - name
+                - display_name
               example:
                 name: 'John Doe'
                 email: 'john.doe@example.com'
-                picture: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...'
+                picture: 'url.png'
+                password: '12345678'
 
       responses:
         '302':
@@ -971,8 +845,8 @@ paths:
                 type: string
               examples:
                 302Success:
-                  description: 'Successful authentication. Redirect to user profile.'
-                  value: '/users/{id}'
+                  description: 'Successful authentication. Redirect to home.'
+                  value: '/home'
                 302Failure:
                   description: 'Failed authentication. Redirect to login form.'
                   value: '/login'
@@ -989,43 +863,19 @@ paths:
 
   /admin/search:
     get:
-      operationId: R502
-      summary: 'R502: Search for Users'
+      operationId: R402
+      summary: 'R402: Search for Users'
       description: 'Search for users based on query parameters. Access: ADM'
       tags:
-        - 'M05: Administration'
+        - 'M04: Administration'
       parameters:
         - in: query
-          name: username
+          name: search_term
           schema:
             type: string
-          required: false
-          description: 'Filter users by username'
-        - in: query
-          name: name
-          schema:
-            type: string
-          required: false
-          description: 'Filter users by name'
-        - in: query
-          name: limit
-          schema:
-            type: integer
-            default: 10
-          required: false
-          description: 'Limit the number of results returned'
-        - in: query
-          name: page
-          schema:
-            type: integer
-            default: 1
-          required: false
-          description: 'Page number for pagination'
-      example:
-        username: 'john_doe'
-        name: 'John Doe'
-        limit: 10
-        page: 1
+          required: true
+          description: 'Search term to look for matching usernames or names'
+      example: 'John Doe'
       responses:
         '200':
           description: 'Ok. Return a list of users matching the search criteria.'
@@ -1047,13 +897,13 @@ paths:
 
  ##EDIT USER ACCOUNTS
 
-  /admin/users/{userId}:
+  /admin/edit/member/{id}:
     put:
-      operationId: R503
-      summary: 'R503: Edit User Account'
+      operationId: R403
+      summary: 'R403: Edit User Account'
       description: 'Edit user account information. Access: ADM'
       tags:
-        - 'M05: Administration'
+        - 'M04: Administration'
       parameters:
         - in: path
           name: userId
@@ -1062,39 +912,57 @@ paths:
             type: integer
             format: int64
           description: 'ID of the user to update'
-        - in: body
-          name: data
-          required: true
-          description: 'User data to be updated'
-          schema:
-            $ref: '#/components/schemas/User'
+      requestBody:
+        required: true
+        description: 'User data to be updated'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
       responses:
         '200':
           description: 'User updated successfully.'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
+          
         '400':
           $ref: '#/components/responses/BadRequest'
+          headers:
+            Location:
+              description: 'Redirect to the error page for bad request.'
+              type: string
+              example: '/error/bad-request'
         '401':
           $ref: '#/components/responses/Unauthorized'
+          headers:
+            Location:
+              description: 'Redirect to the login page or authorization error page.'
+              type: string
+              example: '/login'
         '404':
           $ref: '#/components/responses/NotFound'
+          headers:
+            Location:
+              description: 'Redirect to the error page for user not found.'
+              type: string
+              example: '/error/not-found'
         '500':
           $ref: '#/components/responses/InternalServerError'
+          headers:
+            Location:
+              description: 'Redirect to the error page for internal server errors.'
+              type: string
+              example: '/error/internal-server'
 
 
 ###############################NOTIFICATIONS####################################
 
 ##SEE NOTIFICATIONS
-  /home/notifications:
+  /notifications:
     get:
-      operationId: R601
-      summary: 'R601: User notifications page.'
-      description: 'Show user notifications page. Access: MBR, ADM'
+      operationId: R501
+      summary: 'R501: User notifications page.'
+      description: 'Show user notifications page. Access: MBR'
       tags:
-        - 'M06: Notifications'
+        - 'M05: Notifications'
 
       responses:
         '200':
@@ -1108,7 +976,56 @@ paths:
               example:
                 302Failure:
                   description: 'Failure. User not logged in.'
-
+    put:
+      operationId: R502
+      summary: 'R502: Delete Notification'
+      description: 'Allows a member to refund a ticket. Access: OWN.'
+      tags:
+        - 'M05: Notifications'
+      requestBody:
+        required: true
+        description: 'Notification_id to be deleted'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ticket'
+      responses:
+        '200':
+          description: 'Notification deleted successfully.'
+          headers:
+            Location:
+              description: 'Redirect to the list of notifications after deletion.'
+              schema:
+                type: string
+                example: '/notifications'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+          headers:
+            Location:
+              description: 'Redirect to the error page for bad request.'
+              type: string
+              example: '/error/bad-request'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+          headers:
+            Location:
+              description: 'Redirect to the login page or authorization error page.'
+              type: string
+              example: '/login'
+        '404':
+          $ref: '#/components/responses/NotFound'
+          headers:
+            Location:
+              description: 'Redirect to the error page for notification not found.'
+              type: string
+              example: '/error/not-found'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+          headers:
+            Location:
+              description: 'Redirect to the error page for internal server errors.'
+              type: string
+              example: '/error/internal-server'
 
 components:
   schemas:
@@ -1123,7 +1040,7 @@ components:
           description: 'Detailed description of the event'
         type:
           type: string
-          description: 'Category of the event (e.g., Dance, Music, Workshop, etc.)'
+          description: 'Visibility of the event (Public, Private)'
         date:
           type: string
           format: date-time
@@ -1131,63 +1048,33 @@ components:
         location:
           type: string
           description: 'Location of the event'
-        media_urls:
-          type: array
-          items:
-            type: string
-            format: uri
-          description: 'URLs for event media (e.g., images, videos)'
-        is_public:
-          type: boolean
-          description: 'Indicates whether the event is public or private'
-        tags:
-          type: array
-          items:
-            type: string
-          description: 'Tags related to the event'
+        media_url:
+          type: string
+          format: uri
+          description: 'URL for event image'
         price:
           type: number
           format: float
-          description: 'Price of the event, if applicable (e.g., ticket price)'
-        ticket_limit:
+          description: 'Price of the event'
+        capacity:
           type: integer
           description: 'The maximum number of tickets available for this event'
         refund_policy:
           type: integer
           description: 'Refund percentage of the ticket price'
+        artist_id:
+          type: integer
+          description: 'Owner of the event'
       example:
         title: 'Salsa Night with Live Music'
         description: 'Join us for an evening of vibrant salsa dancing and live music under the stars.'
-        type: 'Dance'
+        type: 'Public'
         date: '2024-12-15T20:00:00Z'
         location: 'Havana Club, Miami, USA'
-        media_urls:
-          - 'https://example.com/media/event101/image1.jpg'
-          - 'https://example.com/media/event101/image2.png'
-        is_public: true
-        tags:
-          - 'Salsa'
-          - 'Live Music'
+        media_url: 'https://example.com/media/event101/image1.jpg'
         price: 20.00
-        ticket_limit: 500
+        capacity: 500
         refund_policy: 100
-
-    UserEvent:
-      type: object
-      properties:
-        event_id:
-          type: integer
-          description: 'ID of the event'
-        username:
-          type: string
-          description: 'Username of the participant'
-        status:
-          type: string
-          description: 'Participation status (e.g., left)'
-    example:
-      event_id: 101
-      username: 'john_doe'
-      status: 'left'
   
     User:
       type: object
@@ -1195,7 +1082,7 @@ components:
         username:
           type: string
           description: 'Username of the member'
-          required: false
+          required: true
         bio:
           type: string
           description: 'Biography of the member'
@@ -1208,28 +1095,18 @@ components:
         name:
           type: string
           description: 'Full name of the member'
-          required: false
+          required: true
         email:
           type: string
           format: email
           description: 'Email address of the member'
-          required: false
-        phone:
-          type: string
-          description: 'Phone number of the member'
-          required: false
-        address:
-          type: string
-          description: 'Physical address of the member'
-          required: false
+          required: true
       example:
-        - username: 'john_doe123'
-          bio: 'A software developer passionate about open-source projects.'
-          image: 'https://example.com/images/john_doe123.png'
-          name: 'John Doe'
-          email: 'john.doe@example.com'
-          phone: '123456789'
-          address: '123 Main St, Springfield, IL, 62701'
+        username: 'john_doe123'
+        bio: 'A software developer passionate about EDM.'
+        image: 'https://example.com/images/john_doe123.png'
+        name: 'John Doe'
+        email: 'john.doe@example.com'
 
     Ticket:
       type: object
@@ -1237,81 +1114,59 @@ components:
         ticket_id:
           type: integer
           description: 'Unique identifier of the ticket'
+          required: true
         event_id:
           type: integer
           description: 'Unique identifier of the event'
-        event_title:
-          type: string
-          description: 'Title of the event'
-        event_date:
-          type: string
-          format: date-time
-          description: 'Date and time of the event'
-        seat:
-          type: string
-          description: 'Seat information (if applicable)'
-        price:
-          type: number
-          format: float
-          description: 'Price of the ticket'
+          required: true
         purchase_date:
           type: string
           format: date-time
           description: 'Date and time the ticket was purchased'
+          required: true
       example:
-        - ticket_id: 1001
-          event_id: 301
-          event_title: 'Classical Strings Night'
-          event_date: '2024-05-12T19:00:00Z'
-          seat: 'A15'
-          price: 45.00
-          purchase_date: '2024-04-01T14:30:00Z'
-        - ticket_id: 1002
-          event_id: 302
-          event_title: 'Samba Dance Gala'
-          event_date: '2024-06-20T21:00:00Z'
-          seat: 'VIP2'
-          price: 120.00
-          purchase_date: '2024-05-10T16:45:00Z'
+        ticket_id: 1001
+        event_id: 301
+        purchase_date: '2024-04-01T14:30:00Z'
 
   responses:
-      BadRequest:
-        description: 'Bad Request. The request could not be understood or was missing required parameters.'
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                error:
-                  type: string
-                  example: 'Invalid request parameters.'
-      Unauthorized:
-        description: 'Unauthorized. Authentication is required to access this resource.'
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                error:
-                  type: string
-                  example: 'User is not authenticated.'
-      NotFound:
-        description: 'Not Found. The requested resource could not be found.'
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                error:
-                  type: string
-                  example: 'Resource not found.'
-      InternalServerError:
-        description: 'Internal Server Error. An unexpected error occurred on the server.'
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                error:
-                  type: string
-                  example: 'Something went wrong on the server.'
+    BadRequest:
+      description: 'Bad Request. The request could not be understood or was missing required parameters.'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: 'Invalid request parameters.'
+    Unauthorized:
+      description: 'Unauthorized. Authentication is required to access this resource.'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: 'User is not authenticated.'
+    NotFound:
+      description: 'Not Found. The requested resource could not be found.'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: 'Resource not found.'
+    InternalServerError:
+      description: 'Internal Server Error. An unexpected error occurred on the server.'
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: 'Something went wrong on the server.'

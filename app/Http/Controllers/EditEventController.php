@@ -6,6 +6,7 @@ use Illuminate\View\View;
 
 use App\Models\Event;
 use App\Models\Tag;
+use App\Models\Ticket;
 use Illuminate\Support\Carbon;
 
 class EditEventController extends Controller
@@ -33,7 +34,6 @@ class EditEventController extends Controller
             'refund' => 'required|numeric|between:0,100',  
             'price' => 'required|numeric|min:0',  
             'type_of_event' => 'required|in:Public,Private',  
-            'rating' => 'required|numeric|between:0,5',
             'capacity' => 'required|numeric|min:10',
             'event_media' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
@@ -42,7 +42,7 @@ class EditEventController extends Controller
         $event->update($validated);
         $eventDate = $request->input('event_date');
         $eventTime = $request->input('event_time');
-        $eventDateTime = Carbon::createFromFormat('Y-m-d H:i', "$eventDate $eventTime");
+        $eventDateTime = $eventDate . ' ' . $eventTime;
 
         if ($request->hasFile('event_media')) {
             $path = $request->file('event_media')->store('events', 'public');
@@ -58,19 +58,32 @@ class EditEventController extends Controller
         return redirect()->route('event', ['event_id' => $event_id])->with('success', 'Member updated successfully!');
     }
 
-    public function participants($event_id)
+    public function tickets($event_id)
     {
         $event = Event::findOrFail($event_id);
-    
-        $this->authorize('edit', $event);
+        $tickets = $event->tickets();
 
-        $participants = $event->tickets->map(function ($ticket) {
-            return $ticket->member;
-        });
-    
+        $tickets = $event->tickets()->with('member')->get();
         return view('pages.manage-participants', [
-            'participants' => $participants
+            'event' => $event,
+            'tickets' => $tickets
         ]);
+    }
+
+    public function deleteParticipant($event_id, $ticket_id)
+    {
+        try 
+        {
+            $ticket = Ticket::findOrFail($ticket_id);
+            $member = $ticket->member; 
+            $ticket->delete();
+            return redirect()->route('participants', ['event_id' => $event_id ])->with('success', "@{$member->username}'s Ticket #{$ticket_id} deleted successfully!");
+        }
+
+        catch (\Exception $e) 
+        {
+            return redirect()->route('participants', ['event_id' => $event_id ])->with('error', "Failed to delete {$member->username}'s ticket.");
+        }   
     }
 
 	public function create()
@@ -101,7 +114,7 @@ class EditEventController extends Controller
 
         // Create the event
         $event = Event::create($request->only([
-            'event_name', 'event_date', 'location', 'description', 'refund', 'price', 'type_of_event', 'rating', 'artist_id',
+            'event_name', 'event_date', 'location', 'description', 'refund', 'price', 'type_of_event', 'artist_id',
         ]));
 
         // Attach tags (if any are selected)
@@ -135,7 +148,7 @@ class EditEventController extends Controller
 		$tagsDance = Tag::type(['Dance'])->get();
 		$tagsMood = Tag::type(['Mood'])->get();
 		$tagsSettings = Tag::type(['Settings'])->get();
-        $events = Event::where('event_date', '<', Carbon::now())->get();
+        $events = Event::where('event_date', '<', now())->get();
 
         return view('pages.events', [
             'events' => $events,
@@ -152,7 +165,7 @@ class EditEventController extends Controller
 		$tagsDance = Tag::type(['Dance'])->get();
 		$tagsMood = Tag::type(['Mood'])->get();
 		$tagsSettings = Tag::type(['Settings'])->get();
-        $events = Event::where('event_date', '>', Carbon::now())->get();
+        $events = Event::where('event_date', '>',  now())->get();
 
         return view('pages.events', [
             'events' => $events,

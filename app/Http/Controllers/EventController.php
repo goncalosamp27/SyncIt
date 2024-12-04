@@ -49,7 +49,7 @@ class EventController extends Controller
             }
 
             // Validate event date
-            if (!$event->event_date || Carbon::parse($event->event_date)->isPast()) {
+            if (!$event->event_date || strtotime($event->event_date) < time()) {
                 return redirect()->route('your-events')->with('error', "Cannot delete past events.");
             }
 
@@ -65,8 +65,6 @@ class EventController extends Controller
             return redirect()->route('your-events')->with('error', "Failed to delete the event.");
         }
     }
-
-
 
     public function member_events()
     {
@@ -89,19 +87,15 @@ class EventController extends Controller
         ]);
     }
 
-    public function participants($event_id)
+    public function tickets($event_id)
     {
         $event = Event::findOrFail($event_id);
+        $tickets = $event->tickets();
 
-        $this->authorize('edit', $event);
-
-        $participants = $event->tickets->map(function ($ticket) {
-            return $ticket->member;
-        });
-
+        $tickets = $event->tickets()->with('member')->get();
         return view('pages.manage-participants', [
             'event' => $event,
-            'participants' => $participants
+            'tickets' => $tickets
         ]);
     }
 
@@ -141,7 +135,6 @@ class EventController extends Controller
             'refund',
             'price',
             'type_of_event',
-            'rating',
             'artist_id',
         ]));
 
@@ -177,6 +170,22 @@ class EventController extends Controller
         ]);
     }
 
+    public function deleteParticipant($event_id, $ticket_id)
+    {
+        try 
+        {
+            $ticket = Ticket::findOrFail($ticket_id);
+            $member = $ticket->member; 
+            $ticket->delete();
+            return redirect()->route('event', ['event_id' => $event_id ])->with('success', "'{$member->username}'s Ticket #'{$ticket_id}' deleted successfully!");
+        }
+
+        catch (\Exception $e) 
+        {
+            return redirect()->route('event', ['event_id' => $event_id ])->with('error', "Failed to delete '{$member->username}'s ticket.");
+        }   
+    }
+
     public function showTagsPerType()
     {
         // Fetch tags where tag_name is 'Music' or 'Dance' (Genres)
@@ -197,10 +206,10 @@ class EventController extends Controller
     {
         // Fetch tags where tag_name is 'Music' or 'Dance' (Genres)
         $tagsMusic = Tag::type(['Music'])->get();
-        $tagsDance = Tag::type(['Dance'])->get();
-        $tagsMood = Tag::type(['Mood'])->get();
-        $tagsSettings = Tag::type(['Settings'])->get();
-        $events = Event::where('event_date', '<', Carbon::now())->get();
+		$tagsDance = Tag::type(['Dance'])->get();
+		$tagsMood = Tag::type(['Mood'])->get();
+		$tagsSettings = Tag::type(['Settings'])->get();
+        $events = Event::where('event_date', '<', now())->get();
 
         return view('pages.events', [
             'events' => $events,
@@ -214,13 +223,10 @@ class EventController extends Controller
     {
         // Fetch tags of different types
         $tagsMusic = Tag::type(['Music'])->get();
-        $tagsDance = Tag::type(['Dance'])->get();
-        $tagsMood = Tag::type(['Mood'])->get();
-        $tagsSettings = Tag::type(['Settings'])->get();
-        // Current datetime for filtering future events
-        $currentDateTime = (new DateTime())->format('Y-m-d H:i:s');
-
-        $events = Event::where('event_date', '>', $currentDateTime)->get();
+		$tagsDance = Tag::type(['Dance'])->get();
+		$tagsMood = Tag::type(['Mood'])->get();
+		$tagsSettings = Tag::type(['Settings'])->get();
+        $events = Event::where('event_date', '>', now())->get();
 
         return view('pages.events', [
             'events' => $events,

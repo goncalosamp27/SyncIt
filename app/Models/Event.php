@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Carbon;
 
 class Event extends Model
 {
@@ -75,11 +74,11 @@ class Event extends Model
 
     public static function upcomingEvents()
     {
-        return self::where('event_date', '>', Carbon::now())->get();
+        return self::where('event_date', '>', now())->get();
     }
     public static function pastEvents()
     {
-        return self::where('event_date', '<', Carbon::now())->get();
+        return self::where('event_date', '<', now())->get();
     }
 
     public static function createEvent($data)
