@@ -31,6 +31,6 @@ class JoinRequestController extends Controller
 		$joinRequest->request_date = now();
 		$joinRequest->save();
 
-        return redirect()->back()->with('success', 'Join request to this event was sent successfully!');
+        return redirect()->route('event', ['event_id' => $event->event_id ])->with('success', 'Join request to this event was sent successfully!');
     }
 }

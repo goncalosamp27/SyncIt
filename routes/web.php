@@ -57,6 +57,7 @@ Route::controller(EventController::class)->group(function () {
         Route::post('/your-events/{event_id}', 'deleteEvent')->name('delete-event');
     });
 });
+
 Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
 Route::get('/events/create', [EventController::class, 'create'])->middleware('auth')->name('events.create');
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');

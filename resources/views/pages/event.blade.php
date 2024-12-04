@@ -1,6 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
+	@if (session('success'))
+		<div class = "success">
+			{{ session('success') }}
+		</div>
+	@endif
+		@if (session('error'))
+		<div class="error">
+			{{ session('error') }}
+		</div>
+	@endif
+
 	<script src="{{ asset('js/app.js') }}" defer></script>
 
 	<div class="event-page-content">
@@ -35,10 +46,8 @@
 					Manage
 				</a>
 				@endcan
-
 			</div>
 		
-
 			@php
     			$eventExpired = $event->event_date <= now();
     			$userTicketCount = $event->tickets->where('member_id', auth()->id())->count();
@@ -66,6 +75,9 @@
 				@elseif ($userTicketCount == 10)
 					<button type="submit" class="disabled-btn" disabled>Ticket Limit Reached</button>
 
+				@elseif ($eventType == 'Private' && $event->requests->contains('member_id', auth()->id()))
+					<button class="disabled-btn2" disabled>Waiting for join request approval...</button>
+
 				@elseif ($eventType == 'Private' && !$event->invitations->contains('member_id', auth()->id()))
 					<div class="button-container">
 						<button type="submit" class="disabled-btn">Private Event</button>
@@ -77,9 +89,6 @@
 							</button>    
 						</form>	
 					</div>  
-
-				@elseif ($eventType == 'Private' && $event->requests->contains('member_id', auth()->id()))
-					<button class="disabled-btn2" disabled>Waiting for join request approval...</button>
 				@else            
 					<form action="{{ route('buy-ticket') }}" method="POST">
 						@csrf
