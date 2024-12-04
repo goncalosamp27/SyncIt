@@ -130,7 +130,6 @@
 		<div class="purple-line"></div>
 		
 		<div class="event-page-comments">
-			<h1>{{ count($comments ?? []) }} Comments:</h1>
     		<div class="add-your-own-comment">
         		<img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Profile Picture" class="profile-pic">
         		<input type="text" placeholder="Add your comment..." id="new-comment" class="comment-input">
@@ -138,6 +137,7 @@
     		</div>
 			<div id="comment-list">
 				@include('partials.comment-list', ['comments' => $comments])
+		
 			</div>
 			
 		</div>
