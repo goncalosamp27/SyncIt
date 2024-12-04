@@ -10,7 +10,7 @@ use App\Models\Tag;
 use App\Models\Ticket;
 use App\Models\JoinRequest;
 use App\Models\EventTag;
-use Illuminate\Support\Carbon;
+
 use Illuminate\Support\Facades\DB;
 use DateTime;
 

@@ -73,9 +73,6 @@ CHECK (CHAR_LENGTH(VALUE) BETWEEN 8 AND 100);
 CREATE DOMAIN rating_domain AS DECIMAL(2, 1)
 CHECK (VALUE >= 0.0 AND VALUE <= 5.0);
 
-CREATE DOMAIN request_status_domain AS VARCHAR(10)
-CHECK (VALUE IN ('Approved', 'Rejected', 'Pending'));
-
 CREATE TABLE member (
     member_id SERIAL PRIMARY KEY,
     username username_domain UNIQUE NOT NULL,
@@ -141,7 +138,6 @@ CREATE TABLE join_request (
     event_id INT NOT NULL,
     member_id INT NOT NULL,
     request_date TIMESTAMP CHECK (request_date >= CURRENT_DATE),
-    status request_status_domain NOT NULL,
     FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
@@ -738,6 +734,24 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 */
+
+CREATE OR REPLACE FUNCTION delete_join_requests_on_invitation()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Delete all join requests for the member and event when an invitation is created
+    DELETE FROM join_request
+    WHERE member_id = NEW.member_id
+      AND event_id = NEW.event_id;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_invitation_insert
+AFTER INSERT ON invitation
+FOR EACH ROW
+EXECUTE FUNCTION delete_join_requests_on_invitation();
+
 
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
 VALUES 
@@ -1481,18 +1495,18 @@ VALUES
     (20, INTERVAL '0 days', 2, NOW()),      -- Member 20 banned by Admin 2
     (25, INTERVAL '0 days', 3, NOW());      -- Member 25 banned by Admin 3
 
-INSERT INTO join_request(event_id, member_id, request_date, status)
+INSERT INTO join_request(event_id, member_id, request_date)
 VALUES 
-    (1, 1, NOW() + INTERVAL '1 days', 'Pending'),
-    (2, 2, NOW() + INTERVAL '2 days', 'Pending'),
-    (3, 3, NOW() + INTERVAL '3 days', 'Approved'),
-    (4, 4, NOW() + INTERVAL '4 days', 'Approved'),
-    (5, 5, NOW() + INTERVAL '5 days', 'Rejected'),
-    (6, 6, NOW() + INTERVAL '6 days', 'Rejected'),
-    (7, 7, NOW() + INTERVAL '2 days', 'Pending'),
-    (8, 8, NOW() + INTERVAL '2 days', 'Pending'),
-    (9, 9, NOW() + INTERVAL '2 days', 'Pending'),
-    (10, 10, NOW() + INTERVAL '2 days', 'Pending');
+    (1, 1, NOW() + INTERVAL '1 days'),
+    (2, 2, NOW() + INTERVAL '2 days'),
+    (3, 3, NOW() + INTERVAL '3 days'),
+    (4, 4, NOW() + INTERVAL '4 days'),
+    (5, 5, NOW() + INTERVAL '5 days'),
+    (6, 6, NOW() + INTERVAL '6 days'),
+    (7, 7, NOW() + INTERVAL '2 days'),
+    (8, 8, NOW() + INTERVAL '2 days'),
+    (9, 9, NOW() + INTERVAL '2 days'),
+    (10, 10, NOW() + INTERVAL '2 days');
 
 
 INSERT INTO vote_comment (comment_id, member_id, vote) 

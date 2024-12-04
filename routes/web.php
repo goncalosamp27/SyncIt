@@ -69,7 +69,10 @@ Route::get('/events/search', [EventController::class, 'search'])->name('events.s
 Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
     ->name('buy-ticket')
     ->middleware('auth');
+
 Route::post('/events/getTags', [EventController::class, 'getTags'])->name('events.filters.tags');
+Route::post('/event/request-access', [JoinRequestController::class, 'requestAccess'])->name('request-access')
+    ->middleware(['auth', 'notAdmin']);
 
 //AJAX
 Route::post('/future-events/updateFutureEventsPage', [EventController::class, 'updateFutureEventsPage'])->name('future-events-update');

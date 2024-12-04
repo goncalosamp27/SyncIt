@@ -47,8 +47,8 @@
 
 			@cannot('edit', $event)
 			<div class="ticket-buttons">
-				@if ($eventExpired)
-					<button type="submit" class="disabled-btn" disabled>Event Expired</button>  
+				@if ($eventExpired) <button type="submit" class="disabled-btn" disabled>Event Expired</button>  
+
 				@elseif($userTicketCount < 10 && $userTicketCount >= 1)
 					<div class="button-container">
 						<button class="purchased-btn">
@@ -62,9 +62,11 @@
 							</button>
 						</form>
 					</div>  
+
 				@elseif ($userTicketCount == 10)
 					<button type="submit" class="disabled-btn" disabled>Ticket Limit Reached</button>
-				@elseif ($eventType == 'Private')
+
+				@elseif ($eventType == 'Private' && !$event->invitations->contains('member_id', auth()->id()))
 					<div class="button-container">
 						<button type="submit" class="disabled-btn">Private Event</button>
 						<form action="{{ route('request-access') }}" method="POST">   
@@ -75,6 +77,9 @@
 							</button>    
 						</form>	
 					</div>  
+
+				@elseif ($eventType == 'Private' && $event->requests->contains('member_id', auth()->id()))
+					<button class="disabled-btn2" disabled>Waiting for join request approval...</button>
 				@else            
 					<form action="{{ route('buy-ticket') }}" method="POST">
 						@csrf

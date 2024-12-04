@@ -17,22 +17,14 @@ class JoinRequest extends Model
 	public static function validate($data)
     {
         $validator = Validator::make($data, [
-            'invitation_message' => 'nullable|string|max:500',  
-            'invitation_date' => 'required|date|after_or_equal:today',  
             'event_id' => 'required|exists:event,event_id',  
             'member_id' => 'required|exists:member,member_id',  
+            'request_date' => 'required|date',  
         ]);
 
         return $validator;
     }
-
-    public function event() 
-    {
-        return $this->belongsTo(Event::class, 'event_id', 'event_id');
-    }
-
-    public function member()
-	{
-		return $this->belongsTo(Member::class, 'member_id', 'member_id');
-	}
+    
+    public function event() {return $this->belongsTo(Event::class, 'event_id', 'event_id');}
+    public function member() {return $this->belongsTo(Member::class, 'member_id', 'member_id');}
 }
