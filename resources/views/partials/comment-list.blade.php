@@ -9,6 +9,9 @@
                     {{ $comment->member->username }}:
                 </div>
                 {{ $comment->text }}
+                <div class="comment-date" style="font-size: smaller;">
+                    <small>{{ $comment->comment_date }}</small>
+                </div>
             </div>
         </div>
     </div>
@@ -52,21 +55,22 @@
 
     // Function to handle vote via AJAX
     function voteComment(voteType, commentId) {
-        // Send AJAX request to upvote or downvote
-        fetch("{{ url('vote') }}/" + voteType + "/" + commentId, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ comment_id: commentId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Update vote counts
-            document.getElementById('upvote-count-' + commentId).textContent = data.upvotes;
-            document.getElementById('downvote-count-' + commentId).textContent = data.downvotes;
-        })
-        .catch(error => console.error('Error:', error));
-    }
+        console.log('Vote Type:', voteType);
+        console.log('Comment ID:', commentId);
+    fetch("{{ url('vote') }}/" + voteType + "/" + commentId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ comment_id : commentId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Update vote counts
+        document.getElementById('upvote-count-' + commentId).textContent = data.upvotes;
+        document.getElementById('downvote-count-' + commentId).textContent = data.downvotes;
+    })
+    .catch(error => console.error('Error:', error));
+}
 </script>
