@@ -119,7 +119,7 @@ function postComment() {
         console.log("Response Data:", data);
 
         if (data.success) {
-            alert('Comment posted!');
+            //alert('Comment posted!');
             console.info("Comment posted successfully. Reloading the page.");
             window.location.reload(); // Reload page to show new comment
         } else {
