@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
     const commentForm = document.getElementById('comment-form');
     const commentsContainer = document.getElementById('comments-container');
+    fetchComments();
+
 
     // Handle comment submission
     commentForm.addEventListener('submit', function (e) {
@@ -111,7 +113,7 @@ function postComment(button) {
         })
         .then(data => {
             if (data.success) {
-                alert('Comment posted!');
+                //alert('Comment posted!');
                 document.getElementById('new-comment').value = ''; // Clear input
                 fetchComments(); // Fetch comments dynamically
             } else {
