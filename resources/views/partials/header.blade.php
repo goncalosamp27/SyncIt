@@ -57,7 +57,7 @@
 				<a href="{{ route('tickets') }}">My Tickets</a>
 				<a href="{{ route('your-events') }}">My Events</a>
                 <a href="{{ route('attended-events')}}">Attended Events</a>
-                <a href="">Invitations</a>
+                <a href="{{ route('invitations')}}">Invitations</a>
 				<a href="">Reset Password</a>
             @endif
         </div>
