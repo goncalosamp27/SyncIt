@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
 use App\Models\Invitation;
 use App\Models\Member;
 use App\Models\Event;
-use Illuminate\Http\Request;
 
 class InvitationController extends Controller
 {
@@ -60,17 +63,7 @@ class InvitationController extends Controller
 		}
 
 		$event = Event::findOrFail($request->input('event_id'));
-        
-        /*
-		$existingInvitation = Invitation::where('event_id', $request->input('event_id'))
-        ->where('member_id', $member->member_id)
-        ->first();
 
-		if ($existingInvitation) {
-			return redirect()->back()->with('error', "This member has already been invited to this event.");
-		}
-        */
-        
         $invitation = new Invitation();
         $invitation->invitation_message = null;
         $invitation->invitation_date = now(); 
@@ -79,5 +72,42 @@ class InvitationController extends Controller
         $invitation->save();
 
         return redirect()->back()->with('success', 'Join request accepted and invitation sent successfully!');
+    }
+
+    public function memberinvitations()
+    {	
+		$member = Auth::user()->load('invitations');
+        $invitations = Invitation::where('member_id', Auth::id());
+
+        return view('pages.invitations', [
+            'invitations' => $invitations, 
+            'member' => $member,
+        ]);
+    }
+
+    public function deleteInvitation(string $invitation_id)
+    {
+        try {
+            // Fetch the event
+            $invitation = Invitation::findOrFail($invitation_id);
+
+            // Debug: Check if event is valid
+            if (!$invitation) {
+                return redirect()->route('invitations')->with('error', "Invitation not found.");
+            }
+
+            // Attempt to delete the event
+            $invitation->delete();
+
+            return redirect()->route('invitations')->with('success', "Invitation #{$invitation_id} deleted successfully!");
+        } 
+        catch (\Exception $e) 
+        {
+            // Log the actual error
+            dd($e->getMessage());
+            \Log::error("Failed to delete invitation: {$e->getMessage()}");
+
+            return redirect()->route('invitations')->with('error', "Failed to delete the invitation.");
+        }
     }
 }
