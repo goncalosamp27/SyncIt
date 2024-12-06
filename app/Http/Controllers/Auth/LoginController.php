@@ -73,11 +73,16 @@ class LoginController extends Controller
                             return $end->greaterThan(now());
                         })
                         ->first();
-                    if ($activeRestriction){
+
+                    if ($activeRestriction) {
+                        $end = Carbon::parse($activeRestriction->start)->addDays($activeRestriction->duration);
+                        $timeLeft = $end->diffForHumans(now(), true); // Get a human-readable difference (e.g., "3 days", "2 hours")
+                    
                         return back()->withErrors([
-                            'login' => 'Your account is suspended. Please contact support for assistance.',
+                            'login' => "Your account is suspended. Time remaining: $timeLeft.",
                         ]);
                     }
+
                     else{
                         $member->update(['member_status' => 'Active']);
                     }
