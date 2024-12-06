@@ -645,7 +645,7 @@ BEGIN
                 JOIN event_notification en ON n.notification_id = en.notification_id
                 WHERE n.member_id = ticket_member_id
                   AND en.event_id = NEW.event_id
-                  AND n.notification_message = 'Event details changed'
+                  AND n.notification_message = 'Event details have changed. Please check the updates!'
                   AND n.notification_date >= CURRENT_TIMESTAMP - INTERVAL '1 minute'
             ) THEN
                 -- Insert the notification only if it doesn't exist
@@ -917,7 +917,8 @@ VALUES
     (65, 4.3),   -- Rock God
     (70, 4.0),   -- Funk Master
     (72, 3.1),   -- Soul Queen
-    (75, 4.8);   -- Swing Pro
+    (75, 4.8),   -- Swing Pro
+    (78, 5.0);
 
 INSERT INTO admin (email, password)
 VALUES 
@@ -1028,7 +1029,8 @@ VALUES
     ('Afro-Cuban Salsa Night', NOW() + INTERVAL '29 days', 'Cuban Lounge', 'A night dedicated to Afro-Cuban salsa and rhythmic beats.', 55.00, 25.00, 'Public', 4.6, 2, 2350, 'default_event.png'),
     ('Lo-Fi Chillout', NOW() + INTERVAL '17 days', 'Downtown Café', 'Relax with mellow lo-fi beats in a cozy café setting.', 20.00, 10.00, 'Private', 4.3, 70, 2400, 'default_event.png'),
     ('Bluegrass Bonanza', NOW() + INTERVAL '21 days', 'Country Barn', 'A fun-filled evening of bluegrass music and dance.', 40.00, 15.00, 'Public', 4.2, 45, 2450, 'default_event.png'),
-    ('Hard Rock Havoc', NOW() + INTERVAL '33 days', 'Rock City Arena', 'A powerful night of hard rock music with top bands.', 60.00, 35.00, 'Public', 4.5, 65, 2500, 'default_event.png');
+    ('Hard Rock Havoc', NOW() + INTERVAL '33 days', 'Rock City Arena', 'A powerful night of hard rock music with top bands.', 60.00, 35.00, 'Public', 4.5, 65, 2500, 'default_event.png'),
+    ('House Set', NOW() + INTERVAL '5 days', 'AEFEUP', 'FEUP Café with House Music', 0.00, 0.00, 'Public', 5.0, 78, 500, 'default_event.png');
 
 INSERT INTO comment (text, comment_date, event_id, member_id, response_comment_id)
 VALUES 

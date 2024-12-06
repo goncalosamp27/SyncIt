@@ -24,13 +24,15 @@
         </div>
     </div>    
 
-@elseif ($notification -> eventNotification)
+@elseif ($notification -> eventNotification && $notification->eventNotification->event)
     <div class="invitation-card">
         <div class="invitation-data">
             <div class="invitation-date">
                 {{ date('d/m/Y - h:i A', strtotime($notification->notification_date)) }}
             </div>
-            </div>
+            <div class = "invitation-username">
+                <span class = "invitation-username">@</span>{{ $notification->eventNotification->event->artist->member->username }}<span class = "invitation-username">'s</span>
+               </div>
             <div class="invitation-text">
                 {{ $notification->notification_message }}
             </div>
@@ -41,7 +43,6 @@
                 </button>
             </form>
         </div>
-
         <div class="invitation-event-card">
             @include('partials.event-card', ['event' => $notification->eventNotification->event])
         </div>
