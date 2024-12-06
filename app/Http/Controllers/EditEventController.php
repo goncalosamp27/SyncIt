@@ -55,7 +55,7 @@ class EditEventController extends Controller
         }
         $event->event_date = $eventDateTime;
             $event->save();
-        return redirect()->route('event', ['event_id' => $event_id])->with('success', 'Member updated successfully!');
+        return redirect()->route('event', ['event_id' => $event_id])->with('success', 'Event updated successfully!');
     }
 
     public function tickets($event_id)

@@ -14,21 +14,23 @@
 		@endif
 
 		<div class="tickets-title">
-			Showing Tickets for upcoming shows:
+			Showing your Invitations for upcoming events:
 		</div>
 		<div class ="new-purple-line"></div>
 		<div class="tickets-list">
+
 			@php
 				$now = new \DateTime();
-				$validTickets = $member->tickets->filter(function ($ticket) use ($now) {
-					return new \DateTime($ticket->event->event_date) > $now;
+				$validInvitations = $member->invitations->filter(function ($invitations) use ($now) {
+					return new \DateTime($invitations->event->event_date) > $now;
 				});
 			@endphp
-			@if ($validTickets->isEmpty())
-				<p class="no-tickets">You do not own any tickets for upcoming events.</p>
+
+			@if ($validInvitations->isEmpty())
+				<p class="no-tickets">You were not invited for any upcoming events.</p>
 			@else
-				@foreach ($validTickets as $ticket_)
-					@include('partials.ticket-card', ['ticket' => $ticket_])
+				@foreach ($validInvitations as $invitation)
+					@include('partials.invitation-card', ['invitation' => $invitation])
 				@endforeach
 			@endif
 		</div>

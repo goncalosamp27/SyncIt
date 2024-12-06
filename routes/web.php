@@ -16,21 +16,11 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\EditEventController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\NotificationController;
-
+use App\Http\Controllers\JoinRequestController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 
 use App\Models\Artist;
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
 Route::redirect('/', '/home');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -59,6 +49,7 @@ Route::controller(EventController::class)->group(function () {
         Route::post('/your-events/{event_id}', 'deleteEvent')->name('delete-event');
     });
 });
+
 Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
 Route::get('/events/create', [EventController::class, 'create'])->middleware('auth')->name('events.create');
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
@@ -70,7 +61,10 @@ Route::get('/events/search', [EventController::class, 'search'])->name('events.s
 Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
     ->name('buy-ticket')
     ->middleware('auth');
+
 Route::post('/events/getTags', [EventController::class, 'getTags'])->name('events.filters.tags');
+Route::post('/event/request-access', [JoinRequestController::class, 'requestAccess'])->name('request-access')
+    ->middleware(['auth', 'notAdmin']);
 
 //AJAX
 Route::post('/future-events/filter', [EventController::class, 'filterEvents'])->name('events.filter');
@@ -108,9 +102,13 @@ Route::controller(TicketController::class)->middleware(['notAdmin', 'auth'])->gr
     Route::post('/event/buy-ticket', 'buyTicket')->name('buy-ticket');
     Route::post('/tickets/{ticket_id}', 'refundTicket')->name('refund-ticket');
     Route::get('/tickets', 'ticketAndEventData')->name('tickets');
+    Route::get('/attended', 'ticketAndEventData2')->name('attended-events');
 });
 
 Route::post('/create-invitation', [InvitationController::class, 'create'])->middleware(['notAdmin', 'auth'])->name('create-invitation');
+Route::post('/create-invitation2', [InvitationController::class, 'create2'])->middleware(['notAdmin', 'auth'])->name('create-invitation2');
+Route::get('/invitations', [InvitationController::class, 'memberinvitations'])->middleware(['notAdmin','auth'])->name('invitations');
+Route::post('/invitations/{invitation_id}', [InvitationController::class, 'deleteInvitation'])->middleware(['notAdmin','auth'])->name('delete-invitation');
 
 Route::controller(NotificationController::class)->middleware(['notAdmin', 'auth'])->group(function () {
     Route::get('/notifications', 'getNotifications')->name('notifications');

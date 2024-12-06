@@ -69,6 +69,7 @@
     color: var(--text-color);
     padding: 1rem 4rem; /* Adjusted padding for balance */
     font-size: 1.8rem; /* Increased button font size */
+    font-weight: bold;
     border-radius: 1em;
     box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
     transition: all 0.3s ease-in-out;

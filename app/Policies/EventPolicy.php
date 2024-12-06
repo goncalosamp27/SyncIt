@@ -7,9 +7,6 @@ use App\Models\Event;
 
 class EventPolicy
 {
-    /**
-     * Create a new policy instance.
-     */
     public function __construct()
     {
         //
@@ -19,6 +16,4 @@ class EventPolicy
     {
         return $event->artist->member->member_id === $member->member_id;
     }
-
-
 }
