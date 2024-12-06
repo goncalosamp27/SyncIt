@@ -84,19 +84,10 @@ class AdminController extends Controller
         try {
             $member = Member::findOrFail($data['member_id']);
 
-            // Handle restriction type logic
             if ($data['type'] === 'Ban') {
-                // Anonymize member data
-                $member->update([
-                    'username' => 'anonymous_' . $member->member_id,
-                    'display_name' => 'Anonymous',
-                    'bio' => null,
-                    'profile_pic_url' => 'default_user.png',
-                    'member_status' => 'Banned',
-                ]);
+                $member->update(['member_status' => 'Banned',]);
                 $data['duration'] = 0; // Ban is permanent
             } else {
-                // Mark member as suspended
                 $member->update(['member_status' => 'Suspended']);
             }
             
