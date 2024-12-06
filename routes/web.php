@@ -43,6 +43,7 @@ Route::controller(AdminController::class)->middleware('admin')->group(function (
     Route::get('admin/edit/member/{id}', 'getMember')->name('admin.edit.member');
     Route::put('admin/edit/member/{id}', 'updateMemberAdmin')->name('member.updates');
     Route::get('admin/register', 'createMember')->name('create.member');
+    Route::put('admin', 'applyRestriction')->name('admin.restrict.member');
 });
 
 Route::controller(EventController::class)->group(function () {
@@ -143,6 +144,5 @@ Route::controller(EditEventController::class)->middleware(['notAdmin', 'auth'])-
     Route::put('/event/edit/{event_id}', 'editEvent')->name('edit.event');
     Route::post('/event/edit/{event_id}/{ticket_id}', 'deleteParticipant')->name('delete-participant');
 });
-
 
 

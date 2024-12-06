@@ -7,6 +7,7 @@ use Illuminate\View\View;
 
 use App\Models\Admin;
 use App\Models\Member;
+use App\Models\Restriction;
 
 class AdminController extends Controller
 {
@@ -67,5 +68,50 @@ class AdminController extends Controller
 
     public function createMember(){
         return view('auth.register');
+    }
+
+    public function applyRestriction(Request $request)
+    {
+
+        $data = $request->validate([
+            'member_id' => 'required|exists:member,member_id',
+            'admin_id' => 'required|exists:admin,admin_id',
+            'start' => 'required|date',
+            'type' => 'required|in:Ban,Suspension',
+            'duration' => 'required_if:type,Suspension|nullable|integer|min:0',
+        ]);
+
+        try {
+            $member = Member::findOrFail($data['member_id']);
+
+            // Handle restriction type logic
+            if ($data['type'] === 'Ban') {
+                // Anonymize member data
+                $member->update([
+                    'username' => 'anonymous_' . $member->member_id,
+                    'display_name' => 'Anonymous',
+                    'bio' => null,
+                    'profile_pic_url' => 'default_user.png',
+                    'member_status' => 'Banned',
+                ]);
+                $data['duration'] = 0; // Ban is permanent
+            } else {
+                // Mark member as suspended
+                $member->update(['member_status' => 'Suspended']);
+            }
+            
+            Restriction::create([
+                'member_id' => $data['member_id'],
+                'admin_id' => $data['admin_id'],
+                'start' => $data['start'],
+                'duration' => $data['duration'],
+                'type' => $data['type'],
+            ]);
+
+            return redirect()->route('home')->with('success', 'Restriction successfully applied.');
+        } catch (\Exception $e) {
+            \Log::error("Failed to apply restriction: {$e->getMessage()}");
+            return redirect()->route('home')->with('error', 'An error occurred while applying the restriction.');
+        }        
     }
 }
