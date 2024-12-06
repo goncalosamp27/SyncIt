@@ -25,6 +25,7 @@ DROP TABLE IF EXISTS restriction CASCADE;
 DROP TABLE IF EXISTS restriction_notification CASCADE;
 DROP TABLE IF EXISTS event_image CASCADE;
 DROP TABLE IF EXISTS join_request CASCADE;
+DROP TABLE IF EXISTS join_request_notification CASCADE;
 DROP TABLE IF EXISTS vote_comment CASCADE;
 DROP TABLE IF EXISTS event_notification CASCADE;
 
@@ -71,9 +72,6 @@ CHECK (CHAR_LENGTH(VALUE) BETWEEN 8 AND 100);
 
 CREATE DOMAIN rating_domain AS DECIMAL(2, 1)
 CHECK (VALUE >= 0.0 AND VALUE <= 5.0);
-
-CREATE DOMAIN request_status_domain AS VARCHAR(10)
-CHECK (VALUE IN ('Approved', 'Rejected', 'Pending'));
 
 CREATE TABLE member (
     member_id SERIAL PRIMARY KEY,
@@ -140,7 +138,6 @@ CREATE TABLE join_request (
     event_id INT NOT NULL,
     member_id INT NOT NULL,
     request_date TIMESTAMP CHECK (request_date >= CURRENT_DATE),
-    status request_status_domain NOT NULL,
     FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
@@ -310,7 +307,6 @@ CREATE TABLE restriction_notification (
 CREATE OR REPLACE FUNCTION anonymize_data() RETURNS TRIGGER AS
 $BODY$
 BEGIN
-
     IF TG_TABLE_NAME = 'member' THEN
         UPDATE comment
         SET member_id = 1 -- DEFAULT USER
@@ -487,24 +483,23 @@ EXECUTE FUNCTION follow_handler();
 CREATE OR REPLACE FUNCTION invitation_handler()
 RETURNS TRIGGER AS $$
 DECLARE
-    new_notification_id INT;  -- Variable to hold the new notification ID
+    new_notification_id INT;
 BEGIN
-    -- Insert the notification and get the new notification_id in one step
     INSERT INTO notification (notification_message, notification_date, member_id)
     VALUES (
-        'You have a new invitation: ' || NEW.invitation_message,
+        COALESCE('You have a new invitation: ' || NEW.invitation_message, 'You have a new invitation.'),
         CURRENT_TIMESTAMP,
         NEW.member_id
     )
-    RETURNING notification_id INTO new_notification_id;  -- Capture the new notification ID
+    RETURNING notification_id INTO new_notification_id; 
 
-    -- Insert the notification record into invitation_notification
     INSERT INTO invitation_notification (notification_id, invitation_id)
-    VALUES (new_notification_id, NEW.invitation_id);  -- Link notification with the invitation
+    VALUES (new_notification_id, NEW.invitation_id);
 
-    RETURN NEW;  -- Return the new invitation row
+    RETURN NEW;  
 END;
 $$ LANGUAGE plpgsql;
+
 
 
 
@@ -570,9 +565,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
-
-
 -- Trigger for comment table
 CREATE TRIGGER after_comment_insert
 AFTER INSERT ON comment
@@ -629,10 +621,11 @@ FOR EACH ROW EXECUTE FUNCTION event_fts_trigger();
 CREATE INDEX event_fts_name_idx ON event USING GIN (fts_name);
 CREATE INDEX event_fts_location_idx ON event USING GIN (fts_location);
 
-
--- Create a function that handles event changes
 CREATE OR REPLACE FUNCTION notify_event_changes()
 RETURNS TRIGGER AS $$
+DECLARE
+    ticket_member_id INT;
+    new_notification_id INT;
 BEGIN
     -- Check if any of the monitored fields have changed
     IF NEW.location <> OLD.location OR 
@@ -642,17 +635,32 @@ BEGIN
        NEW.capacity <> OLD.capacity OR 
        NEW.event_media <> OLD.event_media THEN
 
-        -- Insert a notification for each member registered for the event
-        INSERT INTO notification (notification_message, notification_date, member_id)
-        SELECT 'Event details changed', CURRENT_TIMESTAMP, member_id
-        FROM ticket
-        WHERE event_id = NEW.event_id;
+        -- Loop through each member with tickets for the event
+        FOR ticket_member_id IN
+            SELECT DISTINCT ticket.member_id
+            FROM ticket
+            WHERE ticket.event_id = NEW.event_id
+        LOOP
+            -- Check if a similar notification already exists
+            IF NOT EXISTS (
+                SELECT 1
+                FROM notification n
+                JOIN event_notification en ON n.notification_id = en.notification_id
+                WHERE n.member_id = ticket_member_id
+                  AND en.event_id = NEW.event_id
+                  AND n.notification_message = 'Event details changed'
+                  AND n.notification_date >= CURRENT_TIMESTAMP - INTERVAL '1 minute'
+            ) THEN
+                -- Insert the notification only if it doesn't exist
+                INSERT INTO notification (notification_message, notification_date, member_id)
+                VALUES ('Event details changed', CURRENT_TIMESTAMP, ticket_member_id)
+                RETURNING notification_id INTO new_notification_id;
 
-        -- Link notifications to the event
-        INSERT INTO event_notification (notification_id, event_id)
-        SELECT notification_id, NEW.event_id
-        FROM notification
-        WHERE notification_date = CURRENT_TIMESTAMP;
+                -- Link the notification to the event
+                INSERT INTO event_notification (notification_id, event_id)
+                VALUES (new_notification_id, NEW.event_id);
+            END IF;
+        END LOOP;
 
     END IF;
 
@@ -660,13 +668,53 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create a trigger that calls the function on UPDATE of monitored fields
+
 CREATE TRIGGER trigger_notify_event_changes
 AFTER UPDATE OF location, event_date, event_name, description, capacity, event_media
 ON event
 FOR EACH ROW
 EXECUTE FUNCTION notify_event_changes();
 
+CREATE OR REPLACE FUNCTION clean_orphaned_notifications()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM notification
+    WHERE notification_id = OLD.notification_id;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_event_notification_delete
+AFTER DELETE ON event_notification
+FOR EACH ROW
+EXECUTE FUNCTION clean_orphaned_notifications();
+
+CREATE TRIGGER after_invitation_notification_delete
+AFTER DELETE ON invitation_notification
+FOR EACH ROW
+EXECUTE FUNCTION clean_orphaned_notifications();
+
+CREATE TRIGGER after_follow_notification_delete
+AFTER DELETE ON follow_notification
+FOR EACH ROW
+EXECUTE FUNCTION clean_orphaned_notifications();
+
+CREATE TRIGGER after_comment_notification_delete
+AFTER DELETE ON comment_notification
+FOR EACH ROW
+EXECUTE FUNCTION clean_orphaned_notifications();
+
+CREATE TRIGGER after_poll_notification_delete
+AFTER DELETE ON poll_notification
+FOR EACH ROW
+EXECUTE FUNCTION clean_orphaned_notifications();
+
+CREATE TRIGGER after_restriction_notification_delete
+AFTER DELETE ON restriction_notification
+FOR EACH ROW
+EXECUTE FUNCTION clean_orphaned_notifications();
+
+/*
 CREATE OR REPLACE FUNCTION notify_event_tomorrow()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -685,34 +733,24 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+*/
 
-
-CREATE OR REPLACE FUNCTION generate_tomorrow_notifications()
-RETURNS void AS $$
+CREATE OR REPLACE FUNCTION delete_join_requests_on_invitation()
+RETURNS TRIGGER AS $$
 BEGIN
-    -- Insert notifications for ticket holders of tomorrow's events
-    INSERT INTO notification (notification_message, notification_date, member_id)
-    SELECT 
-        'The event you signed for is tomorrow! Don''t miss it!', 
-        CURRENT_TIMESTAMP, 
-        member_id
-    FROM ticket
-    WHERE event_id IN (
-        SELECT event_id
-        FROM event
-        WHERE event_date::date = CURRENT_DATE + INTERVAL '1 day'
-    );
+    -- Delete all join requests for the member and event when an invitation is created
+    DELETE FROM join_request
+    WHERE member_id = NEW.member_id
+      AND event_id = NEW.event_id;
 
-    -- Link the notifications to the events
-    INSERT INTO event_notification (notification_id, event_id)
-    SELECT n.notification_id, e.event_id
-    FROM notification n
-    JOIN ticket t ON n.member_id = t.member_id -- Fixed JOIN condition
-    JOIN event e ON t.event_id = e.event_id
-    WHERE e.event_date::date = CURRENT_DATE + INTERVAL '1 day';
-
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_invitation_insert2
+AFTER INSERT ON invitation
+FOR EACH ROW
+EXECUTE FUNCTION delete_join_requests_on_invitation();
 
 
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
@@ -1462,18 +1500,18 @@ VALUES
     (20, INTERVAL '0 days', 2, NOW()),      -- Member 20 banned by Admin 2
     (25, INTERVAL '0 days', 3, NOW());      -- Member 25 banned by Admin 3
 
-INSERT INTO join_request(event_id, member_id, request_date, status)
+INSERT INTO join_request(event_id, member_id, request_date)
 VALUES 
-    (1, 1, NOW() + INTERVAL '1 days', 'Pending'),
-    (2, 2, NOW() + INTERVAL '2 days', 'Pending'),
-    (3, 3, NOW() + INTERVAL '3 days', 'Approved'),
-    (4, 4, NOW() + INTERVAL '4 days', 'Approved'),
-    (5, 5, NOW() + INTERVAL '5 days', 'Rejected'),
-    (6, 6, NOW() + INTERVAL '6 days', 'Rejected'),
-    (7, 7, NOW() + INTERVAL '2 days', 'Pending'),
-    (8, 8, NOW() + INTERVAL '2 days', 'Pending'),
-    (9, 9, NOW() + INTERVAL '2 days', 'Pending'),
-    (10, 10, NOW() + INTERVAL '2 days', 'Pending');
+    (1, 1, NOW() + INTERVAL '1 days'),
+    (2, 2, NOW() + INTERVAL '2 days'),
+    (3, 3, NOW() + INTERVAL '3 days'),
+    (4, 4, NOW() + INTERVAL '4 days'),
+    (5, 5, NOW() + INTERVAL '5 days'),
+    (6, 6, NOW() + INTERVAL '6 days'),
+    (7, 7, NOW() + INTERVAL '2 days'),
+    (8, 8, NOW() + INTERVAL '2 days'),
+    (9, 9, NOW() + INTERVAL '2 days'),
+    (10, 10, NOW() + INTERVAL '2 days');
 
 
 INSERT INTO vote_comment (comment_id, member_id, vote) 

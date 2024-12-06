@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
 use App\Models\Invitation;
 use App\Models\Member;
 use App\Models\Event;
-use Illuminate\Http\Request;
 
 class InvitationController extends Controller
 {
@@ -42,5 +45,69 @@ class InvitationController extends Controller
         $invitation->save();
 
         return redirect()->back()->with('success', 'Invitation sent successfully!');
+    }
+
+    public function create2(Request $request)
+    {
+        $request->validate([
+            'member_id' => 'required|exists:member,member_id',
+            'event_id' => 'required|exists:event,event_id',
+        ]);
+
+        $member = Member::findOrFail($request->input('member_id'));
+		
+		if (!$member) { return redirect()->back()->with('error', "Not a valid member.");}
+
+		if (in_array($member->member_status, ['Suspended', 'Banned'])) {
+			return redirect()->back()->with('error', "This member's account is {$member->member_status}.");
+		}
+
+		$event = Event::findOrFail($request->input('event_id'));
+
+        $invitation = new Invitation();
+        $invitation->invitation_message = null;
+        $invitation->invitation_date = now(); 
+        $invitation->event_id = $request->input('event_id');
+        $invitation->member_id = $request->input('member_id');
+        $invitation->save();
+
+        return redirect()->back()->with('success', 'Join request accepted and invitation sent successfully!');
+    }
+
+    public function memberinvitations()
+    {	
+		$member = Auth::user()->load('invitations');
+        $invitations = Invitation::where('member_id', Auth::id());
+
+        return view('pages.invitations', [
+            'invitations' => $invitations, 
+            'member' => $member,
+        ]);
+    }
+
+    public function deleteInvitation(string $invitation_id)
+    {
+        try {
+            // Fetch the event
+            $invitation = Invitation::findOrFail($invitation_id);
+
+            // Debug: Check if event is valid
+            if (!$invitation) {
+                return redirect()->route('invitations')->with('error', "Invitation not found.");
+            }
+
+            // Attempt to delete the event
+            $invitation->delete();
+
+            return redirect()->route('invitations')->with('success', "Invitation #{$invitation_id} deleted successfully!");
+        } 
+        catch (\Exception $e) 
+        {
+            // Log the actual error
+            dd($e->getMessage());
+            \Log::error("Failed to delete invitation: {$e->getMessage()}");
+
+            return redirect()->route('invitations')->with('error', "Failed to delete the invitation.");
+        }
     }
 }

@@ -26,8 +26,7 @@
 .no-tickets {
     margin-top: 2rem;
     font-size: 1.5rem;
-    margin-left: auto;
-    margin-right: auto;
+    text-align: center;
 }
 
 .ticket-card {
@@ -126,4 +125,41 @@
     height: auto; /* Keeps aspect ratio */
     border-radius: 1rem;
     overflow: hidden; /* Prevents media overflow */
+}
+
+.no-refund-button-attended {
+    background-color: #2b3a9e;
+    color: #fff;
+    cursor: not-allowed;
+    pointer-events: none;
+    width: 100%;
+    margin-top: 0rem;
+    margin-left: auto;
+    margin-right: auto;
+    align-self: flex-start;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.no-refund-button {
+    background-color: gray;
+    color: lightgray;
+    cursor: not-allowed;
+    pointer-events: none;
+    text-decoration: line-through;
+    width: 100%;
+    margin-top: 0rem;
+    margin-left: auto;
+    margin-right: auto;
+    align-self: flex-start;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
 }

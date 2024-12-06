@@ -22,6 +22,18 @@ class TicketController extends Controller {
         ]);
     }
 
+    public function ticketAndEventData2()
+    {	
+		$member = Auth::user()->load('tickets');
+        $tickets = Ticket::where('member_id', Auth::id());
+
+        return view('pages.attended', [
+            'tickets' => $tickets, 
+            'member' => $member,
+        ]);
+    }
+
+
     public function refundTicket(string $ticket_id)
     {   
         try {

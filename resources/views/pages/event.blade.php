@@ -1,6 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
+	@if (session('success'))
+		<div class = "success">
+			{{ session('success') }}
+		</div>
+	@endif
+		@if (session('error'))
+		<div class="error">
+			{{ session('error') }}
+		</div>
+	@endif
+
 	<script src="{{ asset('js/app.js') }}" defer></script>
 
 	<div class="event-page-content">
@@ -35,10 +46,8 @@
 					Manage
 				</a>
 				@endcan
-
 			</div>
 		
-
 			@php
     			$eventExpired = $event->event_date <= now();
     			$userTicketCount = $event->tickets->where('member_id', auth()->id())->count();
@@ -47,7 +56,9 @@
 
 			@cannot('edit', $event)
 			<div class="ticket-buttons">
-				@if($userTicketCount < 10 && $userTicketCount >= 1)
+				@if ($eventExpired) <button type="submit" class="disabled-btn" disabled>Event Expired</button>  
+
+				@elseif($userTicketCount < 10 && $userTicketCount >= 1)
 					<div class="button-container">
 						<button class="purchased-btn">
 							Tickets Purchased: {{ $userTicketCount }}
@@ -60,20 +71,30 @@
 							</button>
 						</form>
 					</div>  
+
 				@elseif ($userTicketCount == 10)
 					<button type="submit" class="disabled-btn" disabled>Ticket Limit Reached</button>
-				@elseif ($eventType == 'Private')
-					<button type="submit" class="disabled-btn">Private Event</button>    
+
+				@elseif ($eventType == 'Private' && $event->requests->contains('member_id', auth()->id()))
+					<button class="disabled-btn" disabled>Waiting for join request approval...</button>
+
+				@elseif ($eventType == 'Private' && !$event->invitations->contains('member_id', auth()->id()))
+					<div class="button-container">
+						<button type="submit" class="disabled-btn">Private Event</button>
+						<form action="{{ route('request-access') }}" method="POST">   
+							@csrf
+							<input type="hidden" name="event_id" value="{{ $event->event_id }}">
+							<button type="submit" class="request-btn">
+								Request Access
+							</button>    
+						</form>	
+					</div>  
 				@else            
 					<form action="{{ route('buy-ticket') }}" method="POST">
 						@csrf
 						<input type="hidden" name="event_id" value="{{ $event->event_id }}">
-						<button type="submit" class="buy-tickets-btn {{ $eventExpired ? 'disabled-btn' : '' }}" {{ $eventExpired ? 'disabled' : '' }}>
-							@if ($eventExpired)
-								Event Expired
-							@else
+						<button type="submit" class="buy-tickets-btn">
 								Get Tickets - {{ $event->price }}€
-							@endif
 						</button>
 					</form>
 				@endif  

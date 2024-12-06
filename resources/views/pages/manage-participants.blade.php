@@ -13,61 +13,99 @@
     @endif
 
     <div class="admin_page">
-    <div class="participants-header">
-    <h1>Participants</h1>
-    <div class="add-participant-container">
-        <button class="add-participant-btn" onclick="toggleSearchBar()">➕</button>
-        <div id="search-bar-container" class="search-bar-container">
-            <form action="/create-invitation" method="POST" class="invitation-form">
-                @csrf <!-- Include CSRF protection token -->
+        <div class="participants-header">
+        <h1>Participants</h1>
+        <div class="add-participant-container">
+            <button class="add-participant-btn" onclick="toggleSearchBar()">➕</button>
+            <div id="search-bar-container" class="search-bar-container">
+                <form action="/create-invitation" method="POST" class="invitation-form">
+                    @csrf <!-- Include CSRF protection token -->
+                    <input 
+                        type="text" 
+                        name="username" 
+                        id="participant-search" 
+                        placeholder="Search username..." 
+                        class="search-bar-input"
+                        required
+                    />
+                    <textarea
+                        name="message"
+                        id="invitation-message"
+                        placeholder="Enter a custom invitation message"
+                        class="search-bar-input2"
+                    ></textarea>
+                    <input type="hidden" name="event_id" value="{{ $event->event_id }}">
+                    <button type="submit" class="search-submit-btn">Invite</button></form>
+            </div>
+        </div>  
+        </div>        
+            <div class="search-bar">
+                <button type="submit" class="search-button">🔍</button>
                 <input 
                     type="text" 
-                    name="username" 
-                    id="participant-search" 
-                    placeholder="Search username..." 
-                    class="search-bar-input"
-                    required
+                    class="search-input" 
+                    placeholder="Search by name, username, or email..." 
                 />
-                <textarea
-                    name="message"
-                    id="invitation-message"
-                    placeholder="Enter a custom invitation message"
-                    class="search-bar-input2"
-                ></textarea>
-                <input type="hidden" name="event_id" value="{{ $event->event_id }}">
-                <button type="submit" class="search-submit-btn">Invite</button></form>
-        </div>
-    </div>  
-    </div>        
-        <div class="search-bar">
-            <button type="submit" class="search-button">🔍</button>
-            <input 
-                type="text" 
-                class="search-input" 
-                placeholder="Search by name, username, or email..." 
-            />
-        </div>
-
-        @foreach ($tickets as $ticket) <!-- $participant is a Ticket -->
-            @php
-                $member = $ticket->member; 
-            @endphp
-            <div class="member-card">
-                <div class="member-profile-pic">
-                    {{--<img src="{{ asset('storage/profiles/' . $member->profile_pic_url)}}" alt="{{ $member->display_name }}">--}}
-                </div>
-                <div class="member-details">
-                    <h3 class="member-name">{{ $member->display_name }}</h3>
-                    <p class="member-username">{{'@' . $member->username }}</p>
-                </div> 
-                <div class="member-edit">
-                  <form action="{{ route('delete-participant', ['event_id' => $event->event_id, 'ticket_id' => $ticket->ticket_id]) }}" method="POST">
-                    @csrf
-                    <button class="remove-participant" title="Remove participant" type="submit">
-                        Remove
-                    </button>
-                </div>
             </div>
-        @endforeach
+
+            @if ($tickets->isEmpty())
+                <p class="no-tickets">There are no participants for this event.</p>
+            @else
+                @foreach ($tickets as $ticket) <!-- $participant is a Ticket -->
+                    @php
+                        $member = $ticket->member; 
+                    @endphp
+                    <div class="member-card">
+                        <div class="member-profile-pic">
+                            <img src="{{ asset('storage/profiles/' . $member->profile_pic_url)}}" alt="{{ $member->display_name }}">
+                        </div>
+                        <div class="member-details">
+                            <h3 class="member-name">{{ $member->display_name }}</h3>
+                            <p class="member-username">{{ '@' . $member->username }}</p>
+                        </div> 
+                        <div class="member-edit">
+                        <form action="{{ route('delete-participant', ['event_id' => $event->event_id, 'ticket_id' => $ticket->ticket_id]) }}" method="POST">
+                            @csrf
+                            <button class="remove-participant" title="Remove participant" type="submit">
+                                Remove
+                            </button>
+                        </form>
+                        </div>
+                    </div>
+                @endforeach
+            @endif
+            <div class ="new-purple-line"></div>
+            
+            <div class="participants-header">
+            <h1>Join Requests</h1></div>
+            @if ($requests->isEmpty())
+                <p class="no-tickets">There are no join requests for this event.</p>
+            @else
+                @foreach ($requests as $request)
+                    @php
+                        $member = $request->member; 
+                    @endphp
+                    <div class="member-card">
+                        <div class="member-profile-pic">
+                            <img src="{{ asset('storage/profiles/' . $member->profile_pic_url)}}" alt="{{ $member->display_name }}">
+                        </div>
+                        <div class="member-details">
+                            <h3 class="member-name">{{ $member->display_name }}</h3>
+                            <p class="member-username">{{ '@' . $member->username }} wants to join your event!</p>
+                        </div> 
+                        <div class="member-edit">
+                        <form action="/create-invitation2" method="POST">
+                            @csrf
+                            <input type = "hidden" name = "member_id" value = "{{ $member -> member_id }}">
+                            <input type="hidden" name="event_id" value="{{ $event->event_id }}">
+                            <button class="remove-participant" type="submit">
+                                Invite
+                            </button>
+                        </form>
+                        </div>
+                    </div>
+                @endforeach
+            @endif
+
     </div>
 @endsection

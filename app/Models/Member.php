@@ -100,7 +100,7 @@ class Member extends Authenticatable
 
     public function invitations()
     {
-        return $this->hasMany(Invitation::class, 'inviter_id', 'member_id');
+        return $this->hasMany(Invitation::class, 'member_id', 'member_id');
     }
 
     public function followNotifications()
