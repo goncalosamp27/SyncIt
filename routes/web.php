@@ -2,7 +2,9 @@
 use App\Http\Controllers\CreateEventController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
+use App\Models\Tag;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventTagController;
@@ -54,7 +56,6 @@ Route::post('/events/store', [EventController::class, 'store'])->name('events.st
 Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events');
 Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->name('past-events');
 Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('future-events');
-Route::post('/future-events/filter', [EventController::class, 'filterEvents'])->name('events.filter');
 Route::get('/events/search', [EventController::class, 'search'])->name('events.search');
 
 Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
@@ -66,8 +67,33 @@ Route::post('/event/request-access', [JoinRequestController::class, 'requestAcce
     ->middleware(['auth', 'notAdmin']);
 
 //AJAX
-Route::post('/future-events/updateFutureEventsPage', [EventController::class, 'updateFutureEventsPage'])->name('future-events-update');
-Route::post('/future-events/getEventCards', [EventController::class, 'getEventCards'])->name('get-cards');
+Route::post('/future-events/filter', [EventController::class, 'filterEvents'])->name('events.filter');
+Route::post('/future-events', function (Request $request) {
+    Log::info($request->input('tagsMusic'));
+    $events = $request->input('events');
+    $tagsMusic = $request->input('tagsMusic');
+    $tagsDance = $request->input('tagsDance');
+    $tagsMood = $request->input('tagsMood');
+    $tagsSettings = $request->input('tagsSettings');
+
+    foreach ($events as &$event) {
+        $eventTags = Tag::getTagsByEventId($event['event_id'])->take(3);
+    
+        $event['tags'] = $eventTags;
+    }
+    return view('pages.events', [
+        'events' => $events ,
+        'tagsMusic' => $tagsMusic ,
+        'tagsDance' => $tagsDance ,
+        'tagsMood' => $tagsMood ,
+        'tagsSettings' => $tagsSettings ,
+    ]);
+    
+});
+
+
+
+
 
 Route::post('/tickets/{ticket_id}', [TicketController::class, 'refundTicket'])->name('refund-ticket');
 Route::post('/your-events/{event_id}', [EventController::class, 'deleteEvent'])->name('delete-event');

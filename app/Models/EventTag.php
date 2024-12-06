@@ -57,5 +57,6 @@ class EventTag extends Model
             ->pluck('tag_id');  // This retrieves an array of tag_ids associated with the event_id
     }
 
+    
 
 }

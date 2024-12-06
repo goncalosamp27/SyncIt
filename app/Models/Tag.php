@@ -83,5 +83,18 @@ class Tag extends Model
         return $tag->color;
 
     }
+    public static function getTag($tagId)
+    {
+        $tag = self::find($tagId);
+        return $tag;
+    }
+    public static function getTagsByEventId($eventId)
+    {
+        $tagIds = EventTag::getTagsByEventId($eventId);
+
+        $tags = self::whereIn('tag_id', $tagIds)->get();
+
+        return $tags; 
+    }
 
 }
