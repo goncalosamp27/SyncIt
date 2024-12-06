@@ -76,7 +76,7 @@
 					<button type="submit" class="disabled-btn" disabled>Ticket Limit Reached</button>
 
 				@elseif ($eventType == 'Private' && $event->requests->contains('member_id', auth()->id()))
-					<button class="disabled-btn2" disabled>Waiting for join request approval...</button>
+					<button class="disabled-btn" disabled>Waiting for join request approval...</button>
 
 				@elseif ($eventType == 'Private' && !$event->invitations->contains('member_id', auth()->id()))
 					<div class="button-container">
