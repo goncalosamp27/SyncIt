@@ -239,7 +239,7 @@ CREATE TABLE invitation_notification (
 
 CREATE TABLE event_notification(
     notification_id INT PRIMARY KEY,
-    event_id INT NOT NULL,
+    event_id INT,
     FOREIGN KEY (notification_id) REFERENCES notification(notification_id) ON DELETE CASCADE,
     FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE
 );
@@ -348,17 +348,14 @@ CREATE OR REPLACE TRIGGER create_artist_after_event_insert
     FOR EACH ROW
     EXECUTE FUNCTION create_artist_trigger_function();
 
-
--- BR04: Suspended or banned accounts cannot interact with the website (i.e. comment, purchase tickets,...)
 CREATE OR REPLACE FUNCTION check_member_status() RETURNS TRIGGER AS
 $BODY$
 BEGIN
-    -- Check if the member status is Suspended or Banned
     IF EXISTS (
         SELECT 1 
         FROM member
         WHERE member_id = NEW.member_id 
-        AND member_status IN ('Suspended', 'Banned')  -- Use string literals if member_status is text
+        AND member_status IN ('Suspended', 'Banned')  
     ) THEN
         RAISE EXCEPTION 'Suspended or banned accounts cannot interact with the website.';
     END IF;
@@ -411,7 +408,7 @@ BEGIN
             FROM event
             WHERE event_id = NEW.event_id
         )
-    ), 0)  -- Use 0 if the average is NULL
+    ), 0)  
     WHERE artist_id = (
         SELECT artist_id
         FROM event
@@ -753,6 +750,58 @@ FOR EACH ROW
 EXECUTE FUNCTION delete_join_requests_on_invitation();
 
 
+CREATE OR REPLACE FUNCTION ticket_refund_notification()
+RETURNS TRIGGER AS $$
+DECLARE
+    notification_id INT;
+    event_name TEXT;
+BEGIN
+    SELECT event_name INTO event_name 
+    FROM event 
+    WHERE event_id = OLD.event_id;
+
+    IF event_name IS NULL THEN
+        event_name := 'Unknown Event';
+    END IF;
+
+    INSERT INTO notification (notification_message, notification_date, member_id)
+    VALUES (
+        CONCAT('The ticket for the event ', event_name, ' has been refunded'),
+        CURRENT_TIMESTAMP,
+        OLD.member_id
+    )
+
+    RETURNING notification_id INTO notification_id;
+
+    INSERT INTO event_notification (notification_id, event_id)
+    VALUES (notification_id, OLD.event_id);
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER ticket_refund_trigger
+AFTER DELETE ON ticket
+FOR EACH ROW
+EXECUTE FUNCTION ticket_refund_notification();
+
+
+CREATE OR REPLACE FUNCTION clean_up_event_notifications()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM event_notification
+    WHERE event_id = OLD.event_id;
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER clean_up_event_notifications_trigger
+AFTER DELETE ON event
+FOR EACH ROW
+EXECUTE FUNCTION clean_up_event_notifications();
+
+
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
 VALUES 
     ('edgar', 'LBAW Teacher', 'lbaw@example.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
@@ -831,7 +880,9 @@ VALUES
     ('latinoheat', 'Latino Heat Music', 'latinoheat@example.com', 'latinoheat2023', 'Latin music and dance', 'default_user.png', 'Active'),
     ('afrojazz', 'Afro Jazz Music', 'afrojazz@example.com', 'afrojazz2023', 'Afro Jazz fusion', 'default_user.png', 'Active'),
     ('kpopfan', 'KPop Music Fan', 'kpopfan@example.com', 'kpopfan2023', 'K-Pop for life', 'default_user.png', 'Active'),
-    ('bollydance', 'Bolly Dance Artist', 'bollydance@example.com', 'bollydance2023', 'Bollywood dance styles', 'default_user.png', 'Active');
+    ('bollydance', 'Bolly Dance Artist', 'bollydance@example.com', 'bollydance2023', 'Bollywood dance styles', 'default_user.png', 'Active'),
+    ('gonca', 'DJ Gonca', 'gonca@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'DJ Gonca no beat','default_user.png', 'Active'),
+    ('dud', 'DJ Dud', 'dud@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'DJ Dud no beat','default_user.png', 'Active');
 
 
 INSERT INTO artist (artist_id, rating)

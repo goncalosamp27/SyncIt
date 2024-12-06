@@ -9,7 +9,11 @@
         <p class="event-price-cap"> 
             <span class="event-capacity"> {{ $event->ticket_count }}/{{ $event->capacity }} </span>
             <span class="event-price">
-                {{ $event->price == 0 ? '<span class="event-free">FREE</span>' : $event->price . '€' }}
+                @if ($event->price == 0)
+                    <span class="event-free">FREE</span>
+                @else
+                    {{ $event->price }}€
+                @endif
             </span>
         <div class="event-card-tags">
             @foreach ($event->tags->take(3) as $tag)
