@@ -311,36 +311,6 @@ CREATE TABLE restriction_notification (
     FOREIGN KEY (restriction_id) REFERENCES restriction(restriction_id)
 );
 
--- Upon account deletion, shared user data (e.g. comments, reviews, likes) is kept but made anonymous.
-CREATE OR REPLACE FUNCTION anonymize_data() RETURNS TRIGGER AS
-$BODY$
-BEGIN
-
-    IF TG_TABLE_NAME = 'member' THEN
-        UPDATE comment
-        SET member_id = 1 -- DEFAULT USER
-        WHERE member_id = OLD.member_id;
-
-    ELSIF TG_TABLE_NAME = 'artist' THEN
-        UPDATE event
-        SET artist_id = 1-- DEFAULT USER
-        WHERE artist_id = OLD.artist_id;
-    END IF;
-
-    RETURN OLD;
-END;
-$BODY$
-LANGUAGE plpgsql;
-
-CREATE OR REPLACE TRIGGER before_member_delete
-    BEFORE DELETE ON member
-    FOR EACH ROW
-    EXECUTE FUNCTION anonymize_data();
-
-CREATE OR REPLACE TRIGGER before_artist_delete
-    BEFORE DELETE ON artist
-    FOR EACH ROW
-    EXECUTE FUNCTION anonymize_data();
 
 CREATE OR REPLACE FUNCTION create_artist_trigger_function()
 RETURNS TRIGGER AS $$

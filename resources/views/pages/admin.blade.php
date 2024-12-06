@@ -3,7 +3,7 @@
 @section('content')
     <div class="admin_page">
         <div class="participants-header">
-
+        
         <h1> Member search </h1>
         <a class="add-participant-btn" href="{{ route('create.member') }}">➕</a>
         </div>
