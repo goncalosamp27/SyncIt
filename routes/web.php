@@ -144,4 +144,8 @@ Route::controller(EditEventController::class)->middleware(['notAdmin', 'auth'])-
     Route::post('/event/edit/{event_id}/{ticket_id}', 'deleteParticipant')->name('delete-participant');
 });
 
+Route::view('/about-us', 'pages/about-us')->name('about-us');
+Route::view('/contacts', 'pages/contacts')->name('contacts');
+Route::view('/services', 'pages/services')->name('services');
+Route::view('/faq', 'pages/faq')->name('faq');
 
