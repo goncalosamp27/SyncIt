@@ -11,11 +11,18 @@ use App\Models\Restriction;
 
 class AdminController extends Controller
 {
-    public function display_members()
-    {
-        $members = Member::all();
 
-        return view('pages.admin', ['members' => $members]);
+    public function getMembersByStatus($type = 'active')
+    {
+        if ($type == 'active') {
+            $members = Member::where('member_status', 'Active')->get();
+        } elseif ($type == 'banned') {
+            $members = Member::where('member_status', 'Banned')->get();
+        } elseif ($type == 'suspended') {
+            $members = Member::where('member_status', 'Suspended')->get();
+        } 
+
+        return view('pages.admin', compact('members'));
     }
 
     public function getMember(string $member_id) 
@@ -82,6 +89,7 @@ class AdminController extends Controller
         ]);
 
         try {
+
             $member = Member::findOrFail($data['member_id']);
 
             if ($data['type'] === 'Ban') {
@@ -99,10 +107,25 @@ class AdminController extends Controller
                 'type' => $data['type'],
             ]);
 
-            return redirect()->route('home')->with('success', 'Restriction successfully applied.');
+            return redirect()->route('admin')->with('success', 'Restriction successfully applied.');
         } catch (\Exception $e) {
             \Log::error("Failed to apply restriction: {$e->getMessage()}");
-            return redirect()->route('home')->with('error', 'An error occurred while applying the restriction.');
+            return redirect()->route('admin')->with('error', 'An error occurred while applying the restriction.');
         }        
+    }
+
+    public function removeRestriction(Request $request, $memberId)
+    {
+        $member = Member::find($memberId);
+        if ($member) {
+            $member->update([
+                'member_status' => 'Active'
+            ]);
+            $member->save();
+
+            return redirect()->back()->with('status', 'Restriction removed');
+        }
+
+        return redirect()->back()->with('error', 'Member not found');
     }
 }

@@ -6,6 +6,7 @@ namespace App\Providers;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use App\Models\Member;
 use App\Policies\RestrictionPolicy;
+use App\Policies\AdminPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -18,6 +19,7 @@ class AuthServiceProvider extends ServiceProvider
         Admin::class => AdminPolicy::class, 
         Event::class => EventPolicy::class,
         Member::class => RestrictionPolicy::class,
+        Member::class => AdminPolicy::class,
     ];
 
     /**
