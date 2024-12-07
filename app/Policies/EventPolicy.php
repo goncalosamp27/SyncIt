@@ -14,6 +14,7 @@ class EventPolicy
 
     public function edit(Member $member, Event $event)
     {
+        dd($member->member_id);
         return $event->artist->member->member_id === $member->member_id;
     }
 }
