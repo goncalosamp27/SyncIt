@@ -7,14 +7,22 @@ use Illuminate\View\View;
 
 use App\Models\Admin;
 use App\Models\Member;
+use App\Models\Restriction;
 
 class AdminController extends Controller
 {
-    public function display_members()
-    {
-        $members = Member::all();
 
-        return view('pages.admin', ['members' => $members]);
+    public function getMembersByStatus($type = 'active')
+    {
+        if ($type == 'active') {
+            $members = Member::where('member_status', 'Active')->get();
+        } elseif ($type == 'banned') {
+            $members = Member::where('member_status', 'Banned')->get();
+        } elseif ($type == 'suspended') {
+            $members = Member::where('member_status', 'Suspended')->get();
+        } 
+
+        return view('pages.admin', compact('members'));
     }
 
     public function getMember(string $member_id) 
@@ -67,5 +75,57 @@ class AdminController extends Controller
 
     public function createMember(){
         return view('auth.register');
+    }
+
+    public function applyRestriction(Request $request)
+    {
+
+        $data = $request->validate([
+            'member_id' => 'required|exists:member,member_id',
+            'admin_id' => 'required|exists:admin,admin_id',
+            'start' => 'required|date',
+            'type' => 'required|in:Ban,Suspension',
+            'duration' => 'required_if:type,Suspension|nullable|integer|min:0',
+        ]);
+
+        try {
+
+            $member = Member::findOrFail($data['member_id']);
+
+            if ($data['type'] === 'Ban') {
+                $member->update(['member_status' => 'Banned',]);
+                $data['duration'] = 0; // Ban is permanent
+            } else {
+                $member->update(['member_status' => 'Suspended']);
+            }
+            
+            Restriction::create([
+                'member_id' => $data['member_id'],
+                'admin_id' => $data['admin_id'],
+                'start' => $data['start'],
+                'duration' => $data['duration'],
+                'type' => $data['type'],
+            ]);
+
+            return redirect()->route('admin')->with('success', 'Restriction successfully applied.');
+        } catch (\Exception $e) {
+            \Log::error("Failed to apply restriction: {$e->getMessage()}");
+            return redirect()->route('admin')->with('error', 'An error occurred while applying the restriction.');
+        }        
+    }
+
+    public function removeRestriction(Request $request, $memberId)
+    {
+        $member = Member::find($memberId);
+        if ($member) {
+            $member->update([
+                'member_status' => 'Active'
+            ]);
+            $member->save();
+
+            return redirect()->back()->with('status', 'Restriction removed');
+        }
+
+        return redirect()->back()->with('error', 'Member not found');
     }
 }

@@ -21,24 +21,13 @@ class Restriction extends Model
         'duration',
         'admin_id',
         'start',
+        'type',
     ];
 
     protected $casts = [
         'start' => 'datetime', 
-        'duration' => 'string', 
     ];
 
-    public static function validate($data)
-    {
-        $validator = Validator::make($data, [
-            'member_id' => 'required|exists:member,member_id',   
-            'duration' => 'required|date_format:H:i:s',          
-            'admin_id' => 'required|exists:admin,admin_id',      
-            'start' => 'required|date|after_or_equal:now',      
-        ]);
-
-        return $validator;
-    }
     //Relationships
     // 1 Restriction belongs to 1 Member (many restrictions to one member)
     public function member()
