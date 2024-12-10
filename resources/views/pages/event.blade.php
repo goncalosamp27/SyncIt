@@ -13,6 +13,15 @@
 	@endif
 
 	<script src="{{ asset('js/app.js') }}" defer></script>
+	<script src="{{ asset('js/comment.js') }}" defer></script>
+	<script>
+		const commentUrl = @json(route('comments.store', ['event_id' => $event->event_id]));
+		const getCommentsUrl = @json(route('comments.index', ['event_id' => $event->event_id]));
+		console.log("Comment URL:", commentUrl);
+		console.log("getComment URL:", getCommentsUrl);
+	</script>
+	
+	
 
 	<div class="event-page-content">
 		<div class="event-page-info">
@@ -142,18 +151,18 @@
 		<div class="purple-line"></div>
 		
 		<div class="event-page-comments">
-			<h1>XXX Comments:</h1>
-			<div class="event-page-text">
-				<div class="add-your-own-comment">
-					<img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Profile Picture" class="profile-pic">
-    				<input type="text" placeholder="Add your comment..." class="comment-input">
-    				<button class="post-button">Post</button>
-				</div>
-
-				@include('partials.comment')
-				@include('partials.reply-comment')
+    		<div class="add-your-own-comment">
+        		<img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Profile Picture" class="profile-pic">
+        		<input type="text" placeholder="Add your comment..." id="new-comment" class="comment-input">
+        		<button class="post-button" data-event-id="{{ $event->event_id }}" onclick="postComment(this)">Post</button>
+    		</div>
+			<div id="comment-list">
+				@include('partials.comment-list', ['comments' => $comments])
+		
 			</div>
+			
 		</div>
+
 		@include('partials.go-back')
 	</div>	
 @endsection	
