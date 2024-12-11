@@ -711,26 +711,6 @@ AFTER DELETE ON restriction_notification
 FOR EACH ROW
 EXECUTE FUNCTION clean_orphaned_notifications();
 
-/*
-CREATE OR REPLACE FUNCTION notify_event_tomorrow()
-RETURNS TRIGGER AS $$
-BEGIN
-    -- Insert notifications for ticket holders
-    INSERT INTO notification (notification_message, notification_date, member_id)
-    SELECT 'The event you signed for is tomorrow! Don''t miss it!', CURRENT_TIMESTAMP, member_id
-    FROM ticket
-    WHERE ticket.event_id = NEW.event_id;
-
-    -- Link notifications to the event
-    INSERT INTO event_notification (notification_id, event_id)
-    SELECT n.notification_id, NEW.event_id
-    FROM notification n
-    WHERE n.notification_date = CURRENT_TIMESTAMP;
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-*/
 
 CREATE OR REPLACE FUNCTION delete_join_requests_on_invitation()
 RETURNS TRIGGER AS $$
@@ -801,6 +781,27 @@ AFTER DELETE ON event
 FOR EACH ROW
 EXECUTE FUNCTION clean_up_event_notifications();
 
+
+/*
+CREATE OR REPLACE FUNCTION notify_event_tomorrow()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Insert notifications for ticket holders
+    INSERT INTO notification (notification_message, notification_date, member_id)
+    SELECT 'The event you signed for is tomorrow! Don''t miss it!', CURRENT_TIMESTAMP, member_id
+    FROM ticket
+    WHERE ticket.event_id = NEW.event_id;
+
+    -- Link notifications to the event
+    INSERT INTO event_notification (notification_id, event_id)
+    SELECT n.notification_id, NEW.event_id
+    FROM notification n
+    WHERE n.notification_date = CURRENT_TIMESTAMP;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+*/
 
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
 VALUES 
