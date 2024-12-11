@@ -129,8 +129,7 @@ class EventController extends Controller
                 ->withInput();
         }
 
-        // Create the event
-        $event = Event::create($request->only([
+        $data = $request->only([
             'event_name',
             'event_date',
             'location',
@@ -139,8 +138,11 @@ class EventController extends Controller
             'price',
             'type_of_event',
             'artist_id',
-        ]));
+        ]);
+        $data['event_status'] = 'Active'; 
 
+        $event = Event::create($data);
+        
         // Attach tags (if any are selected)
         if ($request->has('tags')) {
             $event->tags()->sync($request->tags);
@@ -303,11 +305,6 @@ class EventController extends Controller
     }
 
 
-
-
-
-
-
     public function updateFutureEventsPage(Request $request)
     {
         // If the request contains specific event IDs to filter
@@ -322,9 +319,8 @@ class EventController extends Controller
             'success' => true,
             'events' => $events,
         ]);
-
-
     }
+
     /*
     public function getEventCards(Request $request)
     {
@@ -342,9 +338,4 @@ class EventController extends Controller
         return response()->json(['success' => true, 'html' => $html]);
     }
         */
-
-
-
-
-
 }
