@@ -17,13 +17,18 @@
 	<div class="event-page-content">
 		<div class="event-page-info">
 			<div class="title-edit">
-				<h1> {{ $event->event_name }} </h1>
+				<h1 style="color: gray;">
+					@if ($event->event_status === 'Cancelled')
+						[Cancelled] - <span style="text-decoration: line-through;">{{ $event->event_name }}</span>
+					@else
+						{{ $event->event_name }}
+					@endif
+				</h1>
 				@can('edit', $event)
 				<a href="{{ route('edit.event.show', ['event_id' => $event->event_id]) }}" class="event-button">
 					Edit
 				</a>
 				@endcan
-
 			</div>			
 			<a class="user-event-owner" href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}" style="display: flex; align-items: center; margin-top:1rem;">
 				<img 
@@ -49,6 +54,7 @@
 			</div>
 		
 			@php
+				$eventCancelled = $event->event_status === 'Cancelled';
     			$eventExpired = $event->event_date <= now();
     			$userTicketCount = $event->tickets->where('member_id', auth()->id())->count();
 				$eventType = $event->type_of_event;
@@ -56,8 +62,8 @@
 
 			@cannot('edit', $event)
 			<div class="ticket-buttons">
-				@if ($eventExpired) <button type="submit" class="disabled-btn" disabled>Event Expired</button>  
-
+				@if ($eventCancelled) <button type="submit" class="disabled-btn" disabled>Event Canceled</button>  
+				@elseif ($eventExpired) <button type="submit" class="disabled-btn" disabled>Event Expired</button>  
 				@elseif($userTicketCount < 10 && $userTicketCount >= 1)
 					<div class="button-container">
 						<button class="purchased-btn">

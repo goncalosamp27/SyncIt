@@ -132,6 +132,11 @@
 	margin-right: 0.7rem;
 }
 
+.cancelled-event {
+    color: gray;
+    text-decoration: line-through;
+}
+
 .description-comments{
     width: 80%;
 	margin-left: auto;  
