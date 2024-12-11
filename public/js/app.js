@@ -18,3 +18,19 @@ function toggleSearchBar() {
         searchBarContainer.style.display = 'none'; // Hide the search bar
     }
 }
+
+function openModal() {
+    document.getElementById('deleteAccountModal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('deleteAccountModal').style.display = 'none';
+}
+
+    // Optional: Close modal when clicking outside of it
+window.onclick = function(event) {
+    const modal = document.getElementById('deleteAccountModal');
+    if (event.target === modal) {
+        closeModal();
+    }
+}

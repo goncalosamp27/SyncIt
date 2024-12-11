@@ -304,34 +304,49 @@ CREATE TABLE restriction_notification (
 );
 
 -- Upon account deletion, shared user data (e.g. comments, reviews, likes) is kept but made anonymous.
-CREATE OR REPLACE FUNCTION anonymize_data() RETURNS TRIGGER AS
+-- Function to handle anonymization logic
+CREATE OR REPLACE FUNCTION anonymize_member_data() RETURNS TRIGGER AS
 $BODY$
 BEGIN
-    IF TG_TABLE_NAME = 'member' THEN
-        UPDATE comment
-        SET member_id = 1 -- DEFAULT USER
-        WHERE member_id = OLD.member_id;
+    -- Update related data in the 'comment' table
+    UPDATE comment
+    SET member_id = 1 -- DEFAULT USER
+    WHERE member_id = OLD.member_id;
 
-    ELSIF TG_TABLE_NAME = 'artist' THEN
-        UPDATE event
-        SET artist_id = 1-- DEFAULT USER
-        WHERE artist_id = OLD.artist_id;
-    END IF;
-
+    -- Returning OLD for BEFORE DELETE trigger
     RETURN OLD;
 END;
 $BODY$
 LANGUAGE plpgsql;
 
+-- Trigger for 'member' table
 CREATE OR REPLACE TRIGGER before_member_delete
     BEFORE DELETE ON member
     FOR EACH ROW
-    EXECUTE FUNCTION anonymize_data();
+    EXECUTE FUNCTION anonymize_member_data();
 
+
+-- Function to handle anonymization for 'artist'
+CREATE OR REPLACE FUNCTION anonymize_artist_data() RETURNS TRIGGER AS
+$BODY$
+BEGIN
+    -- Update related data in the 'event' table
+    UPDATE event
+    SET artist_id = 1 -- DEFAULT USER
+    WHERE artist_id = OLD.artist_id;
+
+    -- Returning OLD for BEFORE DELETE trigger
+    RETURN OLD;
+END;
+$BODY$
+LANGUAGE plpgsql;
+
+-- Trigger for 'artist' table
 CREATE OR REPLACE TRIGGER before_artist_delete
     BEFORE DELETE ON artist
     FOR EACH ROW
-    EXECUTE FUNCTION anonymize_data();
+    EXECUTE FUNCTION anonymize_artist_data();
+
 
 CREATE OR REPLACE FUNCTION create_artist_trigger_function()
 RETURNS TRIGGER AS $$
@@ -729,59 +744,6 @@ AFTER INSERT ON invitation
 FOR EACH ROW
 EXECUTE FUNCTION delete_join_requests_on_invitation();
 
-
-CREATE OR REPLACE FUNCTION ticket_refund_notification()
-RETURNS TRIGGER AS $$
-DECLARE
-    notification_id INT;
-    event_name TEXT;
-BEGIN
-    SELECT event_name INTO event_name 
-    FROM event 
-    WHERE event_id = OLD.event_id;
-
-    IF event_name IS NULL THEN
-        event_name := 'Unknown Event';
-    END IF;
-
-    INSERT INTO notification (notification_message, notification_date, member_id)
-    VALUES (
-        CONCAT('The ticket for the event ', event_name, ' has been refunded'),
-        CURRENT_TIMESTAMP,
-        OLD.member_id
-    )
-
-    RETURNING notification_id INTO notification_id;
-
-    INSERT INTO event_notification (notification_id, event_id)
-    VALUES (notification_id, OLD.event_id);
-
-    RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER ticket_refund_trigger
-AFTER DELETE ON ticket
-FOR EACH ROW
-EXECUTE FUNCTION ticket_refund_notification();
-
-
-CREATE OR REPLACE FUNCTION clean_up_event_notifications()
-RETURNS TRIGGER AS $$
-BEGIN
-    DELETE FROM event_notification
-    WHERE event_id = OLD.event_id;
-
-    RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER clean_up_event_notifications_trigger
-AFTER DELETE ON event
-FOR EACH ROW
-EXECUTE FUNCTION clean_up_event_notifications();
-
-
 /*
 CREATE OR REPLACE FUNCTION notify_event_tomorrow()
 RETURNS TRIGGER AS $$
@@ -805,6 +767,7 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
 VALUES 
+    ('anonymous', 'Anonymous', 'anonymous@syncit.com','$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'anonymous', 'default_user.png', 'Active'),
     ('edgar', 'LBAW Teacher', 'lbaw@example.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
     ('salsadancer', 'Salsa Dance Lover', 'salsadancer@example.com', 'salsadancer123', 'Salsa moves are life!', 'default_user.png', 'Active'),
     ('techbeat', 'Tech Beat DJ', 'techbeat@example.com', 'technosecure99', 'Living for the beats', 'default_user.png', 'Active'),
@@ -888,6 +851,7 @@ VALUES
 
 INSERT INTO artist (artist_id, rating)
 VALUES 
+    (1,0),
     (2, 4.5),    -- Salsa Dancer
     (3, 3.2),    -- Techno Beat
     (5, 4.0),    -- Classy Cat

@@ -92,7 +92,11 @@ Route::controller(NotificationController::class)->middleware(['notAdmin', 'auth'
 Route::controller(MemberController::class)->middleware(['notAdmin', 'auth'])->group(function () {
     Route::get('/edit_profile', 'edit')->name('profile.edit');
     Route::put('/edit_profile', 'updateMember')->name('member.profile.edit');
+    Route::post('/account/delete', [MemberController::class, 'delete'])->name('account.delete');
 });
+
+
+
 
 Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'showLoginForm')->middleware(['visitor'])->name('login');
