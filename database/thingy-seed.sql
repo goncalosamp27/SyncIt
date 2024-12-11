@@ -335,6 +335,7 @@ BEGIN
     -- Update related data in the 'event' table
     UPDATE event
     SET artist_id = 1 -- DEFAULT USER
+        event_status = 'Cancelled'
     WHERE artist_id = OLD.artist_id;
 
     -- Returning OLD for BEFORE DELETE trigger
