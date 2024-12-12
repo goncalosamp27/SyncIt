@@ -94,7 +94,7 @@ CREATE INDEX member_display_name_idx ON member (display_name);
 CREATE TABLE artist (
     artist_id INT PRIMARY KEY NOT NULL, 
     rating rating_domain NOT NULL,
-    FOREIGN KEY (artist_id) REFERENCES member(member_id)
+    FOREIGN KEY (artist_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
 
 
@@ -129,6 +129,7 @@ CREATE TABLE event (
     artist_id INT NOT NULL,
     capacity INT NOT NULL,
     event_media VARCHAR(100) NOT NULL,
+    event_status event_status_domain NOT NULL,
     FOREIGN KEY (artist_id) REFERENCES artist(artist_id)
 );
 
@@ -243,7 +244,7 @@ CREATE TABLE invitation_notification (
 
 CREATE TABLE event_notification(
     notification_id INT PRIMARY KEY,
-    event_id INT NOT NULL,
+    event_id INT,
     FOREIGN KEY (notification_id) REFERENCES notification(notification_id) ON DELETE CASCADE,
     FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE
 );
@@ -308,6 +309,48 @@ CREATE TABLE restriction_notification (
     FOREIGN KEY (restriction_id) REFERENCES restriction(restriction_id)
 );
 
+-- Upon account deletion, shared user data (e.g. comments, reviews, likes) is kept but made anonymous.
+-- Function to handle anonymization logic
+CREATE OR REPLACE FUNCTION anonymize_member_data() RETURNS TRIGGER AS
+$BODY$
+BEGIN
+    -- Update related data in the 'comment' table
+    UPDATE comment
+    SET member_id = 1 -- DEFAULT USER
+    WHERE member_id = OLD.member_id;
+
+    -- Returning OLD for BEFORE DELETE trigger
+    RETURN OLD;
+END;
+$BODY$
+LANGUAGE plpgsql;
+-- Trigger for 'member' table
+CREATE OR REPLACE TRIGGER before_member_delete
+    BEFORE DELETE ON member
+    FOR EACH ROW
+    EXECUTE FUNCTION anonymize_member_data();
+-- Function to handle anonymization for 'artist'
+CREATE OR REPLACE FUNCTION anonymize_artist_data() RETURNS TRIGGER AS
+$BODY$
+BEGIN
+    -- Update related data in the 'event' table
+    UPDATE event
+    SET artist_id = 1, -- DEFAULT USER
+        event_status = 'Cancelled'
+    WHERE artist_id = OLD.artist_id;
+
+    -- Returning OLD for BEFORE DELETE trigger
+    RETURN OLD;
+END;
+$BODY$
+LANGUAGE plpgsql;
+
+-- Trigger for 'artist' table
+CREATE OR REPLACE TRIGGER before_artist_delete
+    BEFORE DELETE ON artist
+    FOR EACH ROW
+    EXECUTE FUNCTION anonymize_artist_data();
+
 
 CREATE OR REPLACE FUNCTION create_artist_trigger_function()
 RETURNS TRIGGER AS $$
@@ -324,17 +367,14 @@ CREATE OR REPLACE TRIGGER create_artist_after_event_insert
     FOR EACH ROW
     EXECUTE FUNCTION create_artist_trigger_function();
 
-
--- BR04: Suspended or banned accounts cannot interact with the website (i.e. comment, purchase tickets,...)
 CREATE OR REPLACE FUNCTION check_member_status() RETURNS TRIGGER AS
 $BODY$
 BEGIN
-    -- Check if the member status is Suspended or Banned
     IF EXISTS (
         SELECT 1 
         FROM member
         WHERE member_id = NEW.member_id 
-        AND member_status IN ('Suspended', 'Banned')  -- Use string literals if member_status is text
+        AND member_status IN ('Suspended', 'Banned')  
     ) THEN
         RAISE EXCEPTION 'Suspended or banned accounts cannot interact with the website.';
     END IF;
@@ -387,7 +427,7 @@ BEGIN
             FROM event
             WHERE event_id = NEW.event_id
         )
-    ), 0)  -- Use 0 if the average is NULL
+    ), 0)  
     WHERE artist_id = (
         SELECT artist_id
         FROM event
@@ -624,7 +664,7 @@ BEGIN
                 JOIN event_notification en ON n.notification_id = en.notification_id
                 WHERE n.member_id = ticket_member_id
                   AND en.event_id = NEW.event_id
-                  AND n.notification_message = 'Event details changed'
+                  AND n.notification_message = 'Event details have changed. Please check the updates!'
                   AND n.notification_date >= CURRENT_TIMESTAMP - INTERVAL '1 minute'
             ) THEN
                 -- Insert the notification only if it doesn't exist
@@ -690,6 +730,24 @@ AFTER DELETE ON restriction_notification
 FOR EACH ROW
 EXECUTE FUNCTION clean_orphaned_notifications();
 
+
+CREATE OR REPLACE FUNCTION delete_join_requests_on_invitation()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Delete all join requests for the member and event when an invitation is created
+    DELETE FROM join_request
+    WHERE member_id = NEW.member_id
+      AND event_id = NEW.event_id;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_invitation_insert2
+AFTER INSERT ON invitation
+FOR EACH ROW
+EXECUTE FUNCTION delete_join_requests_on_invitation();
+
 /*
 CREATE OR REPLACE FUNCTION notify_event_tomorrow()
 RETURNS TRIGGER AS $$
@@ -711,26 +769,50 @@ END;
 $$ LANGUAGE plpgsql;
 */
 
-CREATE OR REPLACE FUNCTION delete_join_requests_on_invitation()
+-- Create the function for handling event status change notifications
+CREATE OR REPLACE FUNCTION notify_event_status_change()
 RETURNS TRIGGER AS $$
+DECLARE
+    ticket_member_id INT;
+    new_notification_id INT;
 BEGIN
-    -- Delete all join requests for the member and event when an invitation is created
-    DELETE FROM join_request
-    WHERE member_id = NEW.member_id
-      AND event_id = NEW.event_id;
+    -- Check if the event status has changed from 'Active' to 'Cancelled'
+    IF OLD.event_status = 'Active' AND NEW.event_status = 'Cancelled' THEN
+        -- Loop through each member who owns tickets for the event
+        FOR ticket_member_id IN
+            SELECT DISTINCT ticket.member_id
+            FROM ticket
+            WHERE ticket.event_id = NEW.event_id
+        LOOP
+            -- Insert the notification for the member
+            INSERT INTO notification (notification_message, notification_date, member_id)
+            VALUES ('The event has been cancelled. Your ticket has been refunded.', CURRENT_TIMESTAMP, ticket_member_id)
+            RETURNING notification_id INTO new_notification_id;
+
+            -- Link the notification to the event
+            INSERT INTO event_notification (notification_id, event_id)
+            VALUES (new_notification_id, NEW.event_id);
+
+            DELETE FROM ticket
+            WHERE event_id = NEW.event_id;
+        END LOOP;
+    END IF;
 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER after_invitation_insert2
-AFTER INSERT ON invitation
+-- Create the trigger to invoke the function on event status change
+CREATE TRIGGER trigger_event_status_change
+AFTER UPDATE OF event_status ON event
 FOR EACH ROW
-EXECUTE FUNCTION delete_join_requests_on_invitation();
+WHEN (OLD.event_status = 'Active' AND NEW.event_status = 'Cancelled')
+EXECUTE FUNCTION notify_event_status_change();
 
 
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
 VALUES 
+    ('anonymous', 'Anonymous', 'anonymous@syncit.com','$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'anonymous', 'default_user.png', 'Active'),
     ('edgar', 'LBAW Teacher', 'lbaw@example.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
     ('goncalo', 'goncalo', 'goncalo@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
     ('xavi', 'xavi', 'xavi@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
@@ -812,11 +894,14 @@ VALUES
     ('latinoheat', 'Latino Heat Music', 'latinoheat@example.com', 'latinoheat2023', 'Latin music and dance', 'default_user.png', 'Active'),
     ('afrojazz', 'Afro Jazz Music', 'afrojazz@example.com', 'afrojazz2023', 'Afro Jazz fusion', 'default_user.png', 'Active'),
     ('kpopfan', 'KPop Music Fan', 'kpopfan@example.com', 'kpopfan2023', 'K-Pop for life', 'default_user.png', 'Active'),
-    ('bollydance', 'Bolly Dance Artist', 'bollydance@example.com', 'bollydance2023', 'Bollywood dance styles', 'default_user.png', 'Active');
+    ('bollydance', 'Bolly Dance Artist', 'bollydance@example.com', 'bollydance2023', 'Bollywood dance styles', 'default_user.png', 'Active'),
+    ('gonca', 'DJ Gonca', 'gonca@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'DJ Gonca no beat','default_user.png', 'Active'),
+    ('dud', 'DJ Dud', 'dud@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'DJ Dud no beat','default_user.png', 'Active');
 
 
 INSERT INTO artist (artist_id, rating)
 VALUES 
+    (1,0), --Anonymous user
     (2, 4.5),    -- Salsa Dancer
     (3, 3.2),    -- Techno Beat
     (5, 4.0),    -- Classy Cat
@@ -847,7 +932,8 @@ VALUES
     (65, 4.3),   -- Rock God
     (70, 4.0),   -- Funk Master
     (72, 3.1),   -- Soul Queen
-    (75, 4.8);   -- Swing Pro
+    (75, 4.8),   -- Swing Pro
+    (79, 5.0);
 
 INSERT INTO admin (email, password)
 VALUES 
@@ -907,58 +993,59 @@ VALUES
     (65, 61),  -- Pianist Pro follows Rock God
     (75, 72);  -- Soul Queen follows Swing Pro
 
-INSERT INTO event (event_name, event_date, location, description, refund, price, type_of_event, rating, artist_id, capacity, event_media) 
+INSERT INTO event (event_name, event_date, location, description, refund, price, type_of_event, rating, artist_id, capacity, event_media, event_status) 
 VALUES
-    ('Salsa Night Fever', NOW() - INTERVAL '5 days', 'Downtown Dance Hall', 'A night filled with salsa music and dance performances.', 50.00, 20.00, 'Public', 4.5, 2, 50, 'default_event.png'),
-    ('Tech Beats Bash', NOW() - INTERVAL '7 days', 'City Club', 'An electrifying night with top techno beats and live DJs.', 40.00, 25.00, 'Public', 4.0, 3, 100, 'default_event.png'),
-    ('Classical Harmony', NOW() - INTERVAL '10 days', 'Grand Symphony Hall', 'An evening of classical music with renowned violinists and orchestras.', 60.00, 50.00, 'Public', 4.8, 11, 150, 'default_event.png'),
-    ('DJ Night Live', NOW() - INTERVAL '8 days', 'Nightlife Arena', 'A high-energy DJ night with top music hits from various genres.', 50.00, 30.00, 'Public', 4.7, 7, 200, 'default_event.png'),
-    ('Reggae Beach Party', NOW() - INTERVAL '12 days', 'Beachside Stage', 'Chill out with reggae vibes by the beach, featuring local artists.', 35.00, 15.00, 'Public', 4.4, 8, 250, 'default_event.png'),
-    ('Swing Dance Gala', NOW() - INTERVAL '15 days', 'Swing Studio', 'A gala event celebrating swing dance with live music.', 70.00, 35.00, 'Private', 4.6, 9, 300, 'default_event.png'),
-    ('Metal Madness', NOW() + INTERVAL '20 days', 'Underground Club', 'An intense metal music experience with top bands and performers.', 50.00, 20.00, 'Public', 2.9, 14, 350, 'default_event.png'),
-    ('Violin Virtuoso', NOW() + INTERVAL '18 days', 'Concert Hall', 'Experience a night of beautiful violin performances.', 65.00, 45.00, 'Public', 4.7, 11, 400, 'default_event.png'),
-    ('Jazz Night', NOW() + INTERVAL '13 days', 'Riverside Amphitheater', 'A smooth night of jazz under the stars.', 55.00, 25.00, 'Public', 3.8, 15, 450, 'default_event.png'),
-    ('Pop Fiesta', NOW() + INTERVAL '25 days', 'City Park', 'A colorful pop music festival with live performances.', 70.00, 40.00, 'Public', 5.0, 16, 500, 'default_event.png'),
-    ('Latin Dance Extravaganza', NOW() + INTERVAL '22 days', 'Latin Lounge', 'A celebration of Latin dance with performances and open floor dancing.', 60.00, 30.00, 'Public', 4.5, 20, 550, 'default_event.png'),
-    ('EDM Explosion', NOW() + INTERVAL '27 days', 'Electric Arena', 'Top EDM DJs performing live for an unforgettable night.', 80.00, 45.00, 'Public', 4.9, 35, 600, 'default_event.png'),
-    ('Bollywood Bash', NOW() + INTERVAL '30 days', 'Bollywood Palace', 'An energetic Bollywood night with live performances.', 50.00, 20.00, 'Private', 4.1, 32, 650, 'default_event.png'),
-    ('Soul and Funk Groove', NOW() + INTERVAL '17 days', 'Groove Station', 'Get down with the best in soul and funk music.', 45.00, 20.00, 'Public', 3.6, 28, 700, 'default_event.png'),
-    ('Country Night Out', NOW() + INTERVAL '10 days', 'Country Barn', 'Enjoy a night of country music with local bands.', 40.00, 25.00, 'Public', 4.4, 45, 750, 'default_event.png'),
-    ('Urban Dance Fest', NOW() + INTERVAL '19 days', 'Urban Arena', 'A festival of urban dance styles with battles and performances.', 55.00, 30.00, 'Public', 4.2, 37, 800, 'default_event.png'),
-    ('Disco Fever', NOW() + INTERVAL '24 days', 'Disco Lounge', 'Dance the night away with groovy disco music.', 35.00, 15.00, 'Private', 4.0, 60, 850, 'default_event.png'),
-    ('Piano Serenade', NOW() + INTERVAL '11 days', 'Piano Hall', 'A serene evening of classical piano music.', 65.00, 35.00, 'Public', 4.3, 61, 900, 'default_event.png'),
-    ('Rock Fest', NOW() + INTERVAL '9 days', 'Rock Arena', 'A thrilling rock music festival with live bands.', 50.00, 30.00, 'Public', 4.8, 65, 950, 'default_event.png'),
-    ('Swing Soiree', NOW() + INTERVAL '14 days', 'Swing Hall', 'A refined swing dance soiree with live jazz music.', 45.00, 20.00, 'Private', 4.6, 75, 1000, 'default_event.png'),
-    ('Afrobeat Summer Jam', NOW() + INTERVAL '16 days', 'Sunset Beach', 'A high-energy Afrobeat festival by the beach.', 60.00, 25.00, 'Public', 4.5, 75, 1050, 'default_event.png'),
-    ('Folk Fest', NOW() + INTERVAL '18 days', 'Green Field', 'An outdoor festival celebrating folk music traditions.', 50.00, 20.00, 'Public', 3.9, 28, 1100, 'default_event.png'),
-    ('Dubstep Underground', NOW() + INTERVAL '21 days', 'Warehouse District', 'An intense night of dubstep with top DJs from around the world.', 70.00, 35.00, 'Public', 4.7, 75, 1150, 'default_event.png'),
-    ('Classical Morning Bliss', NOW() + INTERVAL '23 days', 'Open Garden Theater', 'A morning of classical music to start the day on a peaceful note.', 45.00, 20.00, 'Public', 4.8, 61, 1200, 'default_event.png'),
-    ('Latin Fiesta', NOW() + INTERVAL '26 days', 'Latin City Lounge', 'A lively Latin dance party with salsa, bachata, and merengue.', 55.00, 30.00, 'Public', 4.2, 20, 1250, 'default_event.png'),
-    ('Jazz Fusion Nights', NOW() + INTERVAL '29 days', 'Downtown Jazz Club', 'A night of jazz fusion featuring the latest sounds and trends.', 50.00, 25.00, 'Private', 3.8, 15, 1300, 'default_event.png'),
-    ('Blues on the Bayou', NOW() + INTERVAL '20 days', 'Bayou Stage', 'An evening of blues by the bayou, with the finest blues bands.', 40.00, 20.00, 'Public', 4.3, 55, 1350, 'default_event.png'),
-    ('Bollywood Beats', NOW() + INTERVAL '32 days', 'Bollywood Hall', 'Celebrate Bollywood music and dance with live performances.', 50.00, 20.00, 'Private', 4.1, 32, 1400, 'default_event.png'),
-    ('Electronic Wave', NOW() + INTERVAL '34 days', 'Electro Dome', 'An electrifying EDM night with top artists and stunning visuals.', 80.00, 45.00, 'Public', 4.9, 35, 1450, 'default_event.png'),
-    ('Hip Hop Showcase', NOW() + INTERVAL '15 days', 'Urban Block', 'A showcase of hip hop talent with breakdancers and rap battles.', 30.00, 15.00, 'Public', 3.5, 14, 1500, 'default_event.png'),
-    ('Neo Soul Groove', NOW() + INTERVAL '10 days', 'The Groove Lounge', 'A soulful evening featuring neo-soul music and R&B vibes.', 50.00, 25.00, 'Public', 4.6, 28, 1550, 'default_event.png'),
-    ('Tribal Beats Night', NOW() + INTERVAL '14 days', 'Jungle Stage', 'Experience tribal rhythms and percussion like never before.', 60.00, 30.00, 'Public', 4.4, 60, 1600, 'default_event.png'),
-    ('Opera Under the Stars', NOW() + INTERVAL '22 days', 'Open-Air Opera House', 'An enchanting night of opera performances under the night sky.', 75.00, 50.00, 'Public', 4.9, 61, 1650, 'default_event.png'),
-    ('Country Fair', NOW() + INTERVAL '28 days', 'Rustic Barn', 'Enjoy country music, line dancing, and delicious barbecue.', 45.00, 20.00, 'Public', 4.2, 45, 1700, 'default_event.png'),
-    ('Rock and Roll Revival', NOW() + INTERVAL '12 days', 'Retro Arena', 'Step back in time with classic rock and roll hits.', 40.00, 15.00, 'Public', 4.3, 65, 1750, 'default_event.png'),
-    ('Ambient Chill', NOW() + INTERVAL '16 days', 'The Zen Garden', 'A relaxing ambient music experience in a tranquil setting.', 30.00, 10.00, 'Private', 4.5, 70, 1800, 'default_event.png'),
-    ('World Music Fest', NOW() + INTERVAL '31 days', 'Global Stage', 'A celebration of world music, with artists from various cultures.', 55.00, 30.00, 'Public', 4.7, 75, 1850, 'default_event.png'),
-    ('Ska Skank', NOW() + INTERVAL '25 days', 'City Center Stage', 'An upbeat night of ska music and lively dancing.', 35.00, 15.00, 'Public', 4.0, 9, 1900, 'default_event.png'),
-    ('Electronic Sunrise', NOW() + INTERVAL '27 days', 'Oceanfront Club', 'Dance through the night and watch the sunrise to electronic beats.', 65.00, 35.00, 'Public', 4.6, 35, 1950, 'default_event.png'),
-    ('Zumba Fiesta', NOW() + INTERVAL '20 days', 'Fitness Arena', 'A Zumba dance party with energetic Latin beats.', 30.00, 15.00, 'Private', 4.3, 20, 2000, 'default_event.png'),
-    ('Psytrance Universe', NOW() + INTERVAL '35 days', 'Cosmic Hall', 'A night of psychedelic trance music and mesmerizing visuals.', 70.00, 40.00, 'Public', 4.8, 75, 2050, 'default_event.png'),
-    ('Soulful Sunday', NOW() + INTERVAL '13 days', 'Soulful Sounds Studio', 'Spend a relaxed Sunday with smooth and soulful tunes.', 25.00, 15.00, 'Public', 4.4, 16, 2100, 'default_event.png'),
-    ('Reggaeton Rumble', NOW() + INTERVAL '19 days', 'Dance Block', 'Dance to the hottest reggaeton beats with live DJs.', 45.00, 20.00, 'Public', 4.5, 37, 2150, 'default_event.png'),
-    ('Indie Acoustic Evening', NOW() + INTERVAL '24 days', 'Indie Café', 'An intimate acoustic performance by top indie artists.', 35.00, 15.00, 'Private', 4.1, 32, 2200, 'default_event.png'),
-    ('Flamenco Fire', NOW() + INTERVAL '11 days', 'Flamenco Lounge', 'Feel the passion of flamenco with live performances.', 50.00, 25.00, 'Public', 4.7, 33, 2250, 'default_event.png'),
-    ('Electronic Symphony', NOW() + INTERVAL '26 days', 'Symphony Hall', 'A fusion of electronic music and classical instruments.', 75.00, 40.00, 'Public', 4.9, 61, 2300, 'default_event.png'),
-    ('Afro-Cuban Salsa Night', NOW() + INTERVAL '29 days', 'Cuban Lounge', 'A night dedicated to Afro-Cuban salsa and rhythmic beats.', 55.00, 25.00, 'Public', 4.6, 2, 2350, 'default_event.png'),
-    ('Lo-Fi Chillout', NOW() + INTERVAL '17 days', 'Downtown Café', 'Relax with mellow lo-fi beats in a cozy café setting.', 20.00, 10.00, 'Private', 4.3, 70, 2400, 'default_event.png'),
-    ('Bluegrass Bonanza', NOW() + INTERVAL '21 days', 'Country Barn', 'A fun-filled evening of bluegrass music and dance.', 40.00, 15.00, 'Public', 4.2, 45, 2450, 'default_event.png'),
-    ('Hard Rock Havoc', NOW() + INTERVAL '33 days', 'Rock City Arena', 'A powerful night of hard rock music with top bands.', 60.00, 35.00, 'Public', 4.5, 65, 2500, 'default_event.png');
+    ('Salsa Night Fever', NOW() - INTERVAL '5 days', 'Downtown Dance Hall', 'A night filled with salsa music and dance performances.', 50.00, 20.00, 'Public', 4.5, 2, 50, 'default_event.png', 'Active'),
+    ('Tech Beats Bash', NOW() - INTERVAL '7 days', 'City Club', 'An electrifying night with top techno beats and live DJs.', 40.00, 25.00, 'Public', 4.0, 3, 100, 'default_event.png', 'Active'),
+    ('Classical Harmony', NOW() - INTERVAL '10 days', 'Grand Symphony Hall', 'An evening of classical music with renowned violinists and orchestras.', 60.00, 50.00, 'Public', 4.8, 11, 150, 'default_event.png', 'Active'),
+    ('DJ Night Live', NOW() - INTERVAL '8 days', 'Nightlife Arena', 'A high-energy DJ night with top music hits from various genres.', 50.00, 30.00, 'Public', 4.7, 7, 200, 'default_event.png', 'Active'),
+    ('Reggae Beach Party', NOW() - INTERVAL '12 days', 'Beachside Stage', 'Chill out with reggae vibes by the beach, featuring local artists.', 35.00, 15.00, 'Public', 4.4, 8, 250, 'default_event.png', 'Active'),
+    ('Swing Dance Gala', NOW() - INTERVAL '15 days', 'Swing Studio', 'A gala event celebrating swing dance with live music.', 70.00, 35.00, 'Private', 4.6, 9, 300, 'default_event.png', 'Active'),
+    ('Metal Madness', NOW() + INTERVAL '20 days', 'Underground Club', 'An intense metal music experience with top bands and performers.', 50.00, 20.00, 'Public', 2.9, 14, 350, 'default_event.png', 'Active'),
+    ('Violin Virtuoso', NOW() + INTERVAL '18 days', 'Concert Hall', 'Experience a night of beautiful violin performances.', 65.00, 45.00, 'Public', 4.7, 11, 400, 'default_event.png', 'Active'),
+    ('Jazz Night', NOW() + INTERVAL '13 days', 'Riverside Amphitheater', 'A smooth night of jazz under the stars.', 55.00, 25.00, 'Public', 3.8, 15, 450, 'default_event.png', 'Active'),
+    ('Pop Fiesta', NOW() + INTERVAL '25 days', 'City Park', 'A colorful pop music festival with live performances.', 70.00, 40.00, 'Public', 5.0, 16, 500, 'default_event.png', 'Active'),
+    ('Latin Dance Extravaganza', NOW() + INTERVAL '22 days', 'Latin Lounge', 'A celebration of Latin dance with performances and open floor dancing.', 60.00, 30.00, 'Public', 4.5, 20, 550, 'default_event.png', 'Active'),
+    ('EDM Explosion', NOW() + INTERVAL '27 days', 'Electric Arena', 'Top EDM DJs performing live for an unforgettable night.', 80.00, 45.00, 'Public', 4.9, 35, 600, 'default_event.png', 'Active'),
+    ('Bollywood Bash', NOW() + INTERVAL '30 days', 'Bollywood Palace', 'An energetic Bollywood night with live performances.', 50.00, 20.00, 'Private', 4.1, 32, 650, 'default_event.png', 'Active'),
+    ('Soul and Funk Groove', NOW() + INTERVAL '17 days', 'Groove Station', 'Get down with the best in soul and funk music.', 45.00, 20.00, 'Public', 3.6, 28, 700, 'default_event.png', 'Active'),
+    ('Country Night Out', NOW() + INTERVAL '10 days', 'Country Barn', 'Enjoy a night of country music with local bands.', 40.00, 25.00, 'Public', 4.4, 45, 750, 'default_event.png', 'Active'),
+    ('Urban Dance Fest', NOW() + INTERVAL '19 days', 'Urban Arena', 'A festival of urban dance styles with battles and performances.', 55.00, 30.00, 'Public', 4.2, 37, 800, 'default_event.png', 'Active'),
+    ('Disco Fever', NOW() + INTERVAL '24 days', 'Disco Lounge', 'Dance the night away with groovy disco music.', 35.00, 15.00, 'Private', 4.0, 60, 850, 'default_event.png', 'Active'),
+    ('Piano Serenade', NOW() + INTERVAL '11 days', 'Piano Hall', 'A serene evening of classical piano music.', 65.00, 35.00, 'Public', 4.3, 61, 900, 'default_event.png', 'Active'),
+    ('Rock Fest', NOW() + INTERVAL '9 days', 'Rock Arena', 'A thrilling rock music festival with live bands.', 50.00, 30.00, 'Public', 4.8, 65, 950, 'default_event.png', 'Active'),
+    ('Swing Soiree', NOW() + INTERVAL '14 days', 'Swing Hall', 'A refined swing dance soiree with live jazz music.', 45.00, 20.00, 'Private', 4.6, 75, 1000, 'default_event.png', 'Active'),
+    ('Afrobeat Summer Jam', NOW() + INTERVAL '16 days', 'Sunset Beach', 'A high-energy Afrobeat festival by the beach.', 60.00, 25.00, 'Public', 4.5, 75, 1050, 'default_event.png', 'Active'),
+    ('Folk Fest', NOW() + INTERVAL '18 days', 'Green Field', 'An outdoor festival celebrating folk music traditions.', 50.00, 20.00, 'Public', 3.9, 28, 1100, 'default_event.png', 'Active'),
+    ('Dubstep Underground', NOW() + INTERVAL '21 days', 'Warehouse District', 'An intense night of dubstep with top DJs from around the world.', 70.00, 35.00, 'Public', 4.7, 75, 1150, 'default_event.png','Active'),
+    ('Classical Morning Bliss', NOW() + INTERVAL '23 days', 'Open Garden Theater', 'A morning of classical music to start the day on a peaceful note.', 45.00, 20.00, 'Public', 4.8, 61, 1200, 'default_event.png','Active'),
+    ('Latin Fiesta', NOW() + INTERVAL '26 days', 'Latin City Lounge', 'A lively Latin dance party with salsa, bachata, and merengue.', 55.00, 30.00, 'Public', 4.2, 20, 1250, 'default_event.png','Active'),
+    ('Jazz Fusion Nights', NOW() + INTERVAL '29 days', 'Downtown Jazz Club', 'A night of jazz fusion featuring the latest sounds and trends.', 50.00, 25.00, 'Private', 3.8, 15, 1300, 'default_event.png','Active'),
+    ('Blues on the Bayou', NOW() + INTERVAL '20 days', 'Bayou Stage', 'An evening of blues by the bayou, with the finest blues bands.', 40.00, 20.00, 'Public', 4.3, 55, 1350, 'default_event.png','Active'),
+    ('Bollywood Beats', NOW() + INTERVAL '32 days', 'Bollywood Hall', 'Celebrate Bollywood music and dance with live performances.', 50.00, 20.00, 'Private', 4.1, 32, 1400, 'default_event.png','Active'),
+    ('Electronic Wave', NOW() + INTERVAL '34 days', 'Electro Dome', 'An electrifying EDM night with top artists and stunning visuals.', 80.00, 45.00, 'Public', 4.9, 35, 1450, 'default_event.png','Active'),
+    ('Hip Hop Showcase', NOW() + INTERVAL '15 days', 'Urban Block', 'A showcase of hip hop talent with breakdancers and rap battles.', 30.00, 15.00, 'Public', 3.5, 14, 1500, 'default_event.png','Active'),
+    ('Neo Soul Groove', NOW() + INTERVAL '10 days', 'The Groove Lounge', 'A soulful evening featuring neo-soul music and R&B vibes.', 50.00, 25.00, 'Public', 4.6, 28, 1550, 'default_event.png','Active'),
+    ('Tribal Beats Night', NOW() + INTERVAL '14 days', 'Jungle Stage', 'Experience tribal rhythms and percussion like never before.', 60.00, 30.00, 'Public', 4.4, 60, 1600, 'default_event.png','Active'),
+    ('Opera Under the Stars', NOW() + INTERVAL '22 days', 'Open-Air Opera House', 'An enchanting night of opera performances under the night sky.', 75.00, 50.00, 'Public', 4.9, 61, 1650, 'default_event.png','Active'),
+    ('Country Fair', NOW() + INTERVAL '28 days', 'Rustic Barn', 'Enjoy country music, line dancing, and delicious barbecue.', 45.00, 20.00, 'Public', 4.2, 45, 1700, 'default_event.png','Active'),
+    ('Rock and Roll Revival', NOW() + INTERVAL '12 days', 'Retro Arena', 'Step back in time with classic rock and roll hits.', 40.00, 15.00, 'Public', 4.3, 65, 1750, 'default_event.png','Active'),
+    ('Ambient Chill', NOW() + INTERVAL '16 days', 'The Zen Garden', 'A relaxing ambient music experience in a tranquil setting.', 30.00, 10.00, 'Private', 4.5, 70, 1800, 'default_event.png','Active'),
+    ('World Music Fest', NOW() + INTERVAL '31 days', 'Global Stage', 'A celebration of world music, with artists from various cultures.', 55.00, 30.00, 'Public', 4.7, 75, 1850, 'default_event.png','Active'),
+    ('Ska Skank', NOW() + INTERVAL '25 days', 'City Center Stage', 'An upbeat night of ska music and lively dancing.', 35.00, 15.00, 'Public', 4.0, 9, 1900, 'default_event.png', 'Active'),
+    ('Electronic Sunrise', NOW() + INTERVAL '27 days', 'Oceanfront Club', 'Dance through the night and watch the sunrise to electronic beats.', 65.00, 35.00, 'Public', 4.6, 35, 1950, 'default_event.png', 'Active'),
+    ('Zumba Fiesta', NOW() + INTERVAL '20 days', 'Fitness Arena', 'A Zumba dance party with energetic Latin beats.', 30.00, 15.00, 'Private', 4.3, 20, 2000, 'default_event.png', 'Active'),
+    ('Psytrance Universe', NOW() + INTERVAL '35 days', 'Cosmic Hall', 'A night of psychedelic trance music and mesmerizing visuals.', 70.00, 40.00, 'Public', 4.8, 75, 2050, 'default_event.png', 'Active'),
+    ('Soulful Sunday', NOW() + INTERVAL '13 days', 'Soulful Sounds Studio', 'Spend a relaxed Sunday with smooth and soulful tunes.', 25.00, 15.00, 'Public', 4.4, 16, 2100, 'default_event.png', 'Active'),
+    ('Reggaeton Rumble', NOW() + INTERVAL '19 days', 'Dance Block', 'Dance to the hottest reggaeton beats with live DJs.', 45.00, 20.00, 'Public', 4.5, 37, 2150, 'default_event.png', 'Active'),
+    ('Indie Acoustic Evening', NOW() + INTERVAL '24 days', 'Indie Café', 'An intimate acoustic performance by top indie artists.', 35.00, 15.00, 'Private', 4.1, 32, 2200, 'default_event.png', 'Active'),
+    ('Flamenco Fire', NOW() + INTERVAL '11 days', 'Flamenco Lounge', 'Feel the passion of flamenco with live performances.', 50.00, 25.00, 'Public', 4.7, 33, 2250, 'default_event.png', 'Active'),
+    ('Electronic Symphony', NOW() + INTERVAL '26 days', 'Symphony Hall', 'A fusion of electronic music and classical instruments.', 75.00, 40.00, 'Public', 4.9, 61, 2300, 'default_event.png', 'Active'),
+    ('Afro-Cuban Salsa Night', NOW() + INTERVAL '29 days', 'Cuban Lounge', 'A night dedicated to Afro-Cuban salsa and rhythmic beats.', 55.00, 25.00, 'Public', 4.6, 2, 2350, 'default_event.png', 'Active'),
+    ('Lo-Fi Chillout', NOW() + INTERVAL '17 days', 'Downtown Café', 'Relax with mellow lo-fi beats in a cozy café setting.', 20.00, 10.00, 'Private', 4.3, 70, 2400, 'default_event.png', 'Active'),
+    ('Bluegrass Bonanza', NOW() + INTERVAL '21 days', 'Country Barn', 'A fun-filled evening of bluegrass music and dance.', 40.00, 15.00, 'Public', 4.2, 45, 2450, 'default_event.png', 'Active'),
+    ('Hard Rock Havoc', NOW() + INTERVAL '33 days', 'Rock City Arena', 'A powerful night of hard rock music with top bands.', 60.00, 35.00, 'Public', 4.5, 65, 2500, 'default_event.png', 'Active'),
+    ('House Set', NOW() + INTERVAL '5 days', 'AEFEUP', 'FEUP Café with House Music', 0.00, 0.00, 'Public', 5.0, 79, 500, 'default_event.png', 'Active');
 
 INSERT INTO comment (text, comment_date, event_id, member_id, response_comment_id)
 VALUES 
