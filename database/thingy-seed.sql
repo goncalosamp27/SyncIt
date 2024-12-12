@@ -39,6 +39,11 @@ DROP DOMAIN IF EXISTS name_domain CASCADE;
 DROP DOMAIN IF EXISTS password_domain CASCADE;
 DROP DOMAIN IF EXISTS rating_domain CASCADE;
 DROP DOMAIN IF EXISTS restriction_type_domain CASCADE;
+DROP DOMAIN IF EXISTS request_status_domain CASCADE;
+DROP DOMAIN IF EXISTS event_status_domain CASCADE;
+
+CREATE DOMAIN event_status_domain AS VARCHAR(9)
+CHECK (VALUE IN ('Active', 'Cancelled'));
 
 CREATE DOMAIN email_domain AS VARCHAR(255)
 CHECK (POSITION('@' IN VALUE) > 1);

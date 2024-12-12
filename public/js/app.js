@@ -80,3 +80,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+function openModal() {
+    document.getElementById('deleteAccountModal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('deleteAccountModal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('deleteAccountModal');
+    if (event.target === modal) {
+        closeModal();
+    }
+}
+
+function openModal2() {
+    document.getElementById('cancelEventModal').style.display = 'block';
+}
+
+function closeModal2() {
+    document.getElementById('cancelEventModal').style.display = 'none';
+}
