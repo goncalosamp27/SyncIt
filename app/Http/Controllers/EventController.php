@@ -18,7 +18,10 @@ use DateTime;
 class EventController extends Controller
 {
     public function show(string $event_id): View
-    {
+    {   
+        if (!is_numeric($event_id)) {
+            abort(404, 'Invalid event identifier');
+        }
         // Get the event card.
         $event = Event::findOrFail($event_id);
         return view('pages.event', [
