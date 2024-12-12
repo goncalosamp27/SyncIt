@@ -265,8 +265,8 @@ CREATE TABLE follow_notification(
 CREATE TABLE comment_notification (
     notification_id INT PRIMARY KEY,
     comment_id INT NOT NULL,
-    FOREIGN KEY (notification_id) REFERENCES notification(notification_id),
-    FOREIGN KEY (comment_id) REFERENCES comment(comment_id)
+    FOREIGN KEY (notification_id) REFERENCES notification(notification_id) ON DELETE CASCADE,
+    FOREIGN KEY (comment_id) REFERENCES comment(comment_id) ON DELETE CASCADE
 );
 
 CREATE TABLE poll_notification (
@@ -449,18 +449,26 @@ CREATE OR REPLACE TRIGGER after_rating_insert
     FOR EACH ROW
     EXECUTE FUNCTION update_artist_rating();
 
-
+    
 CREATE OR REPLACE FUNCTION comment_handler()
 RETURNS TRIGGER AS $$
 DECLARE
-    new_notification_id INT; -- Declare the variable to hold the new notification ID
+    new_notification_id INT; -- Variable to hold the new notification ID
+    event_owner_id INT; -- Variable to hold the event owner's member_id
 BEGIN
-    -- Insert the notification and get the new notification_id in one step
+    -- Retrieve the owner of the event (artist)
+    SELECT artist.artist_id
+    INTO event_owner_id
+    FROM event
+    JOIN artist ON event.artist_id = artist.artist_id
+    WHERE event.event_id = NEW.event_id;
+
+    -- Insert a notification for the event owner
     INSERT INTO notification (notification_message, notification_date, member_id)
     VALUES (
-        'New comment added: ' || NEW.text,
+        'commented your event:',
         CURRENT_TIMESTAMP,
-        NEW.member_id
+        event_owner_id
     )
     RETURNING notification_id INTO new_notification_id;  -- Capture the new notification ID
 
@@ -471,6 +479,7 @@ BEGIN
     RETURN NEW;  -- Return the new comment row
 END;
 $$ LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION follow_handler()
 RETURNS TRIGGER AS $$
