@@ -10,8 +10,11 @@ use App\Models\Artist;
 class ArtistController extends Controller
 {
     public function show($artistId){
+        if (!is_numeric($artistId)) {
+            abort(404, 'Invalid event identifier');
+        }
+
         $artist = Artist::with('events')->find($artistId);
-    
         if (!$artist) {
             abort(404, 'Artist not found');
         }
