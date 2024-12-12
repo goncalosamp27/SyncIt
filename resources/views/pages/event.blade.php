@@ -23,11 +23,11 @@
 	
 	
 
-	<div id="cancelEventModal" class="modal" style="display: none;">
-		<div class="modal-content">
+	<div id="cancelEventModal" class="new-modal" style="display: none;">
+		<div class="new-modal-content">
 			<h2>Confirm Cancellation</h2>
 			<p>Are you sure you want to cancel this event?</p>
-			<div class="modal-buttons">
+			<div class="event-modal-buttons">
 				<form action="{{ route('event.cancel', ['event_id' => $event->event_id]) }}" method="POST">
 					@csrf
 					<button type="submit" class="confirm-button-cancel">Yes, Cancel</button>
