@@ -319,7 +319,7 @@ body {
 }
 .modal-content {
     color: var(--black-color);
-    background-color: var(--black-color);
+    background-color: red;
     margin: 15% auto;
     padding: 20px;
     border: 1px solid var(--primary-color);
