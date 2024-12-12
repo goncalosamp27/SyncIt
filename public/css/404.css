@@ -1,0 +1,44 @@
+@import url('variables.css');	
+
+.error-page {
+    text-align: center;
+    padding: 100px 100px;
+}
+
+.error-page h1 {
+    font-size: 130px;
+    color: #ff4d4d;
+    margin-bottom: 20px;
+	font-weight: bold;
+}
+
+.error-page h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.error-page p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.back-home-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.back-home-button:hover {
+    background-color: #0056b3;
+}
+
+.errr-btn {
+	margin-top: 3rem;
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
+}
