@@ -24,11 +24,19 @@
 						{{ $event->event_name }}
 					@endif
 				</h1>
-				@can('edit', $event)
-				<a href="{{ route('edit.event.show', ['event_id' => $event->event_id]) }}" class="event-button">
-					Edit
-				</a>
-				@endcan
+				<div class="event-edit-buttons">
+					@can('edit', $event)
+					<a href="{{ route('edit.event.show', ['event_id' => $event->event_id]) }}" class="event-button">
+						Edit
+					</a>
+					@endcan
+
+					@can('cancel', $event)
+					<a href="" class="event-button2">
+						Cancel Event
+					</a>
+					@endcan
+				</div>
 			</div>			
 			<a class="user-event-owner" href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}" style="display: flex; align-items: center; margin-top:1rem;">
 				<img 
