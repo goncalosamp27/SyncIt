@@ -14,8 +14,8 @@
 <body>
     @include('partials.header')
 
-    <div id="deleteAccountModal" class="modal" style="display: none;">
-        <div class="modal-content">
+    <div id="deleteAccountModal" class="new-modal" style="display: none;">
+        <div class="new-modal-content">
             <span class="close-btn" onclick="closeModal()">×</span>
             <div class = "delete-form">
                 <h2>Delete Account</h2>

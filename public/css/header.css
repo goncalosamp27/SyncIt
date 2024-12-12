@@ -275,7 +275,7 @@ body {
     color:red
 }
 
-.modal {
+.new-modal {
     color: var(--black-color);
     position: fixed;
     z-index: 1000;
@@ -317,9 +317,9 @@ body {
     width: auto; /* Ensures the button doesn't stretch */
     margin-top: 0.5rem;
 }
-.modal-content {
+.new-modal-content {
     color: var(--black-color);
-    background-color: red;
+    background-color: var(--black-color);
     margin: 15% auto;
     padding: 20px;
     border: 1px solid var(--primary-color);
@@ -353,7 +353,7 @@ body {
     font-size: 1.2rem;
 }
 
-.modal-buttons {
+.event-modal-buttons {
     margin-top: 1rem;
     display: flex; /* Use flexbox to align buttons side by side */
     justify-content: center; /* Center-align the buttons */

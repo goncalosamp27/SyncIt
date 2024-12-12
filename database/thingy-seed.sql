@@ -823,7 +823,7 @@ VALUES
     ('xavi', 'xavi', 'xavi@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
     ('dawen', 'dawen', 'dawen@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
     ('sofia', 'sofia', 'sofia@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
-    
+    ('dud', 'DJ Dud', 'dud@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'DJ Dud no beat','default_user.png', 'Active'),
     ('salsadancer', 'Salsa Dance Lover', 'salsadancer@example.com', 'salsadancer123', 'Salsa moves are life!', 'default_user.png', 'Active'),
     ('techbeat', 'Tech Beat DJ', 'techbeat@example.com', 'technosecure99', 'Living for the beats', 'default_user.png', 'Active'),
     ('folksinger', 'Folk Music Singer', 'folksinger@example.com', 'folkpass1234', 'Folk music and stories', 'default_user.png', 'Active'),
@@ -899,10 +899,7 @@ VALUES
     ('latinoheat', 'Latino Heat Music', 'latinoheat@example.com', 'latinoheat2023', 'Latin music and dance', 'default_user.png', 'Active'),
     ('afrojazz', 'Afro Jazz Music', 'afrojazz@example.com', 'afrojazz2023', 'Afro Jazz fusion', 'default_user.png', 'Active'),
     ('kpopfan', 'KPop Music Fan', 'kpopfan@example.com', 'kpopfan2023', 'K-Pop for life', 'default_user.png', 'Active'),
-    ('bollydance', 'Bolly Dance Artist', 'bollydance@example.com', 'bollydance2023', 'Bollywood dance styles', 'default_user.png', 'Active'),
-    ('gonca', 'DJ Gonca', 'gonca@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'DJ Gonca no beat','default_user.png', 'Active'),
-    ('dud', 'DJ Dud', 'dud@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'DJ Dud no beat','default_user.png', 'Active');
-
+    ('bollydance', 'Bolly Dance Artist', 'bollydance@example.com', 'bollydance2023', 'Bollywood dance styles', 'default_user.png', 'Active');
 
 INSERT INTO artist (artist_id, rating)
 VALUES 
@@ -938,7 +935,7 @@ VALUES
     (70, 4.0),   -- Funk Master
     (72, 3.1),   -- Soul Queen
     (75, 4.8),   -- Swing Pro
-    (79, 5.0);
+    (78, 5.0);
 
 INSERT INTO admin (email, password)
 VALUES 
@@ -1050,7 +1047,7 @@ VALUES
     ('Lo-Fi Chillout', NOW() + INTERVAL '17 days', 'Downtown Café', 'Relax with mellow lo-fi beats in a cozy café setting.', 20.00, 10.00, 'Private', 4.3, 70, 2400, 'default_event.png', 'Active'),
     ('Bluegrass Bonanza', NOW() + INTERVAL '21 days', 'Country Barn', 'A fun-filled evening of bluegrass music and dance.', 40.00, 15.00, 'Public', 4.2, 45, 2450, 'default_event.png', 'Active'),
     ('Hard Rock Havoc', NOW() + INTERVAL '33 days', 'Rock City Arena', 'A powerful night of hard rock music with top bands.', 60.00, 35.00, 'Public', 4.5, 65, 2500, 'default_event.png', 'Active'),
-    ('House Set', NOW() + INTERVAL '5 days', 'AEFEUP', 'FEUP Café with House Music', 0.00, 0.00, 'Public', 5.0, 79, 500, 'default_event.png', 'Active');
+    ('House Set', NOW() + INTERVAL '5 days', 'AEFEUP', 'FEUP Café with House Music', 0.00, 0.00, 'Public', 5.0, 3, 500, 'default_event.png', 'Active');
 
 INSERT INTO comment (text, comment_date, event_id, member_id, response_comment_id)
 VALUES 
