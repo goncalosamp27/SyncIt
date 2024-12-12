@@ -350,6 +350,7 @@
 
 .event-button2 {
     display: inline-block;
+    border-style: none;
     padding: 10px 20px;
     font-size: 1rem;
     background-color: var(--primary-color); /* Green background */

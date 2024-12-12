@@ -321,6 +321,30 @@ class EventController extends Controller
         ]);
     }
 
+    public function cancelEvent(Request $request, string $event_id)
+    {
+        try {
+            // Find the event
+            $event = Event::findOrFail($event_id);
+
+            // Check if the event is currently active
+            if ($event->event_status !== 'Active') {
+                return redirect()->back()->with('error', "Only active events can be cancelled.");
+            }
+
+            // Update the event's status to 'Cancelled'
+            $event->update(['event_status' => 'Cancelled']);
+
+            // Return a success message
+            return redirect()->route('your-events')->with('success', "Event #{$event_id} has been successfully cancelled.");
+        } catch (\Exception $e) {
+            // Log the error and return an error message
+            \Log::error("Failed to cancel event: {$e->getMessage()}");
+
+            return redirect()->back()->with('error', "Failed to cancel the event.");
+        }
+    }
+
     /*
     public function getEventCards(Request $request)
     {

@@ -34,3 +34,11 @@ window.onclick = function(event) {
         closeModal();
     }
 }
+
+function openModal2() {
+    document.getElementById('cancelEventModal').style.display = 'block';
+}
+
+function closeModal2() {
+    document.getElementById('cancelEventModal').style.display = 'none';
+}
