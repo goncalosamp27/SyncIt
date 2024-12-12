@@ -63,5 +63,4 @@ class MemberController extends Controller
             return back()->with('error', $result['message']);
         }
     }
-
 }
