@@ -56,8 +56,10 @@ class Event extends Model
     }
     public static function upcomingEvents()
     {
-        return self::where('event_date', '>', now())->get();
-    }
+        return self::where('event_date', '>', now())
+                   ->where('event_status', '<>', 'Cancelled')
+                   ->get();
+    }    
     public static function pastEvents()
     {
         return self::where('event_date', '<', now())->get();

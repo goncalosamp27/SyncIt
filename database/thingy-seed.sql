@@ -94,7 +94,7 @@ CREATE INDEX member_display_name_idx ON member (display_name);
 CREATE TABLE artist (
     artist_id INT PRIMARY KEY NOT NULL, 
     rating rating_domain NOT NULL,
-    FOREIGN KEY (artist_id) REFERENCES member(member_id)
+    FOREIGN KEY (artist_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
 
 
@@ -768,6 +768,44 @@ END;
 $$ LANGUAGE plpgsql;
 */
 
+-- Create the function for handling event status change notifications
+CREATE OR REPLACE FUNCTION notify_event_status_change()
+RETURNS TRIGGER AS $$
+DECLARE
+    ticket_member_id INT;
+    new_notification_id INT;
+BEGIN
+    -- Check if the event status has changed from 'Active' to 'Cancelled'
+    IF OLD.event_status = 'Active' AND NEW.event_status = 'Cancelled' THEN
+        -- Loop through each member who owns tickets for the event
+        FOR ticket_member_id IN
+            SELECT DISTINCT ticket.member_id
+            FROM ticket
+            WHERE ticket.event_id = NEW.event_id
+        LOOP
+            -- Insert the notification for the member
+            INSERT INTO notification (notification_message, notification_date, member_id)
+            VALUES ('The event has been cancelled. \nYour ticket has been refunded.', CURRENT_TIMESTAMP, ticket_member_id)
+            RETURNING notification_id INTO new_notification_id;
+
+            -- Link the notification to the event
+            INSERT INTO event_notification (notification_id, event_id)
+            VALUES (new_notification_id, NEW.event_id);
+        END LOOP;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create the trigger to invoke the function on event status change
+CREATE TRIGGER trigger_event_status_change
+AFTER UPDATE OF event_status ON event
+FOR EACH ROW
+WHEN (OLD.event_status = 'Active' AND NEW.event_status = 'Cancelled')
+EXECUTE FUNCTION notify_event_status_change();
+
+
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
 VALUES 
     ('anonymous', 'Anonymous', 'anonymous@syncit.com','$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'anonymous', 'default_user.png', 'Active'),
@@ -854,7 +892,7 @@ VALUES
 
 INSERT INTO artist (artist_id, rating)
 VALUES 
-    (1,0),
+    (1,0), --Anonymous user
     (2, 4.5),    -- Salsa Dancer
     (3, 3.2),    -- Techno Beat
     (5, 4.0),    -- Classy Cat

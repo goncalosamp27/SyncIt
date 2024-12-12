@@ -27,12 +27,12 @@
     			@foreach ($events as $event)
 						<div class = "your-single-event">
         					@include('partials.event-card', ['events' => $event])
-							@if ($event->event_status === 'Cancelled')
+							@can('delete', $event)
 								<form action="{{ route('delete-event', ['event_id' => $event->event_id]) }}" method="POST" class="delete-button-form">
 									@csrf
 									<button type="submit" class="delete-button">🗑️</button>
 								</form>
-							@endif
+							@endcan
 						</div>
     			@endforeach
 			</div>	

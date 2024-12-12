@@ -17,24 +17,24 @@
 	<div class="event-page-content">
 		<div class="event-page-info">
 			<div class="title-edit">
-				<h1 style="color: gray;">
+				<h1>
 					@if ($event->event_status === 'Cancelled')
-						[Cancelled] - <span style="text-decoration: line-through;">{{ $event->event_name }}</span>
+						<span style="color: gray;"> [Cancelled] - </span><span style="text-decoration: line-through;">{{ $event->event_name }}</span>
 					@else
-						{{ $event->event_name }}
+						<span style="color: var(--primary-color);">{{ $event->event_name }}</span>
 					@endif
 				</h1>
 				<div class="event-edit-buttons">
 					@can('edit', $event)
-					<a href="{{ route('edit.event.show', ['event_id' => $event->event_id]) }}" class="event-button">
-						Edit
-					</a>
+						<a href="{{ route('edit.event.show', ['event_id' => $event->event_id]) }}" class="event-button">
+							Edit
+						</a>
 					@endcan
 
 					@can('cancel', $event)
-					<a href="" class="event-button2">
-						Cancel Event
-					</a>
+						<a href="" class="event-button2">
+							Cancel Event
+						</a>
 					@endcan
 				</div>
 			</div>			

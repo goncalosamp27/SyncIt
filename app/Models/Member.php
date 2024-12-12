@@ -98,6 +98,7 @@ class Member extends Authenticatable
                 'message' => 'Account deleted successfully.',
             ];
         } catch (\Exception $e) {
+            dd($e->getMessage());
             return [
                 'status' => false,
                 'message' => 'Failed to delete the account. Please try again later.',
