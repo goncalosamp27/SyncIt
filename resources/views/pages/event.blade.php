@@ -14,6 +14,20 @@
 
 	<script src="{{ asset('js/app.js') }}" defer></script>
 
+	<div id="cancelEventModal" class="modal" style="display: none;">
+		<div class="modal-content">
+			<h2>Confirm Cancellation</h2>
+			<p>Are you sure you want to cancel this event?</p>
+			<div class="modal-buttons">
+				<form action="{{ route('event.cancel', ['event_id' => $event->event_id]) }}" method="POST">
+					@csrf
+					<button type="submit" class="confirm-button-cancel">Yes, Cancel</button>
+				</form>
+				<button type="button" class="cancel-button-cancel" onclick="closeModal2()">No, Go Back</button>
+			</div>
+		</div>
+	</div>
+
 	<div class="event-page-content">
 		<div class="event-page-info">
 			<div class="title-edit">
@@ -32,10 +46,9 @@
 					@endcan
 
 					@can('cancel', $event)
-						<a href="" class="event-button2">
-							Cancel Event
-						</a>
+						<button type="button" class="event-button2" onclick="openModal2	()">Cancel Event</button>
 					@endcan
+
 				</div>
 			</div>			
 			<a class="user-event-owner" href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}" style="display: flex; align-items: center; margin-top:1rem;">

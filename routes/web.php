@@ -56,6 +56,7 @@ Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->nam
 Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('future-events');
 Route::post('/future-events/filter', [EventController::class, 'filterEvents'])->name('events.filter');
 Route::get('/events/search', [EventController::class, 'search'])->name('events.search');
+Route::post('/event/{event_id}/cancel', [EventController::class, 'cancelEvent'])->name('event.cancel');
 
 Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
     ->name('buy-ticket')
