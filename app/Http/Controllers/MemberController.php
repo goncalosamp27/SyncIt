@@ -57,7 +57,7 @@ class MemberController extends Controller
         // Handle the result
         if ($result['status']) {
             Auth::logout();
-            return redirect('/')->with('success', "Your account was deleted, logged out successfully");
+            return redirect('/home')->with('success', "Your account was deleted.");
         } else {
             // Return with an error message
             return back()->with('error', $result['message']);

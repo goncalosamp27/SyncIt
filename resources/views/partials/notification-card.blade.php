@@ -31,14 +31,21 @@
             <div class="invitation-date">
                 {{ date('d/m/Y - h:i A', strtotime($notification->notification_date)) }}
             </div>
-            @if ($notification->notification_message !== "The event has been cancelled.\nYour ticket has been refunded.")
+            @if ($notification->notification_message !== "The event has been cancelled. Your ticket has been refunded.")
                 <div class = "invitation-username">
                     <span class = "invitation-username">@</span>{{ $notification->eventNotification->event->artist->member->username }}<span class = "invitation-username">'s</span>
                 </div>
+                <div class="invitation-text">
+                    {{ $notification->notification_message }}
+                </div>
+            @else 
+                <div class="invitation-text">
+                   The event has been cancelled.
+                </div>
+                <div class="invitation-text">
+                    Your ticket has been refunded.
+                </div>
             @endif    
-            <div class="invitation-text">
-                {{ $notification->notification_message }}
-            </div>
             <form action="{{ route('delete-notification', ['notification_id' => $notification->notification_id]) }}" method="POST">
                 @csrf
                 <button class="delete-notification-button" type="submit">

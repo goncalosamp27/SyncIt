@@ -785,12 +785,15 @@ BEGIN
         LOOP
             -- Insert the notification for the member
             INSERT INTO notification (notification_message, notification_date, member_id)
-            VALUES ('The event has been cancelled. \nYour ticket has been refunded.', CURRENT_TIMESTAMP, ticket_member_id)
+            VALUES ('The event has been cancelled. Your ticket has been refunded.', CURRENT_TIMESTAMP, ticket_member_id)
             RETURNING notification_id INTO new_notification_id;
 
             -- Link the notification to the event
             INSERT INTO event_notification (notification_id, event_id)
             VALUES (new_notification_id, NEW.event_id);
+
+            DELETE FROM ticket
+            WHERE event_id = NEW.event_id;
         END LOOP;
     END IF;
 
