@@ -39,10 +39,7 @@ DROP DOMAIN IF EXISTS name_domain CASCADE;
 DROP DOMAIN IF EXISTS password_domain CASCADE;
 DROP DOMAIN IF EXISTS rating_domain CASCADE;
 DROP DOMAIN IF EXISTS request_status_domain CASCADE;
-DROP DOMAIN IF EXISTS event_stauts CASCADE;
-
-CREATE DOMAIN event_status AS VARCHAR(9)
-CHECK (VALUE IN ('Active', 'Cancelled'));
+DROP DOMAIN IF EXISTS event_status_domain CASCADE;
 
 CREATE DOMAIN email_domain AS VARCHAR(255)
 CHECK (POSITION('@' IN VALUE) > 1);
@@ -76,6 +73,9 @@ CHECK (CHAR_LENGTH(VALUE) BETWEEN 8 AND 100);
 
 CREATE DOMAIN rating_domain AS DECIMAL(2, 1)
 CHECK (VALUE >= 0.0 AND VALUE <= 5.0);
+
+CREATE DOMAIN event_status_domain AS VARCHAR(9)
+CHECK (VALUE IN ('Active', 'Cancelled'));
 
 CREATE TABLE member (
     member_id SERIAL PRIMARY KEY,
@@ -129,7 +129,7 @@ CREATE TABLE event (
     artist_id INT NOT NULL,
     capacity INT NOT NULL,
     event_media VARCHAR(100) NOT NULL,
-    event_status event_status NOT NULL,
+    event_status event_status_domain NOT NULL,
     FOREIGN KEY (artist_id) REFERENCES artist(artist_id)
 );
 
@@ -334,7 +334,7 @@ $BODY$
 BEGIN
     -- Update related data in the 'event' table
     UPDATE event
-    SET artist_id = 1 -- DEFAULT USER
+    SET artist_id = 1, -- DEFAULT USER
         event_status = 'Cancelled'
     WHERE artist_id = OLD.artist_id;
 
@@ -886,7 +886,7 @@ VALUES
     (70, 4.0),   -- Funk Master
     (72, 3.1),   -- Soul Queen
     (75, 4.8),   -- Swing Pro
-    (78, 5.0);
+    (79, 5.0);
 
 INSERT INTO admin (email, password)
 VALUES 
@@ -998,7 +998,7 @@ VALUES
     ('Lo-Fi Chillout', NOW() + INTERVAL '17 days', 'Downtown Café', 'Relax with mellow lo-fi beats in a cozy café setting.', 20.00, 10.00, 'Private', 4.3, 70, 2400, 'default_event.png', 'Active'),
     ('Bluegrass Bonanza', NOW() + INTERVAL '21 days', 'Country Barn', 'A fun-filled evening of bluegrass music and dance.', 40.00, 15.00, 'Public', 4.2, 45, 2450, 'default_event.png', 'Active'),
     ('Hard Rock Havoc', NOW() + INTERVAL '33 days', 'Rock City Arena', 'A powerful night of hard rock music with top bands.', 60.00, 35.00, 'Public', 4.5, 65, 2500, 'default_event.png', 'Active'),
-    ('House Set', NOW() + INTERVAL '5 days', 'AEFEUP', 'FEUP Café with House Music', 0.00, 0.00, 'Public', 5.0, 78, 500, 'default_event.png', 'Active');
+    ('House Set', NOW() + INTERVAL '5 days', 'AEFEUP', 'FEUP Café with House Music', 0.00, 0.00, 'Public', 5.0, 79, 500, 'default_event.png', 'Active');
 
 INSERT INTO comment (text, comment_date, event_id, member_id, response_comment_id)
 VALUES 

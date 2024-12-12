@@ -348,6 +348,25 @@
     background-color: var(--hover-color); /* Slightly darker green on hover */
 }
 
+.event-button2 {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: var(--primary-color); /* Green background */
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    text-decoration: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, transform 0.2s ease;
+    margin-top: 1rem; /* Adds some space at the top */
+    margin-left: 0.5rem;
+}
+
+.event-button2:hover {
+    background-color: red; /* Slightly darker green on hover */
+}
+
 .title-edit {
     display: flex;
     justify-content: space-between; /* To place the event name and edit button on opposite sides */
