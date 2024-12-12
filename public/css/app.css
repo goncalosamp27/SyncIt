@@ -16,7 +16,7 @@
 @import url('tickets.css');
 @import url('edit-page.css');
 @import url('notifications.css');
-@import url('404.css');
+@import url('info-page.css');
 
 * {
   color: var(--text-color);

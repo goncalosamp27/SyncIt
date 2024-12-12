@@ -4,6 +4,9 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use App\Models\Member;
+use App\Policies\RestrictionPolicy;
+use App\Policies\AdminPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -15,7 +18,8 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Admin::class => AdminPolicy::class, 
         Event::class => EventPolicy::class,
-
+        Member::class => RestrictionPolicy::class,
+        Member::class => AdminPolicy::class,
     ];
 
     /**
@@ -23,6 +27,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->registerPolicies();
     }
 }

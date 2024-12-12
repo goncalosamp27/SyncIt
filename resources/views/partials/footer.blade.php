@@ -1,9 +1,9 @@
 <footer class="footer">
     <div class="footer-navigation">
-        <a href="">About us</a>
-        <a href="">Services</a>
-        <a href="">Contacts</a>
-        <a href="">FAQ's</a>
+        <a href="{{ route('about-us') }}">About us</a>
+        <a href="{{ route('services') }}">Services</a>
+        <a href="{{ route('contacts') }}">Contacts</a>
+        <a href="{{ route('faq') }}">FAQ's</a>
     </div>
     <div class="footer-divider"></div>
     <div class="footer-bottom">

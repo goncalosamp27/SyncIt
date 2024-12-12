@@ -38,8 +38,7 @@ DROP DOMAIN IF EXISTS username_domain CASCADE;
 DROP DOMAIN IF EXISTS name_domain CASCADE;
 DROP DOMAIN IF EXISTS password_domain CASCADE;
 DROP DOMAIN IF EXISTS rating_domain CASCADE;
-DROP DOMAIN IF EXISTS request_status_domain CASCADE;
-DROP DOMAIN IF EXISTS event_status_domain CASCADE;
+DROP DOMAIN IF EXISTS restriction_type_domain CASCADE;
 
 CREATE DOMAIN email_domain AS VARCHAR(255)
 CHECK (POSITION('@' IN VALUE) > 1);
@@ -74,8 +73,9 @@ CHECK (CHAR_LENGTH(VALUE) BETWEEN 8 AND 100);
 CREATE DOMAIN rating_domain AS DECIMAL(2, 1)
 CHECK (VALUE >= 0.0 AND VALUE <= 5.0);
 
-CREATE DOMAIN event_status_domain AS VARCHAR(9)
-CHECK (VALUE IN ('Active', 'Cancelled'));
+
+CREATE DOMAIN restriction_type_domain AS VARCHAR(11)
+CHECK (VALUE IN ('Ban', 'Suspension'));
 
 CREATE TABLE member (
     member_id SERIAL PRIMARY KEY,
@@ -294,9 +294,10 @@ CREATE TABLE rating (
 CREATE TABLE restriction (
     restriction_id SERIAL PRIMARY KEY,
     member_id INT NOT NULL,
-    duration INTERVAL NOT NULL,
+    duration INT NOT NULL, -- in days
     admin_id INT NOT NULL,
     start TIMESTAMP NOT NULL,
+    type restriction_type_domain NOT NULL,
     FOREIGN KEY (member_id) REFERENCES member(member_id),
     FOREIGN KEY (admin_id) REFERENCES admin(admin_id)
 );
@@ -566,7 +567,7 @@ BEGIN
     VALUES (new_notification_id, NEW.restriction_id);  -- Link notification with the restriction
 
     -- Update member status based on restriction duration
-    IF NEW.duration = '0 days' THEN
+    IF NEW.duration = 0 THEN
         UPDATE member
         SET member_status = 'Banned'  -- Set status to Banned if duration is 0 days
         WHERE member_id = NEW.member_id;
@@ -813,6 +814,11 @@ INSERT INTO member (username, display_name, email, password, bio, profile_pic_ur
 VALUES 
     ('anonymous', 'Anonymous', 'anonymous@syncit.com','$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'anonymous', 'default_user.png', 'Active'),
     ('edgar', 'LBAW Teacher', 'lbaw@example.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
+    ('goncalo', 'goncalo', 'goncalo@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
+    ('xavi', 'xavi', 'xavi@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
+    ('dawen', 'dawen', 'dawen@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
+    ('sofia', 'sofia', 'sofia@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
+    
     ('salsadancer', 'Salsa Dance Lover', 'salsadancer@example.com', 'salsadancer123', 'Salsa moves are life!', 'default_user.png', 'Active'),
     ('techbeat', 'Tech Beat DJ', 'techbeat@example.com', 'technosecure99', 'Living for the beats', 'default_user.png', 'Active'),
     ('folksinger', 'Folk Music Singer', 'folksinger@example.com', 'folkpass1234', 'Folk music and stories', 'default_user.png', 'Active'),
@@ -1545,17 +1551,17 @@ VALUES
     (38, 55, 3.3);  -- Member 55 rates Lo-Fi Chillout
 
 -- Restrictions applied to members by admins
-INSERT INTO restriction (member_id, duration, admin_id, start)
+INSERT INTO restriction (member_id, duration, admin_id, start, type)
 VALUES 
     -- Suspensions (non-zero duration)
-    (5, INTERVAL '7 days', 1, NOW()),       -- Member 5 suspended for 7 days by Admin 1
-    (8, INTERVAL '30 days', 2, NOW()),      -- Member 8 suspended for 30 days by Admin 2
-    (12, INTERVAL '3 days', 3, NOW()),      -- Member 12 suspended for 3 days by Admin 3
+    (6, 7, 1, NOW(), 'Suspension'),       -- Member 5 suspended for 7 days by Admin 1
+    (8, 30, 2, NOW(), 'Suspension'),      -- Member 8 suspended for 30 days by Admin 2
+    (12, 3, 3, NOW(), 'Suspension'),      -- Member 12 suspended for 3 days by Admin 3
 
     -- Bans (duration of 0 means a ban)
-    (15, INTERVAL '0 days', 1, NOW()),      -- Member 15 banned by Admin 1
-    (20, INTERVAL '0 days', 2, NOW()),      -- Member 20 banned by Admin 2
-    (25, INTERVAL '0 days', 3, NOW());      -- Member 25 banned by Admin 3
+    (15, 0, 1, NOW(), 'Ban'),      -- Member 15 banned by Admin 1
+    (20, 0, 2, NOW(), 'Ban'),      -- Member 20 banned by Admin 2
+    (25, 0, 3, NOW(), 'Ban');      -- Member 25 banned by Admin 3
 
 INSERT INTO join_request(event_id, member_id, request_date)
 VALUES 

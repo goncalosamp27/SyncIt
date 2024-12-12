@@ -24,8 +24,10 @@ class EventController extends Controller
         }
         // Get the event card.
         $event = Event::findOrFail($event_id);
+        $comments = $event->comments ?: collect();
         return view('pages.event', [
-            'event' => $event
+            'event' => $event,
+            'comments' => $comments 
         ]);
     }
 
@@ -261,50 +263,24 @@ class EventController extends Controller
     //function to filter events 
     public function filterEvents(Request $request)
     {
-        $tagIds = $request->input('tags', []);  // Get the tag IDs from the request
+        $tagsMusic = Tag::type(['Music'])->get();
+        $tagsDance = Tag::type(['Dance'])->get();
+        $tagsMood = Tag::type(['Mood'])->get();
+        $tagsSettings = Tag::type(['Settings'])->get();
 
-        // Get the events based on selected tags
+        $tagIds = $request->input('tags', []);
+
         $events = Event::getEventsByTags($tagIds);
-
-        // Initialize an empty array to store tags and their colors for each event
-        $tagsArray = [];
-
-        // Loop through the events to get tags for each event
-        foreach ($events as $event) {
-            // Get the tag_ids associated with the current event using the getTagsByEventId method
-            $tagIdsForEvent = EventTag::getTagsByEventId($event->event_id);
-
-            // Initialize an array to store the tag names and their associated colors
-            $tagsForEventArray = [];
-
-            // Loop through each tag_id to retrieve the tag name and color
-            foreach ($tagIdsForEvent as $tagId) {
-                // Get the tag name using the getTagNameById method
-                $tagName = Tag::getTagNameById($tagId);
-
-                // Get the tag color using the getTagColorById method
-                $tagColor = Tag::getTagColorById($tagId);
-
-                // Add the tag name and color to the tags array for this event
-                $tagsForEventArray[] = [
-                    'tag_name' => $tagName,
-                    'color' => $tagColor,  // Return the tag color
-                ];
-            }
-
-            // Add the tags for the current event to the tagsArray
-            $tagsArray[] = [
-                'event_id' => $event->event_id,
-                'tags' => $tagsForEventArray,  // Associated tags with names and colors
-            ];
-        }
-
-        // Return the response with events and tags
-        return response()->json([
-            'success' => true,
-            'events' => $events,  // Return the events
-            'tags' => $tagsArray,  // Return the tags with names and colors for each event
-        ]);
+        
+        return response()->json(
+            [
+                'events' => $events,
+                'tagsMusic' => $tagsMusic,
+                'tagsDance' => $tagsDance,
+                'tagsMood' => $tagsMood,
+                'tagsSettings' => $tagsSettings
+            ]
+        );
     }
 
 
