@@ -16,9 +16,14 @@ class ArtistController extends Controller
             abort(404, 'Artist not found');
         }
 
+        if ($artist->artist_id == 1) {
+            abort(404, 'This page is not available.');
+        }
+
         $followersCount = $artist->getFollowersCount();
         return view('pages.artist', ['artist' => $artist, 'followersCount' => $followersCount]);
     }
+    
 
     public function getArtistEvents($artist_id)
     {
