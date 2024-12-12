@@ -37,9 +37,9 @@
 					@include('partials.event-card', ['event' => $event])
 				@endforeach
 			</div>
-			<a href="{{ route('future-events') }}">
-				@include('partials.show-more')
-			</a>
+				<a href="{{ route('future-events') }}">
+					@include('partials.show-more')
+				</a>
 			</div>
 
 		<div class="purple-line"></div>

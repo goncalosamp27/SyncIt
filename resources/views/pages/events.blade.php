@@ -71,7 +71,9 @@
 {{-- Events Grid --}}
 <div id="events-grid" class="events-grid">
   @foreach ($events as $event)
-    @include('partials.event-card', ['event' => $event])
+      @if ($event->event_status !== 'Cancelled')
+          @include('partials.event-card', ['event' => $event])
+      @endif
   @endforeach
 </div>
 @endsection

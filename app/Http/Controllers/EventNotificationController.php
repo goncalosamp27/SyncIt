@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\EventNotification;
 use App\Models\Event;
 
-class InvitationNotificationController extends Controller
+class EventNotificationController extends Controller
 {
     public function event()
 	{

@@ -4,6 +4,11 @@
     text-align: center;
 }
 
+.event-title2 {
+    text-align: center;
+    color: #747373;
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;

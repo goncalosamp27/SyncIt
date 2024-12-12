@@ -60,6 +60,7 @@ Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events
 Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->name('past-events');
 Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('future-events');
 Route::get('/events/search', [EventController::class, 'search'])->name('events.search');
+Route::post('/event/{event_id}/cancel', [EventController::class, 'cancelEvent'])->name('event.cancel');
 
 Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
     ->name('buy-ticket')
@@ -140,7 +141,11 @@ Route::controller(NotificationController::class)->middleware(['notAdmin', 'auth'
 Route::controller(MemberController::class)->middleware(['notAdmin', 'auth'])->group(function () {
     Route::get('/edit_profile', 'edit')->name('profile.edit');
     Route::put('/edit_profile', 'updateMember')->name('member.profile.edit');
+    Route::post('/account/delete', [MemberController::class, 'delete'])->name('account.delete');
 });
+
+
+
 
 Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'showLoginForm')->middleware(['visitor'])->name('login');
