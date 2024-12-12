@@ -2,7 +2,9 @@
 use App\Http\Controllers\CreateEventController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
+use App\Models\Tag;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventTagController;
@@ -14,6 +16,7 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\EditEventController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\JoinRequestController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -26,11 +29,13 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/artist/{artist_id}', [ArtistController::class, 'show'])->name('artist');
 
 Route::controller(AdminController::class)->middleware('admin')->group(function () {
-    Route::get('admin', 'display_members')->name('admin');
+    Route::get('admin/members/{status?}', 'getMembersByStatus')->name('admin');
     Route::get('admin/search', 'search')->name('members.search');
     Route::get('admin/edit/member/{id}', 'getMember')->name('admin.edit.member');
     Route::put('admin/edit/member/{id}', 'updateMemberAdmin')->name('member.updates');
     Route::get('admin/register', 'createMember')->name('create.member');
+    Route::put('admin/members/', 'applyRestriction')->name('admin.restrict.member');
+    Route::put('admin/{id}', 'removeRestriction')->name('admin.remove.restriction');
 });
 
 Route::controller(EventController::class)->group(function () {
@@ -54,7 +59,6 @@ Route::post('/events/store', [EventController::class, 'store'])->name('events.st
 Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events');
 Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->name('past-events');
 Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('future-events');
-Route::post('/future-events/filter', [EventController::class, 'filterEvents'])->name('events.filter');
 Route::get('/events/search', [EventController::class, 'search'])->name('events.search');
 Route::post('/event/{event_id}/cancel', [EventController::class, 'cancelEvent'])->name('event.cancel');
 
@@ -66,9 +70,53 @@ Route::post('/events/getTags', [EventController::class, 'getTags'])->name('event
 Route::post('/event/request-access', [JoinRequestController::class, 'requestAccess'])->name('request-access')
     ->middleware(['auth', 'notAdmin']);
 
+Route::controller(CommentController::class)->middleware(['auth'])->group(function () {
+    Route::post('/event/{event_id}/comments', 'store')->name('comments.store');
+    Route::get('/event/{event_id}/comments', 'index')->name('comments.index');
+    Route::put('/event/{event_id}/comments/{comment_id}', 'update')->name('comments.update');
+    Route::delete('/event/{event_id}/comments/{comment_id}', 'destroy')->name('comments.destroy');
+});
+
+
+Route::controller(CommentVoteController::class)->middleware(['auth'])->group(function () {
+    Route::post('/comments/{comment_id}/upvote', 'upvote')->name('comments.upvote');
+    Route::post('/comments/{comment_id}/downvote', 'downvote')->name('comments.downvote');  
+    Route::delete('/comments/{comment_id}/vote', 'removeVote')->name('comments.removeVote');
+});
+
+Route::controller(ReplyController::class)->middleware(['auth'])->group(function () {
+    Route::post('/reply/store', 'store')->name('reply.store');
+});
+
+
 //AJAX
-Route::post('/future-events/updateFutureEventsPage', [EventController::class, 'updateFutureEventsPage'])->name('future-events-update');
-Route::post('/future-events/getEventCards', [EventController::class, 'getEventCards'])->name('get-cards');
+Route::post('/future-events/filter', [EventController::class, 'filterEvents'])->name('events.filter');
+Route::post('/future-events', function (Request $request) {
+    Log::info($request->input('tagsMusic'));
+    $events = $request->input('events');
+    $tagsMusic = $request->input('tagsMusic');
+    $tagsDance = $request->input('tagsDance');
+    $tagsMood = $request->input('tagsMood');
+    $tagsSettings = $request->input('tagsSettings');
+
+    foreach ($events as &$event) {
+        $eventTags = Tag::getTagsByEventId($event['event_id'])->take(3);
+    
+        $event['tags'] = $eventTags;
+    }
+    return view('pages.events', [
+        'events' => $events ,
+        'tagsMusic' => $tagsMusic ,
+        'tagsDance' => $tagsDance ,
+        'tagsMood' => $tagsMood ,
+        'tagsSettings' => $tagsSettings ,
+    ]);
+    
+});
+
+
+
+
 
 Route::post('/tickets/{ticket_id}', [TicketController::class, 'refundTicket'])->name('refund-ticket');
 Route::post('/your-events/{event_id}', [EventController::class, 'deleteEvent'])->name('delete-event');
@@ -121,5 +169,8 @@ Route::controller(EditEventController::class)->middleware(['notAdmin', 'auth'])-
     Route::post('/event/edit/{event_id}/{ticket_id}', 'deleteParticipant')->name('delete-participant');
 });
 
-
+Route::view('/about-us', 'pages/about-us')->name('about-us');
+Route::view('/contacts', 'pages/contacts')->name('contacts');
+Route::view('/services', 'pages/services')->name('services');
+Route::view('/faq', 'pages/faq')->name('faq');
 
