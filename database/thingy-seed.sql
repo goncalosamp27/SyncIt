@@ -172,7 +172,7 @@ CREATE TABLE vote_comment (
     comment_id INT NOT NULL,
     member_id INT NOT NULL,
     vote BOOLEAN NOT NULL, -- true = upvote, false = downvote
-    FOREIGN KEY (member_id) REFERENCES member(member_id),
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE,
     FOREIGN KEY (comment_id) REFERENCES comment(comment_id) ON DELETE CASCADE
 );
 
@@ -199,7 +199,7 @@ CREATE TABLE ticket (
     ticket_date TIMESTAMP NOT NULL CHECK (ticket_date >= CURRENT_DATE),
     member_id INT NOT NULL,
     FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
-    FOREIGN KEY (member_id) REFERENCES member(member_id)
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
 
 
@@ -228,7 +228,7 @@ CREATE TABLE invitation (
     event_id INT NOT NULL,
     member_id INT NOT NULL,
     FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
-    FOREIGN KEY (member_id) REFERENCES member(member_id)
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
 
 CREATE TABLE notification (
@@ -258,8 +258,8 @@ CREATE TABLE follow_notification(
     notification_id INT PRIMARY KEY,
     follower_id INT NOT NULL,
 
-    FOREIGN KEY (notification_id) REFERENCES notification(notification_id),
-    FOREIGN KEY (follower_id) REFERENCES member(member_id)
+    FOREIGN KEY (notification_id) REFERENCES notification(notification_id) ON DELETE CASCADE,
+    FOREIGN KEY (follower_id) REFERENCES member(member_id) ON DELETE CASCADE
 );  
 
 CREATE TABLE comment_notification (
