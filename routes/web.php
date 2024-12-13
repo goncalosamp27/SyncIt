@@ -61,12 +61,10 @@ Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->nam
 Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('future-events');
 Route::get('/events/search', [EventController::class, 'search'])->name('events.search');
 Route::post('/event/{event_id}/cancel', [EventController::class, 'cancelEvent'])->name('event.cancel');
-
-Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
-    ->name('buy-ticket')
-    ->middleware('auth');
-
 Route::post('/events/getTags', [EventController::class, 'getTags'])->name('events.filters.tags');
+
+Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])->name('buy-ticket')->middleware('auth');
+
 Route::post('/event/request-access', [JoinRequestController::class, 'requestAccess'])->name('request-access')
     ->middleware(['auth', 'notAdmin']);
 
