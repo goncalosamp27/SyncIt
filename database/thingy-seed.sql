@@ -134,7 +134,7 @@ CREATE TABLE event (
     artist_id INT NOT NULL,
     capacity INT NOT NULL,
     event_media VARCHAR(100) NOT NULL,
-    event_status event_status_domain NOT NULL,
+    event_status event_status_domain NOT NULL DEFAULT 'Active',
     FOREIGN KEY (artist_id) REFERENCES artist(artist_id)
 );
 

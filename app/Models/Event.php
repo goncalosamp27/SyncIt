@@ -24,7 +24,7 @@ class Event extends Model
         'capacity',
         'event_media',
         'event_status',
-        'artist_id'
+        'artist_id',
     ];
     public static function validate($data)
     {
