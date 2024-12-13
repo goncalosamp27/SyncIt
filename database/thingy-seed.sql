@@ -22,7 +22,6 @@ DROP TABLE IF EXISTS invitation_notification CASCADE;
 DROP TABLE IF EXISTS following CASCADE;
 DROP TABLE IF EXISTS rating CASCADE;
 DROP TABLE IF EXISTS restriction CASCADE;
-DROP TABLE IF EXISTS restriction_notification CASCADE;
 DROP TABLE IF EXISTS event_image CASCADE;
 DROP TABLE IF EXISTS join_request CASCADE;
 DROP TABLE IF EXISTS join_request_notification CASCADE;
@@ -307,13 +306,6 @@ CREATE TABLE restriction (
     FOREIGN KEY (admin_id) REFERENCES admin(admin_id)
 );
 
-CREATE TABLE restriction_notification (
-    notification_id INT PRIMARY KEY,
-    restriction_id INT NOT NULL,
-    FOREIGN KEY (notification_id) REFERENCES notification(notification_id),
-    FOREIGN KEY (restriction_id) REFERENCES restriction(restriction_id)
-);
-
 -- Upon account deletion, shared user data (e.g. comments, reviews, likes) is kept but made anonymous.
 -- Function to handle anonymization logic
 CREATE OR REPLACE FUNCTION anonymize_member_data() RETURNS TRIGGER AS
@@ -561,40 +553,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-
-CREATE OR REPLACE FUNCTION restriction_start_handler()
-RETURNS TRIGGER AS $$
-DECLARE
-    new_notification_id INT;  -- Variable to hold the new notification ID
-BEGIN
-    -- Insert the notification and get the new notification_id in one step
-    INSERT INTO notification (notification_message, notification_date, member_id)
-    VALUES (
-        'A new restriction has been applied to you.',
-        CURRENT_TIMESTAMP,
-        NEW.member_id
-    )
-    RETURNING notification_id INTO new_notification_id;  -- Capture the new notification ID
-
-    -- Insert the notification record into restriction_notification
-    INSERT INTO restriction_notification (notification_id, restriction_id)
-    VALUES (new_notification_id, NEW.restriction_id);  -- Link notification with the restriction
-
-    -- Update member status based on restriction duration
-    IF NEW.duration = 0 THEN
-        UPDATE member
-        SET member_status = 'Banned'  -- Set status to Banned if duration is 0 days
-        WHERE member_id = NEW.member_id;
-    ELSE
-        UPDATE member
-        SET member_status = 'Suspended'  -- Set status to Suspended otherwise
-        WHERE member_id = NEW.member_id;
-    END IF;
-
-    RETURN NEW;  -- Return the new restriction row
-END;
-$$ LANGUAGE plpgsql;
-
 -- Trigger for comment table
 CREATE TRIGGER after_comment_insert
 AFTER INSERT ON comment
@@ -606,14 +564,6 @@ CREATE TRIGGER after_invitation_insert
 AFTER INSERT ON invitation
 FOR EACH ROW
 EXECUTE FUNCTION invitation_handler();
-
-
--- Trigger for restriction table
-CREATE TRIGGER after_restriction_insert
-AFTER INSERT ON restriction
-FOR EACH ROW
-EXECUTE FUNCTION restriction_start_handler();
-
 
 -- FULL TEXT SEARCH -> members
 ALTER TABLE member ADD COLUMN fts_username tsvector;
@@ -738,12 +688,6 @@ CREATE TRIGGER after_poll_notification_delete
 AFTER DELETE ON poll_notification
 FOR EACH ROW
 EXECUTE FUNCTION clean_orphaned_notifications();
-
-CREATE TRIGGER after_restriction_notification_delete
-AFTER DELETE ON restriction_notification
-FOR EACH ROW
-EXECUTE FUNCTION clean_orphaned_notifications();
-
 
 CREATE OR REPLACE FUNCTION delete_join_requests_on_invitation()
 RETURNS TRIGGER AS $$
