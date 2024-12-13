@@ -19,7 +19,8 @@ class EventController extends Controller
 {
     public function show(string $event_id): View
     {   
-        if (!is_numeric($event_id)) {
+
+        if (!is_numeric($event_id) || $event_id > 2147483647) {
             abort(404, 'Invalid event identifier');
         }
         // Get the event card.
