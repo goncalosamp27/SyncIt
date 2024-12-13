@@ -22,10 +22,15 @@
 			@if ($member->notifications->isEmpty())
     			<p class="no-tickets">You do not have any notifications.</p>
 			@else
-					@foreach ($member->notifications as $notification)
+					@foreach ($notifications as $notification)
 						@include('partials.notification-card', ['notifications' => $notification])
 					@endforeach
 			@endif
+        </div>
+		
+        <div class="pagination-container">
+           {{-- {{ $notifications->links() --}}
+			{{ $notifications->links('pagination::bootstrap-4') }}
         </div>
 	</div>
 @endsection
