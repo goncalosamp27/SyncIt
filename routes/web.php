@@ -114,10 +114,6 @@ Route::post('/future-events', function (Request $request) {
     
 });
 
-
-
-
-
 Route::post('/tickets/{ticket_id}', [TicketController::class, 'refundTicket'])->name('refund-ticket');
 Route::post('/your-events/{event_id}', [EventController::class, 'deleteEvent'])->name('delete-event');
 
@@ -143,9 +139,6 @@ Route::controller(MemberController::class)->middleware(['notAdmin', 'auth'])->gr
     Route::put('/edit_profile', 'updateMember')->name('member.profile.edit');
     Route::post('/account/delete', [MemberController::class, 'delete'])->name('account.delete');
 });
-
-
-
 
 Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'showLoginForm')->middleware(['visitor'])->name('login');
