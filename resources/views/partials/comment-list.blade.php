@@ -1,5 +1,3 @@
-<h1>{{ isset($comments) && is_countable($comments) ? count($comments) : 0 }} Comments:</h1>
-
 @foreach($comments as $comment)
     <div class="event-comment-div" style="position: relative;">    
         <div class="event-comment">
@@ -26,86 +24,15 @@
 
     <div class="up-down-votes">
         <div class="upvote">
-            <button class="upvote-button" onclick="voteComment('up', {{ $comment->id }})">
-                👍<div class="count" id="upvote-count-{{ $comment->id }}">{{ $comment->upvotes }}</div>
+            <button class="upvote-button" data-comment-id="{{ $comment->id }}" onclick="voteComment('up', this)">
+                👍<span class="count" id="upvote-count-{{ $comment->id }}">{{ $comment->upvotes ?? 0 }}</span>
             </button>
         </div>
         <div class="downvote">
-            <button class="downvote-button" onclick="voteComment('down', {{ $comment->id }})">
-                👎<div class="count" id="downvote-count-{{ $comment->id }}">{{ $comment->downvotes }}</div>
+            <button class="downvote-button" data-comment-id="{{ $comment->id }}" onclick="voteComment('down', this)">
+                👎<span class="count" id="downvote-count-{{ $comment->id }}">{{ $comment->downvotes ?? 0 }}</span>
             </button>
         </div>
     </div>    
 
 @endforeach
-
-@if($comments->isEmpty())
-    <p>No comments yet.</p>
-@endif
-
-<script>
-    // Toggle visibility of the reply form
-    function showReplyForm(commentId) {
-        var form = document.getElementById('reply-form-' + commentId);
-        form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
-    }
-
-    // Function to handle vote via AJAX
-    function voteComment(voteType, commentId) {
-        console.log('Vote Type:', voteType);
-        console.log('Comment ID:', commentId);
-    fetch("{{ url('vote') }}/" + voteType + "/" + commentId, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify({ comment_id : commentId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Update vote counts
-        document.getElementById('upvote-count-' + commentId).textContent = data.upvotes;
-        document.getElementById('downvote-count-' + commentId).textContent = data.downvotes;
-    })
-    .catch(error => console.error('Error:', error));
-}
-
-function editComment(commentId) {
-    const commentTextElement = document.getElementById('comment-text-' + commentId);
-    const currentText = commentTextElement.innerText;
-
-    commentTextElement.innerHTML = `
-        <textarea id="edit-textarea-${commentId}" style="width: 100%; height: 60px;">${currentText}</textarea>
-        <button onclick="saveComment(${commentId})" style="margin-top: 5px;">Save</button>
-        <button onclick="cancelEdit(${commentId}, '${currentText.replace(/'/g, "\\'")}')" style="margin-top: 5px;">Cancel</button>
-    `;
-}
-
-function saveComment(commentId) {
-    const newText = document.getElementById('edit-textarea-' + commentId).value;
-
-    fetch("{{ url('comments') }}/" + commentId, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify({ text: newText })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            document.getElementById('comment-text-' + commentId).innerText = newText;
-        } else {
-            alert('Failed to update comment');
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
-
-function cancelEdit(commentId, originalText) {
-    document.getElementById('comment-text-' + commentId).innerText = originalText;
-}
-
-</script>

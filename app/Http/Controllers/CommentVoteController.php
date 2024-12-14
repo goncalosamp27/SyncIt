@@ -3,35 +3,30 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Comment;
+use App\Models\CommentVote;
 use Illuminate\Support\Facades\Auth;
 
 class CommentVoteController extends Controller
 {
-    // Upvote a comment
-    public function upvote($comment_id)
-    {
-        $comment = Comment::findOrFail($comment_id);
-        $comment->upvotes()->attach(Auth::id());
-        
-        return response()->json(['message' => 'Comment upvoted successfully']);
+    public function vote(Request $request, $comment_id)
+{
+    $request->validate([
+        'vote' => 'required|in:up,down',
+    ]);
+
+    $comment = Comment::findOrFail($comment_id);
+
+    if ($request->vote === 'up') {
+        $comment->increment('upvotes');
+    } else {
+        $comment->increment('downvotes');
     }
 
-    // Downvote a comment
-    public function downvote($comment_id)
-    {
-        $comment = Comment::findOrFail($comment_id);
-        $comment->downvotes()->attach(Auth::id());
-        
-        return response()->json(['message' => 'Comment downvoted successfully']);
-    }
+    return response()->json([
+        'success' => true,
+        'upvotes' => $comment->upvotes,
+        'downvotes' => $comment->downvotes,
+    ]);
+}
 
-    // Remove vote from a comment
-    public function removeVote($comment_id)
-    {
-        $comment = Comment::findOrFail($comment_id);
-        $comment->votes()->detach(Auth::id());
-        
-        return response()->json(['message' => 'Vote removed successfully']);
-    }
 }

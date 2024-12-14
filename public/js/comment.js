@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
     const commentForm = document.getElementById('comment-form');
     const commentsContainer = document.getElementById('comments-container');
-    fetchComments();
 
+    fetchComments();
 
     // Handle comment submission
     commentForm.addEventListener('submit', function (e) {
@@ -32,6 +32,71 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(error => {
             console.error('Error submitting comment:', error);
         });
+
+        commentList.addEventListener('click', function (e) {
+            const target = e.target;
+    
+            // Check if the clicked element is a vote button
+            if (target.classList.contains('upvote-button') || target.classList.contains('downvote-button')) {
+                const voteType = target.classList.contains('upvote-button') ? 'up' : 'down';
+                const commentId = target.getAttribute('data-comment-id');
+    
+                if (!commentId) {
+                    console.error('No comment ID found for vote button.');
+                    return;
+                }
+    
+                console.log(`Vote Type: ${voteType}, Comment ID: ${commentId}`);
+    
+                // Construct the vote URL dynamically
+                const voteUrl = `${voteCommentUrl}/${commentId}/vote`;
+    
+                // Call the voting function
+                handleVote(voteType, voteUrl, commentId);
+            }
+        });
+    
+        // Handle the vote logic
+        function handleVote(voteType, url, commentId) {
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+                body: JSON.stringify({ vote: voteType }),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to submit vote: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        updateVoteCounts(voteType, commentId);
+                    } else {
+                        alert(data.message || 'Failed to cast vote.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while processing your vote.');
+                });
+        }
+    
+        // Update vote counts dynamically in the DOM
+        function updateVoteCounts(voteType, commentId) {
+            const upvoteCountElement = document.getElementById(`upvote-count-${commentId}`);
+            const downvoteCountElement = document.getElementById(`downvote-count-${commentId}`);
+    
+            if (voteType === 'up' && upvoteCountElement) {
+                upvoteCountElement.textContent = parseInt(upvoteCountElement.textContent, 10) + 1;
+            } else if (voteType === 'down' && downvoteCountElement) {
+                downvoteCountElement.textContent = parseInt(downvoteCountElement.textContent, 10) + 1;
+            }
+        }
+    
     });
 
     // Function to dynamically add a comment to the page
@@ -90,7 +155,7 @@ function postComment(button) {
     const eventId = button.getAttribute('data-event-id'); // Get the event ID from the button
 
     if (commentText.trim() === '') {
-        alert("Please write a comment.");
+        alert("Please write a commenty.");
         return;
     }
 
@@ -148,4 +213,46 @@ function fetchComments() {
 
 }
 
+function voteComment(voteType, button) {
+    const commentId = button.getAttribute('data-comment-id'); // Get the comment ID from the button's data attribute
+    console.log('Vote Type:', voteType);
+    console.log('Comment ID:', commentId);
 
+    // Construct the vote URL dynamically
+    const voteUrl = `/comments/${commentId}/vote`;
+
+    // Send the vote to the server
+    fetch(voteUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        },
+        body: JSON.stringify({ vote: voteType }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to process the vote');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Dynamically update the vote count
+            const upvoteCount = document.getElementById(`upvote-count-${commentId}`);
+            const downvoteCount = document.getElementById(`downvote-count-${commentId}`);
+
+            if (voteType === 'up' && upvoteCount) {
+                upvoteCount.textContent = parseInt(upvoteCount.textContent, 10) + 1;
+            } else if (voteType === 'down' && downvoteCount) {
+                downvoteCount.textContent = parseInt(downvoteCount.textContent, 10) + 1;
+            }
+        } else {
+            alert(data.message || 'Failed to cast vote.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while processing your vote.');
+    });
+}
