@@ -81,13 +81,7 @@ Route::controller(CommentController::class)->middleware(['auth'])->group(functio
 
 
 Route::controller(CommentVoteController::class)->middleware(['auth'])->group(function () {
-    Route::post('/comments/{comment_id}/upvote', 'upvote')->name('comments.upvote');
-    Route::post('/comments/{comment_id}/downvote', 'downvote')->name('comments.downvote');  
-    Route::delete('/comments/{comment_id}/vote', 'removeVote')->name('comments.removeVote');
-});
-
-Route::controller(ReplyController::class)->middleware(['auth'])->group(function () {
-    Route::post('/reply/store', 'store')->name('reply.store');
+    Route::post('/comments/{comment_id}/vote', 'vote')->name('comments.vote');
 });
 
 
