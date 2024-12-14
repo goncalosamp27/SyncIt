@@ -35,19 +35,8 @@
                 👎<div class="count" id="downvote-count-{{ $comment->id }}">{{ $comment->downvotes }}</div>
             </button>
         </div>
-        <!-- Button to trigger the reply form -->
-        <button class="post-button" onclick="showReplyForm({{ $comment->id }})">Reply</button>
     </div>    
 
-    <!-- Reply Form -->
-    <div id="reply-form-{{ $comment->id }}" class="reply-form" style="display:none;">
-        <form action="{{ route('reply.store') }}" method="POST">
-            @csrf
-            <input type="hidden" name="comment_id" value="{{ $comment->id }}">
-            <textarea name="reply" placeholder="Add your reply..." required></textarea>
-            <button type="submit" class="submit-reply-button">Post Reply</button>
-        </form>
-    </div>
 @endforeach
 
 @if($comments->isEmpty())
