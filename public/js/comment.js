@@ -1,17 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('DOM fully loaded and parsed.');
 
     const commentsContainer = document.getElementById('comments-container');
-    console.log('Comments container:', commentsContainer);
 
     fetchComments();
 
     function fetchComments() {
-        console.log('Fetching comments from:', getCommentsUrl);
 
         fetch(getCommentsUrl)
             .then(response => {
-                console.log('Fetch response status:', response.status);
 
                 if (!response.ok) {
                     return response.json().then(data => {
@@ -27,10 +23,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.text();
             })
             .then(html => {
-                console.log('Fetched comments HTML:', html);
 
                 const commentList = document.getElementById('comment-list');
-                console.log('Comment list container:', commentList);
 
                 if (commentList) {
                     commentList.innerHTML = html;
