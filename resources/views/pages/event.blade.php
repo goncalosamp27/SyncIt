@@ -132,17 +132,18 @@
 		<div class="purple-line"></div>
 		
 		<div class="event-page-comments">
-    		<div class="add-your-own-comment">
-        		<img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Profile Picture" class="profile-pic">
-        		<input type="text" placeholder="Add your comment..." id="new-comment" class="comment-input">
-				<button class="post-button" data-event-id="{{ $event->event_id }}" onclick="postComment(this)">Post</button>
-			</div>
-			<div id="comment-list">
-				@include('partials.comment-list', ['comments' => $comments])
-		
-			</div>
-			
-		</div>
+    @auth
+        <div class="add-your-own-comment">
+            <img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Profile Picture" class="profile-pic">
+            <input type="text" placeholder="Add your comment..." id="new-comment" class="comment-input">
+            <button class="post-button" data-event-id="{{ $event->event_id }}" onclick="postComment(this)">Post</button>
+        </div>
+    @else
+	<p><a href="{{ route('login') }}" style="color: #9b4dff;">Login</a> to add a comment.</p>    @endauth
+    <div id="comment-list">
+        @include('partials.comment-list', ['comments' => $comments])
+    </div>
+</div>
 
 		@include('partials.go-back')
 	</div>	
