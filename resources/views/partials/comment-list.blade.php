@@ -10,10 +10,12 @@
                 <div id="comment-text-{{ $comment->id }}">  <!-- Comment Text with an ID for Editing -->
                     {{ $comment->text }}
                 </div>
-
-                <button class="edit-button" onclick="editComment({{ $comment->id }})" style="position: absolute; top: 10px; right: 10px; background-color: transparent; border: none; cursor: pointer; font-size: 16px;">
-                    ✏️
-                </button>
+            
+                @if(Auth::check() && Auth::id() == $comment->member_id)
+                    <button class="edit-button" onclick="editComment({{ $comment->id }})" style="position: absolute; top: 10px; right: 10px; background-color: transparent; border: none; cursor: pointer; font-size: 16px;">
+                        ✏️
+                    </button>
+                @endif
 
                 <div class="comment-date" style="font-size: smaller;">
                     <small>{{ \Carbon\Carbon::parse($comment->comment_date)->format('d/m/Y H:i') }}</small>
@@ -34,5 +36,4 @@
             </button>
         </div>
     </div>    
-
 @endforeach
