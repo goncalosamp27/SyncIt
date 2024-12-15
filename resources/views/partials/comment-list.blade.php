@@ -16,7 +16,7 @@
                 </button>
 
                 <div class="comment-date" style="font-size: smaller;">
-                    <small>{{ $comment->comment_date }}</small>
+                    <small>{{ \Carbon\Carbon::parse($comment->comment_date)->format('d/m/Y H:i') }}</small>
                 </div>
             </div>
         </div>

@@ -72,12 +72,16 @@ Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
     ->middleware('auth');
 Route::post('/events/getTags', [EventController::class, 'getTags'])->name('events.filters.tags');
 
+// Public route: allows unauthenticated users to fetch comments
+Route::get('/event/{event_id}/comments', [CommentController::class, 'index'])->name('comments.index');
+
+// Protected routes: require authentication
 Route::controller(CommentController::class)->middleware(['auth'])->group(function () {
     Route::post('/event/{event_id}/comments', 'store')->name('comments.store');
-    Route::get('/event/{event_id}/comments', 'index')->name('comments.index');
     Route::put('/event/{event_id}/comments/{comment_id}', 'update')->name('comments.update');
     Route::delete('/event/{event_id}/comments/{comment_id}', 'destroy')->name('comments.destroy');
 });
+
 
 
 Route::controller(CommentVoteController::class)->middleware(['auth'])->group(function () {
