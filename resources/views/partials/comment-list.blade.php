@@ -22,18 +22,19 @@
                 </div>
             </div>
         </div>
+
+        <div class="up-down-votes">
+            <div class="upvote">
+                <button class="upvote-button" data-comment-id="{{ $comment->id }}" onclick="voteComment('up', this)">
+                    👍<span class="count" id="upvote-count-{{ $comment->id }}">{{ $comment->upvotes ?? 0 }}</span>
+                </button>
+            </div>
+            <div class="downvote">
+                <button class="downvote-button" data-comment-id="{{ $comment->id }}" onclick="voteComment('down', this)">
+                    👎<span class="count" id="downvote-count-{{ $comment->id }}">{{ $comment->downvotes ?? 0 }}</span>
+                </button>
+            </div>
+        </div>    
     </div>
 
-    <div class="up-down-votes">
-        <div class="upvote">
-            <button class="upvote-button" data-comment-id="{{ $comment->id }}" onclick="voteComment('up', this)">
-                👍<span class="count" id="upvote-count-{{ $comment->id }}">{{ $comment->upvotes ?? 0 }}</span>
-            </button>
-        </div>
-        <div class="downvote">
-            <button class="downvote-button" data-comment-id="{{ $comment->id }}" onclick="voteComment('down', this)">
-                👎<span class="count" id="downvote-count-{{ $comment->id }}">{{ $comment->downvotes ?? 0 }}</span>
-            </button>
-        </div>
-    </div>    
 @endforeach
