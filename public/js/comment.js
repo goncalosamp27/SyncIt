@@ -65,7 +65,6 @@ function fetchComments() {
 }
 
 function postComment(button) {
-    console.log("postComment??")
     const commentText = document.getElementById('new-comment').value;
     const eventId = button.getAttribute('data-event-id'); // Get the event ID from the button
 
