@@ -1,6 +1,3 @@
-
-
-
 function toggleMenu() {
     const sideMenu = document.getElementById('side-menu');
     if (sideMenu.style.width === '0px' || sideMenu.style.width === '') {

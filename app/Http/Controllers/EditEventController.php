@@ -61,29 +61,46 @@ class EditEventController extends Controller
     public function tickets($event_id)
     {
         $event = Event::findOrFail($event_id);
-        $tickets = $event->tickets();
-
-        $tickets = $event->tickets()->with('member')->get();
+        $requests = $event->requests()->with('member')->get(); // Use `get()` to retrieve as a collection    
+        // Group tickets by member and count tickets per member
+        $ticketsGrouped = $event->tickets()
+            ->with('member')
+            ->get()
+            ->groupBy('member_id')
+            ->map(function ($tickets) {
+                $member = $tickets->first()->member;
+                return [
+                    'member' => $member,
+                    'ticket_count' => $tickets->count(),
+                ];
+            });
+        
         return view('pages.manage-participants', [
             'event' => $event,
-            'tickets' => $tickets
+            'ticketsGrouped' => $ticketsGrouped,
+            'requests' => $requests,
         ]);
     }
 
-    public function deleteParticipant($event_id, $ticket_id)
+    public function deleteParticipant($event_id, $member_id)
     {
-        try 
-        {
-            $ticket = Ticket::findOrFail($ticket_id);
-            $member = $ticket->member; 
-            $ticket->delete();
-            return redirect()->route('participants', ['event_id' => $event_id ])->with('success', "@{$member->username}'s Ticket #{$ticket_id} deleted successfully!");
-        }
+        try {
+            $event = Event::findOrFail($event_id);
 
-        catch (\Exception $e) 
-        {
-            return redirect()->route('participants', ['event_id' => $event_id ])->with('error', "Failed to delete {$member->username}'s ticket.");
-        }   
+            // Find all tickets for this member within the event and delete them
+            $tickets = $event->tickets()->where('member_id', $member_id)->get();
+            $member = $tickets->first()->member; // Get member details for confirmation
+
+            foreach ($tickets as $ticket) {
+                $ticket->delete();
+            }
+
+            return redirect()->route('participants', ['event_id' => $event_id])
+                ->with('success', "@{$member->username}'s tickets have been deleted successfully!");
+        } catch (\Exception $e) {
+            return redirect()->route('participants', ['event_id' => $event_id])
+                ->with('error', "Failed to delete @{$member->username}'s tickets.");
+        }
     }
 
 	public function create()
