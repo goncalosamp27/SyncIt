@@ -1,7 +1,5 @@
 <div class="invitation-card">
 	<div class="invitation-data">
-
-		
 		<div class = "invitation-username">
 		 <span class = "invitation-username">@</span>{{ $invitation->event->artist->member->username }}
 		</div>
@@ -17,9 +15,7 @@
 				Delete Invitation
 			</button>
 		</form>
-
 	</div>
-
 	<div class="invitation-event-card">
 		@include('partials.event-card', ['event' => $invitation->event])
 	</div>

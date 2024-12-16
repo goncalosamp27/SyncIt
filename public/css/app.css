@@ -84,3 +84,8 @@ html, body {
         transform: scale(1.05);
         box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
 }
+
+.faq-item h3{
+  color: var(--hover-color);
+  font-size: 1.2rem;
+}

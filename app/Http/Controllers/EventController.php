@@ -10,6 +10,7 @@ use App\Models\Tag;
 use App\Models\Ticket;
 use App\Models\JoinRequest;
 use App\Models\EventTag;
+use App\Models\Member;
 
 use Illuminate\Support\Facades\DB;
 use DateTime;
@@ -102,7 +103,7 @@ class EventController extends Controller
 
         $requests = $event->requests()->with('member')->get();
         $tickets = $event->tickets()->with('member')->get();
-        return view('pages.manage-participants', [
+        return view('pages.participants', [
             'event' => $event,
             'requests' => $requests,
             'tickets' => $tickets

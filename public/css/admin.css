@@ -4,8 +4,9 @@
     width: 80%;
     align-content: center;
     margin: 0 auto; /* Centers horizontally */
-
+    margin-bottom: 2rem;
 }
+
 .member-card {
     display: flex;
     align-items: center;
@@ -43,6 +44,10 @@
 }
 
 .member-username {
+    color: var(--hover-color);
+    margin: 5px 0 0;
+}
+.member-username2 {
     color: var(--gray-color);
     margin: 5px 0 0;
 }

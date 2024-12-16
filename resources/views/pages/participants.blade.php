@@ -12,10 +12,11 @@
         </div>
     @endif
 
-    <div class="admin_page">
+    <div class="admin_page">    
         <div class="participants-header">
         <h1>Participants</h1>
         <div class="add-participant-container">
+            @can('edit', $event)
             <button class="add-participant-btn" onclick="toggleSearchBar()">➕</button>
             <div id="search-bar-container" class="search-bar-container">
                 <form action="/create-invitation" method="POST" class="invitation-form">
@@ -37,6 +38,7 @@
                     <input type="hidden" name="event_id" value="{{ $event->event_id }}">
                     <button type="submit" class="search-submit-btn">Invite</button></form>
             </div>
+            @endcan
         </div>  
         </div>        
             <div class="search-bar">
@@ -48,34 +50,44 @@
                 />
             </div>
 
-            @if ($tickets->isEmpty())
-                <p class="no-tickets">There are no participants for this event.</p>
-            @else
-                @foreach ($tickets as $ticket) <!-- $participant is a Ticket -->
-                    @php
-                        $member = $ticket->member; 
-                    @endphp
-                    <div class="member-card">
-                        <div class="member-profile-pic">
-                            <img src="{{ asset('storage/profiles/' . $member->profile_pic_url)}}" alt="{{ $member->display_name }}">
-                        </div>
-                        <div class="member-details">
-                            <h3 class="member-name">{{ $member->display_name }}</h3>
-                            <p class="member-username">{{ '@' . $member->username }}</p>
-                        </div> 
-                        <div class="member-edit">
-                        <form action="{{ route('delete-participant', ['event_id' => $event->event_id, 'ticket_id' => $ticket->ticket_id]) }}" method="POST">
+        @if ($ticketsGrouped->isEmpty())
+        <p class="no-tickets">There are no participants for this event.</p>
+        @else
+            @foreach ($ticketsGrouped as $memberId => $group)
+                @php
+                    $member = $group['member'];
+                    $ticketCount = $group['ticket_count'];
+                @endphp
+                <div class="member-card">
+                    <div class="member-profile-pic">
+                        <img src="{{ asset('storage/profiles/' . $member->profile_pic_url)}}" alt="{{ $member->display_name }}">
+                    </div>
+                    <div class="member-details">
+                        <h3 class="member-name">{{ $member->display_name }}</h3>
+                        <p class="member-username">{{ '@' . $member->username }}</p>
+                        <p class="member-username2">Tickets: {{ $ticketCount }}</p>
+                    </div>
+                    @can('edit', $event)
+                    <div class="member-edit">
+                        <form action="{{ route('delete-participant', ['event_id' => $event->event_id, 'member_id' => $member->member_id]) }}" method="POST">
                             @csrf
-                            <button class="remove-participant" title="Remove participant" type="submit">
-                                Remove
+                            <button class="remove-participant" title="Remove all tickets" type="submit">
+                                Remove All Tickets
                             </button>
                         </form>
-                        </div>
                     </div>
-                @endforeach
-            @endif
+                    @endcan
+                </div>
+            @endforeach
+
+            <div class="pagination-container">
+                {{ $ticketsGrouped->links('pagination::bootstrap-4') }}
+            </div>
+        @endif
+        
+
+        @can('edit', $event)
             <div class ="new-purple-line"></div>
-            
             <div class="participants-header">
             <h1>Join Requests</h1></div>
             @if ($requests->isEmpty())
@@ -105,7 +117,7 @@
                         </div>
                     </div>
                 @endforeach
+                @endcan
             @endif
-
     </div>
 @endsection
