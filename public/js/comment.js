@@ -103,3 +103,61 @@ function postComment(button) {
             console.error('Error occurred:', error);
         });
 }
+
+function toggleEdit(commentId) {
+    console.log(`Toggling edit for comment ID: ${commentId}`); // Debug log
+    const commentDisplay = document.querySelector(`#comment-text-${commentId} .comment-display`);
+    const editTextarea = document.getElementById(`edit-textarea-${commentId}`);
+
+    if (!commentDisplay || !editTextarea) {
+        console.error(`Comment display or textarea not found for comment ID ${commentId}`);
+        return;
+    }
+
+    if (editTextarea.style.display === "none") {
+        // Switch to edit mode
+        commentDisplay.style.display = "none";
+        editTextarea.style.display = "block";
+        editTextarea.focus();
+    } else {
+        // Save changes and switch back to display mode
+        const newText = editTextarea.value;
+        saveComment(commentId, newText);
+    }
+}
+
+
+function saveComment(commentId, newText) {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    fetch(`/event/${eventId}/comments/${commentId}`, { 
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+        },
+        body: JSON.stringify({ text: newText }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to update comment');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Update the displayed comment text
+            const commentDisplay = document.querySelector(`#comment-text-${commentId} .comment-display`);
+            const editTextarea = document.getElementById(`edit-textarea-${commentId}`);
+            
+            commentDisplay.textContent = newText;
+            commentDisplay.style.display = "block";
+            editTextarea.style.display = "none";
+        } else {
+            alert('Failed to update comment');
+        }
+    })
+    .catch(error => {
+        console.error('Error occurred while updating comment:', error);
+    });
+}
