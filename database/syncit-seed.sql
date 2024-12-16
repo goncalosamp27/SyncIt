@@ -22,7 +22,6 @@ DROP TABLE IF EXISTS invitation_notification CASCADE;
 DROP TABLE IF EXISTS following CASCADE;
 DROP TABLE IF EXISTS rating CASCADE;
 DROP TABLE IF EXISTS restriction CASCADE;
-DROP TABLE IF EXISTS restriction_notification CASCADE;
 DROP TABLE IF EXISTS event_image CASCADE;
 DROP TABLE IF EXISTS join_request CASCADE;
 DROP TABLE IF EXISTS join_request_notification CASCADE;
@@ -69,7 +68,7 @@ CHECK (
 CREATE DOMAIN name_domain AS VARCHAR(50)
 CHECK (
     CHAR_LENGTH(VALUE) BETWEEN 3 AND 50 
-    AND VALUE ~ '^[A-Za-z0-9_ ]+$'
+    AND VALUE ~ '^[A-Za-z0-9._\- ]+$'
 );
 
 CREATE DOMAIN password_domain AS VARCHAR(100)
@@ -134,7 +133,7 @@ CREATE TABLE event (
     artist_id INT NOT NULL,
     capacity INT NOT NULL,
     event_media VARCHAR(100) NOT NULL,
-    event_status event_status_domain NOT NULL,
+    event_status event_status_domain NOT NULL DEFAULT 'Active',
     FOREIGN KEY (artist_id) REFERENCES artist(artist_id)
 );
 
@@ -305,13 +304,6 @@ CREATE TABLE restriction (
     type restriction_type_domain NOT NULL,
     FOREIGN KEY (member_id) REFERENCES member(member_id),
     FOREIGN KEY (admin_id) REFERENCES admin(admin_id)
-);
-
-CREATE TABLE restriction_notification (
-    notification_id INT PRIMARY KEY,
-    restriction_id INT NOT NULL,
-    FOREIGN KEY (notification_id) REFERENCES notification(notification_id),
-    FOREIGN KEY (restriction_id) REFERENCES restriction(restriction_id)
 );
 
 -- Upon account deletion, shared user data (e.g. comments, reviews, likes) is kept but made anonymous.
@@ -561,40 +553,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-
-CREATE OR REPLACE FUNCTION restriction_start_handler()
-RETURNS TRIGGER AS $$
-DECLARE
-    new_notification_id INT;  -- Variable to hold the new notification ID
-BEGIN
-    -- Insert the notification and get the new notification_id in one step
-    INSERT INTO notification (notification_message, notification_date, member_id)
-    VALUES (
-        'A new restriction has been applied to you.',
-        CURRENT_TIMESTAMP,
-        NEW.member_id
-    )
-    RETURNING notification_id INTO new_notification_id;  -- Capture the new notification ID
-
-    -- Insert the notification record into restriction_notification
-    INSERT INTO restriction_notification (notification_id, restriction_id)
-    VALUES (new_notification_id, NEW.restriction_id);  -- Link notification with the restriction
-
-    -- Update member status based on restriction duration
-    IF NEW.duration = 0 THEN
-        UPDATE member
-        SET member_status = 'Banned'  -- Set status to Banned if duration is 0 days
-        WHERE member_id = NEW.member_id;
-    ELSE
-        UPDATE member
-        SET member_status = 'Suspended'  -- Set status to Suspended otherwise
-        WHERE member_id = NEW.member_id;
-    END IF;
-
-    RETURN NEW;  -- Return the new restriction row
-END;
-$$ LANGUAGE plpgsql;
-
 -- Trigger for comment table
 CREATE TRIGGER after_comment_insert
 AFTER INSERT ON comment
@@ -606,14 +564,6 @@ CREATE TRIGGER after_invitation_insert
 AFTER INSERT ON invitation
 FOR EACH ROW
 EXECUTE FUNCTION invitation_handler();
-
-
--- Trigger for restriction table
-CREATE TRIGGER after_restriction_insert
-AFTER INSERT ON restriction
-FOR EACH ROW
-EXECUTE FUNCTION restriction_start_handler();
-
 
 -- FULL TEXT SEARCH -> members
 ALTER TABLE member ADD COLUMN fts_username tsvector;
@@ -739,12 +689,6 @@ AFTER DELETE ON poll_notification
 FOR EACH ROW
 EXECUTE FUNCTION clean_orphaned_notifications();
 
-CREATE TRIGGER after_restriction_notification_delete
-AFTER DELETE ON restriction_notification
-FOR EACH ROW
-EXECUTE FUNCTION clean_orphaned_notifications();
-
-
 CREATE OR REPLACE FUNCTION delete_join_requests_on_invitation()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -761,27 +705,6 @@ CREATE TRIGGER after_invitation_insert2
 AFTER INSERT ON invitation
 FOR EACH ROW
 EXECUTE FUNCTION delete_join_requests_on_invitation();
-
-/*
-CREATE OR REPLACE FUNCTION notify_event_tomorrow()
-RETURNS TRIGGER AS $$
-BEGIN
-    -- Insert notifications for ticket holders
-    INSERT INTO notification (notification_message, notification_date, member_id)
-    SELECT 'The event you signed for is tomorrow! Don''t miss it!', CURRENT_TIMESTAMP, member_id
-    FROM ticket
-    WHERE ticket.event_id = NEW.event_id;
-
-    -- Link notifications to the event
-    INSERT INTO event_notification (notification_id, event_id)
-    SELECT n.notification_id, NEW.event_id
-    FROM notification n
-    WHERE n.notification_date = CURRENT_TIMESTAMP;
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-*/
 
 -- Create the function for handling event status change notifications
 CREATE OR REPLACE FUNCTION notify_event_status_change()
@@ -822,6 +745,53 @@ AFTER UPDATE OF event_status ON event
 FOR EACH ROW
 WHEN (OLD.event_status = 'Active' AND NEW.event_status = 'Cancelled')
 EXECUTE FUNCTION notify_event_status_change();
+
+
+CREATE OR REPLACE FUNCTION notify_ticket_refund()
+RETURNS TRIGGER AS $$
+DECLARE
+    new_notification_id INT;
+    event_title TEXT; -- Event name variable
+    event_current_status TEXT; -- Renamed variable to avoid ambiguity
+BEGIN
+    -- Retrieve the event name and status for the deleted ticket
+    SELECT event_name, event_status INTO event_title, event_current_status
+    FROM event
+    WHERE event_id = OLD.event_id;
+
+    -- Skip notification if the event is cancelled
+    IF event_current_status = 'Cancelled' THEN
+        RETURN OLD;
+    END IF;
+
+    -- Ensure no duplicate notifications are created within a short timeframe
+    IF NOT EXISTS (
+        SELECT 1
+        FROM notification n
+        JOIN event_notification en ON n.notification_id = en.notification_id
+        WHERE n.member_id = OLD.member_id
+          AND en.event_id = OLD.event_id
+          AND n.notification_message = 'Your tickets to ' || event_title || ' have been refunded.'
+          AND n.notification_date >= CURRENT_TIMESTAMP - INTERVAL '1 minute'
+    ) THEN
+        -- Insert the notification with the event name
+        INSERT INTO notification (notification_message, notification_date, member_id)
+        VALUES ('Your tickets to ' || event_title || ' have been refunded.', CURRENT_TIMESTAMP, OLD.member_id)
+        RETURNING notification_id INTO new_notification_id;
+
+        -- Link the notification to the event
+        INSERT INTO event_notification (notification_id, event_id)
+        VALUES (new_notification_id, OLD.event_id);
+    END IF;
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER after_ticket_delete
+AFTER DELETE ON ticket
+FOR EACH ROW
+EXECUTE FUNCTION notify_ticket_refund();
 
 
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
@@ -1318,35 +1288,33 @@ VALUES
     (50, 1),         -- Music
     (50, 2);         -- Dance
 
-
-
 INSERT INTO ticket (event_id, ticket_date, member_id)
 VALUES -- Tickets for different events
-    (1, NOW(), 3),    -- Member 3 has a ticket for Salsa Night Fever
-    (2, NOW(), 5),    -- Member 5 has a ticket for Tech Beats Bash
-    (3, NOW(), 8),    -- Member 8 has a ticket for Classical Harmony
-    (4, NOW(), 10),   -- Member 10 has a ticket for DJ Night Live
-    (5, NOW(), 12),   -- Member 12 has a ticket for Reggae Beach Party
-    (6, NOW(), 15),   -- Member 15 has a ticket for Swing Dance Gala
-    (7, NOW(), 18),   -- Member 18 has a ticket for Metal Madness
-    (8, NOW(), 20),   -- Member 20 has a ticket for Violin Virtuoso
-    (9, NOW(), 22),   -- Member 22 has a ticket for Jazz Night
-    (10, NOW(), 25),  -- Member 25 has a ticket for Pop Fiesta
-    (21, NOW(), 28),  -- Member 28 has a ticket for Afrobeat Summer Jam
-    (22, NOW(), 30),  -- Member 30 has a ticket for Folk Fest
-    (27, NOW(), 32),  -- Member 32 has a ticket for Disco Fever
-    (38, NOW(), 35),  -- Member 35 has a ticket for Lo-Fi Chillout
-    (40, NOW(), 37),  -- Member 37 has a ticket for Hard Rock Havoc
-    (41, NOW(), 40),  -- Member 40 has a ticket for Ambient Chill
-    (42, NOW(), 45),  -- Member 45 has a ticket for Opera Under the Stars
-    (43, NOW(), 47),  -- Member 47 has a ticket for Country Fair
-    (44, NOW(), 50),  -- Member 50 has a ticket for Tribal Beats Night
-    (46, NOW(), 55),  -- Member 55 has a ticket for Psytrance Universe
-    (47, NOW(), 58),  -- Member 58 has a ticket for Flamenco Fire
-    (48, NOW(), 60),  -- Member 60 has a ticket for Neo Soul Groove
-    (49, NOW(), 62),  -- Member 62 has a ticket for Blues on the Bayou
-    (50, NOW(), 65),  -- Member 65 has a ticket for Bollywood Beats
-    (50, NOW(), 68);  -- Member 68 has a ticket for Indie Acoustic Evening
+    (1, NOW(), 3),               -- Member 3 has a ticket for Salsa Night Fever
+    (2, NOW(), 5),               -- Member 5 has a ticket for Tech Beats Bash
+    (3, NOW(), 8),               -- Member 8 has a ticket for Classical Harmony
+    (4, NOW(), 10),              -- Member 10 has a ticket for DJ Night Live
+    (5, NOW(), 12),              -- Member 12 has a ticket for Reggae Beach Party
+    (6, NOW(), 15),              -- Member 15 has a ticket for Swing Dance Gala
+    (7, NOW(), 18),              -- Member 18 has a ticket for Metal Madness
+    (8, NOW(), 20),              -- Member 20 has a ticket for Violin Virtuoso
+    (9, NOW(), 22),              -- Member 22 has a ticket for Jazz Night
+    (10, NOW(), 25),             -- Member 25 has a ticket for Pop Fiesta
+    (21, NOW(), 28),             -- Member 28 has a ticket for Afrobeat Summer Jam
+    (22, NOW(), 30),             -- Member 30 has a ticket for Folk Fest
+    (27, NOW(), 32),             -- Member 32 has a ticket for Disco Fever
+    (38, NOW(), 35),             -- Member 35 has a ticket for Lo-Fi Chillout
+    (40, NOW(), 37),             -- Member 37 has a ticket for Hard Rock Havoc
+    (41, NOW(), 40),             -- Member 40 has a ticket for Ambient Chill
+    (42, NOW(), 45),             -- Member 45 has a ticket for Opera Under the Stars
+    (43, NOW(), 47),             -- Member 47 has a ticket for Country Fair
+    (44, NOW(), 50),             -- Member 50 has a ticket for Tribal Beats Night
+    (46, NOW(), 55),             -- Member 55 has a ticket for Psytrance Universe
+    (47, NOW(), 58),             -- Member 58 has a ticket for Flamenco Fire
+    (48, NOW(), 60),             -- Member 60 has a ticket for Neo Soul Groove
+    (49, NOW(), 62),             -- Member 62 has a ticket for Blues on the Bayou
+    (50, NOW(), 65),             -- Member 65 has a ticket for Bollywood Beats
+    (50, NOW(), 68);             -- Member 68 has a ticket for Indie Acoustic Evening
 
 -- Creating Polls for events
 INSERT INTO poll (event_id, start_date, end_date)

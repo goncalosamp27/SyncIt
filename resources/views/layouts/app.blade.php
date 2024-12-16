@@ -22,11 +22,14 @@
                 <p class = "delete-text">To delete your account, please confirm your password and type "I want to delete my account" in the box below.</p>
                 <form method="POST" action="{{ route('account.delete') }}">
                     @csrf
-                    <label for="password">Password:</label>
-                    <input type="password" name="password" id="password" required autocomplete="new-password">
-                    
-                    <label for="confirmation">Confirmation Message:</label>
-                    <input type="text" name="confirmation" id="confirmation" placeholder="I want to delete my account" required>
+                    <div class="form-group2">
+                        <label for="password">Password:</label>
+                        <input type="password" name="password" id="password" required autocomplete="new-password">
+                    </div>
+                    <div class="form-group2">
+                        <label for="confirmation">Confirmation Message:</label>
+                        <input type="text" name="confirmation" id="confirmation" placeholder="I want to delete my account" required>
+                    </div>
                     
                     <button type="submit" class="delete-btn">Delete Account</button>
                 </form>
