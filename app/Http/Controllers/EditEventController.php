@@ -98,6 +98,7 @@ class EditEventController extends Controller
             return redirect()->route('participants', ['event_id' => $event_id])
                 ->with('success', "@{$member->username}'s tickets have been deleted successfully!");
         } catch (\Exception $e) {
+            dd("Error occurred", $e->getMessage()); // Debug: Output error message
             return redirect()->route('participants', ['event_id' => $event_id])
                 ->with('error', "Failed to delete @{$member->username}'s tickets.");
         }

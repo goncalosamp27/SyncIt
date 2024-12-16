@@ -747,26 +747,52 @@ WHEN (OLD.event_status = 'Active' AND NEW.event_status = 'Cancelled')
 EXECUTE FUNCTION notify_event_status_change();
 
 
-/*
-CREATE OR REPLACE FUNCTION notify_event_tomorrow()
+CREATE OR REPLACE FUNCTION notify_ticket_refund()
 RETURNS TRIGGER AS $$
+DECLARE
+    new_notification_id INT;
+    event_title TEXT; -- Event name variable
+    event_current_status TEXT; -- Renamed variable to avoid ambiguity
 BEGIN
-    -- Insert notifications for ticket holders
-    INSERT INTO notification (notification_message, notification_date, member_id)
-    SELECT 'The event you signed for is tomorrow! Don''t miss it!', CURRENT_TIMESTAMP, member_id
-    FROM ticket
-    WHERE ticket.event_id = NEW.event_id;
+    -- Retrieve the event name and status for the deleted ticket
+    SELECT event_name, event_status INTO event_title, event_current_status
+    FROM event
+    WHERE event_id = OLD.event_id;
 
-    -- Link notifications to the event
-    INSERT INTO event_notification (notification_id, event_id)
-    SELECT n.notification_id, NEW.event_id
-    FROM notification n
-    WHERE n.notification_date = CURRENT_TIMESTAMP;
+    -- Skip notification if the event is cancelled
+    IF event_current_status = 'Cancelled' THEN
+        RETURN OLD;
+    END IF;
 
-    RETURN NEW;
+    -- Ensure no duplicate notifications are created within a short timeframe
+    IF NOT EXISTS (
+        SELECT 1
+        FROM notification n
+        JOIN event_notification en ON n.notification_id = en.notification_id
+        WHERE n.member_id = OLD.member_id
+          AND en.event_id = OLD.event_id
+          AND n.notification_message = 'Your tickets to ' || event_title || ' have been refunded.'
+          AND n.notification_date >= CURRENT_TIMESTAMP - INTERVAL '1 minute'
+    ) THEN
+        -- Insert the notification with the event name
+        INSERT INTO notification (notification_message, notification_date, member_id)
+        VALUES ('Your tickets to ' || event_title || ' have been refunded.', CURRENT_TIMESTAMP, OLD.member_id)
+        RETURNING notification_id INTO new_notification_id;
+
+        -- Link the notification to the event
+        INSERT INTO event_notification (notification_id, event_id)
+        VALUES (new_notification_id, OLD.event_id);
+    END IF;
+
+    RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
-*/
+
+CREATE TRIGGER after_ticket_delete
+AFTER DELETE ON ticket
+FOR EACH ROW
+EXECUTE FUNCTION notify_ticket_refund();
+
 
 INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
 VALUES 

@@ -22,7 +22,7 @@ class NotificationController extends Controller
 
         $notifications = Notification::where('member_id', $member->member_id)
             ->orderBy('notification_date', 'desc') // Optional: Order by date
-            ->paginate(3); // Limit to 2 notifications per page
+            ->paginate(3);
 
         // dd($notifications->toArray());
 
