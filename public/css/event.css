@@ -344,7 +344,7 @@
     text-decoration: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s, transform 0.2s ease;
-    margin-top: 1rem; /* Adds some space at the top */
+    margin-top: 2rem; /* Adds some space at the top */
 }
 
 .event-button:hover {
@@ -658,3 +658,89 @@ form.buy-tickets-form {
     line-height: 1.5; /* Increase line height for readability */
 }
 
+.capacity-link {
+    color: var(--primary-color); /* Primary color for link */
+    cursor: pointer; /* Change cursor to indicate it’s clickable */
+    transition: color 0.3s ease, text-decoration 0.3s ease; /* Smooth transition */
+}
+
+.capacity-link h5:hover {
+    color: var(--hover-color); /* Change color on hover */
+    text-decoration: none; /* Remove underline on hover */
+}
+
+.capacity-arrow {
+    font-size: 1.2rem; /* Adjust the size of the arrow */
+    color: var(--primary-color); /* Same color as the link */
+    cursor: pointer; /* Change cursor to indicate it’s clickable */
+    transition: color 0.3s ease; /* Smooth transition for the arrow */
+}
+
+.capacity-arrow:hover {
+    color: var(--hover-color); /* Change color of arrow on hover */
+}
+
+.capacity-link:hover .capacity-arrow::after {
+    content: "View participants"; /* Add text as a tooltip */
+    position: absolute;
+    top: -20px;
+    left: 0;
+    background-color: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 0.875rem;
+}
+
+/* Event Participants Modal */
+.event-participants-modal {
+    color: var(--black-color);
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    backdrop-filter: blur(10px); /* Apply blur effect */
+    -webkit-backdrop-filter: blur(5px); /* Safari support */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal content */
+.event-participants-modal-content {
+    overflow: hidden;
+    background-color: var(--black-color);
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid var(--primary-color);
+    width: 40%;
+    text-align: center;
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Soft shadow */
+}
+
+/* Close button */
+.event-participants-modal .close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.event-participants-modal .close-btn:hover {
+    color: var(--primary-color); /* Change close button color on hover */
+}
+
+/* Title of the modal */
+.event-participants-modal h2 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}

@@ -77,9 +77,15 @@
 
 				@can('edit', $event)
 				<a href="{{ route('participants', ['event_id' => $event->event_id]) }}" class="event-button">
-					Manage
+					Manage Participants
 				</a>
 				@endcan
+
+				@cannot('edit', $event)
+					<a href="{{ route('participants', ['event_id' => $event->event_id]) }}" class="event-button">
+						View Participants
+					</a>
+				@endcannot
 			</div>
 		
 			@php
@@ -256,4 +262,5 @@
 
 		@include('partials.go-back')
 	</div>	
+	</div>
 @endsection	

@@ -44,7 +44,7 @@ Route::controller(EventController::class)->group(function () {
     Route::get('/past-events', 'showTagsPerTypePast')->name('past-events');
     Route::get('/future-events', 'showTagsPerTypeFuture')->name('future-events');
     Route::get('/events/search', 'search')->name('events.search');
-    Route::get('/event/{event_id}/participants', 'tickets')->name('participants');
+    Route::get('/event/{event_id}/participants', [EditEventController::class, 'tickets'])->name('participants');
     Route::middleware(['notAdmin', 'auth'])->group(function () {
         Route::get('/events/create', 'create')->name('events.create');
         Route::post('/events/store', 'store')->name('events.store');
@@ -157,7 +157,7 @@ Route::controller(CreateEventController::class)->middleware(['notAdmin', 'auth']
 Route::controller(EditEventController::class)->middleware(['notAdmin', 'auth'])->group(function () {
     Route::get('/event/edit/{event_id}', 'show')->name('edit.event.show');
     Route::put('/event/edit/{event_id}', 'editEvent')->name('edit.event');
-    Route::post('/event/edit/{event_id}/{ticket_id}', 'deleteParticipant')->name('delete-participant');
+    Route::post('/event/edit/{event_id}/{member_id}', [EditEventController::class, 'deleteParticipant'])->name('delete-participant');
 });
 
 Route::view('/about-us', 'pages/about-us')->name('about-us');
