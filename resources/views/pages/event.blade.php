@@ -95,7 +95,7 @@
 				$eventType = $event->type_of_event;
 			@endphp
 
-			@cannot('edit', $event)
+		@cannot('edit', $event)
 			<div class="ticket-buttons">
 				@if ($eventCancelled) <button type="submit" class="disabled-btn" disabled>Event Canceled</button>  
 				@elseif ($eventExpired) <button type="submit" class="disabled-btn" disabled>Event Expired</button>  
