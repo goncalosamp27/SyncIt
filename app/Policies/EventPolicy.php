@@ -17,4 +17,7 @@ class EventPolicy
     public function delete(Member $member, Event $event) {
         return $event->event_status === 'Cancelled' && $event->artist->member->member_id === $member->member_id;
     }
+    public function seeParticipants(Member $member, Event $event) {
+        return $event->event_status !== 'Cancelled';
+    }
 }
