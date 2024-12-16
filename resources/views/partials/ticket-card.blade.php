@@ -9,10 +9,23 @@
             <span class="ticket-refund">Refund: {{ $ticket->event->refund }}%</span>
             <span class= "ticket-refund">Refund Value: {{$ticket->event->price * $ticket->event->refund / 100}}
         </div>
-        <form action="{{ route('refund-ticket', ['ticket_id' => $ticket->ticket_id]) }}" method="POST">
-            @csrf
-            <button class="refund-button" type="submit">Click to refund</button>
-        </form>    
+
+        @php
+            $now = date('Y-m-d H:i:s'); // Current date and time
+            $nowPlus24Hours = date('Y-m-d H:i:s', strtotime('+24 hours')); // 24 hours from now
+        @endphp
+
+        @if ($ticket->event->event_date >= $nowPlus24Hours)
+            <!-- Event is more than 24 hours away, refund available -->
+            <form action="{{ route('refund-ticket', ['ticket_id' => $ticket->ticket_id]) }}" method="POST">
+                @csrf
+                <button class="refund-button" type="submit">Click to refund</button>
+            </form>  
+        @elseif ($ticket->event->event_date < $now)
+            <button class="no-refund-button-attended" disabled>Event Attended</button>
+        @else
+            <button class="no-refund-button" disabled>Refund unavailable</button>
+        @endif
     </div>
 
     <div class="ticket-event-card">

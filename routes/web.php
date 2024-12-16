@@ -2,7 +2,9 @@
 use App\Http\Controllers\CreateEventController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
+use App\Models\Tag;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventTagController;
@@ -15,21 +17,11 @@ use App\Http\Controllers\EditEventController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CommentController;
-
+use App\Http\Controllers\JoinRequestController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 
 use App\Models\Artist;
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
 Route::redirect('/', '/home');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -37,11 +29,13 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/artist/{artist_id}', [ArtistController::class, 'show'])->name('artist');
 
 Route::controller(AdminController::class)->middleware('admin')->group(function () {
-    Route::get('admin', 'display_members')->name('admin');
+    Route::get('admin/members/{status?}', 'getMembersByStatus')->name('admin');
     Route::get('admin/search', 'search')->name('members.search');
     Route::get('admin/edit/member/{id}', 'getMember')->name('admin.edit.member');
     Route::put('admin/edit/member/{id}', 'updateMemberAdmin')->name('member.updates');
     Route::get('admin/register', 'createMember')->name('create.member');
+    Route::put('admin/members/', 'applyRestriction')->name('admin.restrict.member');
+    Route::put('admin/{id}', 'removeRestriction')->name('admin.remove.restriction');
 });
 
 Route::controller(EventController::class)->group(function () {
@@ -58,19 +52,21 @@ Route::controller(EventController::class)->group(function () {
         Route::post('/your-events/{event_id}', 'deleteEvent')->name('delete-event');
     });
 });
+
 Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
 Route::get('/events/create', [EventController::class, 'create'])->middleware('auth')->name('events.create');
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
 Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events');
 Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->name('past-events');
 Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('future-events');
-Route::post('/future-events/filter', [EventController::class, 'filterEvents'])->name('events.filter');
 Route::get('/events/search', [EventController::class, 'search'])->name('events.search');
-
-Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
-    ->name('buy-ticket')
-    ->middleware('auth');
+Route::post('/event/{event_id}/cancel', [EventController::class, 'cancelEvent'])->name('event.cancel');
 Route::post('/events/getTags', [EventController::class, 'getTags'])->name('events.filters.tags');
+
+Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])->name('buy-ticket')->middleware('auth');
+
+Route::post('/event/request-access', [JoinRequestController::class, 'requestAccess'])->name('request-access')
+    ->middleware(['auth', 'notAdmin']);
 
 // Public route: allows unauthenticated users to fetch comments
 Route::get('/event/{event_id}/comments', [CommentController::class, 'index'])->name('comments.index');
@@ -90,8 +86,29 @@ Route::controller(CommentVoteController::class)->middleware(['auth'])->group(fun
 
 
 //AJAX
-Route::post('/future-events/updateFutureEventsPage', [EventController::class, 'updateFutureEventsPage'])->name('future-events-update');
-Route::post('/future-events/getEventCards', [EventController::class, 'getEventCards'])->name('get-cards');
+Route::post('/future-events/filter', [EventController::class, 'filterEvents'])->name('events.filter');
+Route::post('/future-events', function (Request $request) {
+    Log::info($request->input('tagsMusic'));
+    $events = $request->input('events');
+    $tagsMusic = $request->input('tagsMusic');
+    $tagsDance = $request->input('tagsDance');
+    $tagsMood = $request->input('tagsMood');
+    $tagsSettings = $request->input('tagsSettings');
+
+    foreach ($events as &$event) {
+        $eventTags = Tag::getTagsByEventId($event['event_id'])->take(3);
+    
+        $event['tags'] = $eventTags;
+    }
+    return view('pages.events', [
+        'events' => $events ,
+        'tagsMusic' => $tagsMusic ,
+        'tagsDance' => $tagsDance ,
+        'tagsMood' => $tagsMood ,
+        'tagsSettings' => $tagsSettings ,
+    ]);
+    
+});
 
 Route::post('/tickets/{ticket_id}', [TicketController::class, 'refundTicket'])->name('refund-ticket');
 Route::post('/your-events/{event_id}', [EventController::class, 'deleteEvent'])->name('delete-event');
@@ -100,9 +117,13 @@ Route::controller(TicketController::class)->middleware(['notAdmin', 'auth'])->gr
     Route::post('/event/buy-ticket', 'buyTicket')->name('buy-ticket');
     Route::post('/tickets/{ticket_id}', 'refundTicket')->name('refund-ticket');
     Route::get('/tickets', 'ticketAndEventData')->name('tickets');
+    Route::get('/attended', 'ticketAndEventData2')->name('attended-events');
 });
 
 Route::post('/create-invitation', [InvitationController::class, 'create'])->middleware(['notAdmin', 'auth'])->name('create-invitation');
+Route::post('/create-invitation2', [InvitationController::class, 'create2'])->middleware(['notAdmin', 'auth'])->name('create-invitation2');
+Route::get('/invitations', [InvitationController::class, 'memberinvitations'])->middleware(['notAdmin','auth'])->name('invitations');
+Route::post('/invitations/{invitation_id}', [InvitationController::class, 'deleteInvitation'])->middleware(['notAdmin','auth'])->name('delete-invitation');
 
 Route::controller(NotificationController::class)->middleware(['notAdmin', 'auth'])->group(function () {
     Route::get('/notifications', 'getNotifications')->name('notifications');
@@ -112,6 +133,7 @@ Route::controller(NotificationController::class)->middleware(['notAdmin', 'auth'
 Route::controller(MemberController::class)->middleware(['notAdmin', 'auth'])->group(function () {
     Route::get('/edit_profile', 'edit')->name('profile.edit');
     Route::put('/edit_profile', 'updateMember')->name('member.profile.edit');
+    Route::post('/account/delete', [MemberController::class, 'delete'])->name('account.delete');
 });
 
 Route::controller(LoginController::class)->group(function () {
@@ -136,5 +158,8 @@ Route::controller(EditEventController::class)->middleware(['notAdmin', 'auth'])-
     Route::post('/event/edit/{event_id}/{ticket_id}', 'deleteParticipant')->name('delete-participant');
 });
 
-
+Route::view('/about-us', 'pages/about-us')->name('about-us');
+Route::view('/contacts', 'pages/contacts')->name('contacts');
+Route::view('/services', 'pages/services')->name('services');
+Route::view('/faq', 'pages/faq')->name('faq');
 

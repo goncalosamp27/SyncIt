@@ -16,6 +16,10 @@ class Comment extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        
+    ];
+
     public static function validate($data)
     {
         $validator = Validator::make($data, [
@@ -52,11 +56,4 @@ class Comment extends Model
     {
         return $this->hasMany(Comment::class, 'response_comment_id', 'comment_id');
     }
-
-    // One comment to many Poll notifications 
-    public function commentNotifications()
-    {
-        return $this->hasMany(CommentNotification::class, 'comment_id', 'comment_id');
-    }
-    
 }
