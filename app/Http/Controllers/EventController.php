@@ -103,7 +103,7 @@ class EventController extends Controller
 
         $requests = $event->requests()->with('member')->get();
         $tickets = $event->tickets()->with('member')->get();
-        return view('pages.manage-participants', [
+        return view('pages.participants', [
             'event' => $event,
             'requests' => $requests,
             'tickets' => $tickets

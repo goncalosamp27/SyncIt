@@ -90,7 +90,7 @@ class EditEventController extends Controller
             ['path' => request()->url(), 'query' => request()->query()] // Keep existing query parameters
         );
 
-        return view('pages.manage-participants', [
+        return view('pages.participants', [
             'event' => $event,
             'ticketsGrouped' => $paginatedTickets, // Pass the paginated tickets
             'requests' => $requests,

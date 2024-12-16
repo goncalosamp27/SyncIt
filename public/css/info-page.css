@@ -41,7 +41,7 @@
 }
 
 .info-page ul.contact-list a {
-    color: var(--secondary-color); /* Updated */
+    color: var(--hover-color); /* Updated */
     text-decoration: none;
     font-weight: bold;
 }
