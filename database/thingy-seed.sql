@@ -197,7 +197,6 @@ CREATE TABLE ticket (
     event_id INT NOT NULL,
     ticket_date TIMESTAMP NOT NULL CHECK (ticket_date >= CURRENT_DATE),
     member_id INT NOT NULL,
-    owner name_domain NOT NULL,
     FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
@@ -1263,36 +1262,33 @@ VALUES
     (50, 1),         -- Music
     (50, 2);         -- Dance
 
-
-INSERT INTO ticket (event_id, ticket_date, member_id, owner)
+INSERT INTO ticket (event_id, ticket_date, member_id)
 VALUES -- Tickets for different events
-    (1, NOW(), 3, 'John Cena'),               -- Member 3 has a ticket for Salsa Night Fever
-    (2, NOW(), 5, 'Travis Scott'),            -- Member 5 has a ticket for Tech Beats Bash
-    (3, NOW(), 8, 'Emily Watson'),            -- Member 8 has a ticket for Classical Harmony
-    (4, NOW(), 10, 'Michael Jordan'),         -- Member 10 has a ticket for DJ Night Live
-    (5, NOW(), 12, 'Sophia Brown'),           -- Member 12 has a ticket for Reggae Beach Party
-    (6, NOW(), 15, 'James Bond'),             -- Member 15 has a ticket for Swing Dance Gala
-    (7, NOW(), 18, 'Chris Hemsworth'),        -- Member 18 has a ticket for Metal Madness
-    (8, NOW(), 20, 'Dwayne Johnson'),         -- Member 20 has a ticket for Violin Virtuoso
-    (9, NOW(), 22, 'Ariana Grande'),          -- Member 22 has a ticket for Jazz Night
-    (10, NOW(), 25, 'Taylor Swift'),          -- Member 25 has a ticket for Pop Fiesta
-    (21, NOW(), 28, 'Elon Musk'),             -- Member 28 has a ticket for Afrobeat Summer Jam
-    (22, NOW(), 30, 'Billie Eilish'),         -- Member 30 has a ticket for Folk Fest
-    (27, NOW(), 32, 'Kanye West'),            -- Member 32 has a ticket for Disco Fever
-    (38, NOW(), 35, 'Selena Gomez'),          -- Member 35 has a ticket for Lo-Fi Chillout
-    (40, NOW(), 37, 'Drake Graham'),          -- Member 37 has a ticket for Hard Rock Havoc
-    (41, NOW(), 40, 'Megan Fox'),             -- Member 40 has a ticket for Ambient Chill
-    (42, NOW(), 45, 'LeBron James'),          -- Member 45 has a ticket for Opera Under the Stars
-    (43, NOW(), 47, 'Zendaya Coleman'),       -- Member 47 has a ticket for Country Fair
-    (44, NOW(), 50, 'Johnny Depp'),           -- Member 50 has a ticket for Tribal Beats Night
-    (46, NOW(), 55, 'Robert Downey Jr.'),     -- Member 55 has a ticket for Psytrance Universe
-    (47, NOW(), 58, 'Scarlett Johansson'),    -- Member 58 has a ticket for Flamenco Fire
-    (48, NOW(), 60, 'Chris Evans'),           -- Member 60 has a ticket for Neo Soul Groove
-    (49, NOW(), 62, 'Jennifer Lawrence'),     -- Member 62 has a ticket for Blues on the Bayou
-    (50, NOW(), 65, 'Rihanna Fenty'),         -- Member 65 has a ticket for Bollywood Beats
-    (50, NOW(), 68, 'Bruno Mars');            -- Member 68 has a ticket for Indie Acoustic Evening
-
-
+    (1, NOW(), 3),               -- Member 3 has a ticket for Salsa Night Fever
+    (2, NOW(), 5),               -- Member 5 has a ticket for Tech Beats Bash
+    (3, NOW(), 8),               -- Member 8 has a ticket for Classical Harmony
+    (4, NOW(), 10),              -- Member 10 has a ticket for DJ Night Live
+    (5, NOW(), 12),              -- Member 12 has a ticket for Reggae Beach Party
+    (6, NOW(), 15),              -- Member 15 has a ticket for Swing Dance Gala
+    (7, NOW(), 18),              -- Member 18 has a ticket for Metal Madness
+    (8, NOW(), 20),              -- Member 20 has a ticket for Violin Virtuoso
+    (9, NOW(), 22),              -- Member 22 has a ticket for Jazz Night
+    (10, NOW(), 25),             -- Member 25 has a ticket for Pop Fiesta
+    (21, NOW(), 28),             -- Member 28 has a ticket for Afrobeat Summer Jam
+    (22, NOW(), 30),             -- Member 30 has a ticket for Folk Fest
+    (27, NOW(), 32),             -- Member 32 has a ticket for Disco Fever
+    (38, NOW(), 35),             -- Member 35 has a ticket for Lo-Fi Chillout
+    (40, NOW(), 37),             -- Member 37 has a ticket for Hard Rock Havoc
+    (41, NOW(), 40),             -- Member 40 has a ticket for Ambient Chill
+    (42, NOW(), 45),             -- Member 45 has a ticket for Opera Under the Stars
+    (43, NOW(), 47),             -- Member 47 has a ticket for Country Fair
+    (44, NOW(), 50),             -- Member 50 has a ticket for Tribal Beats Night
+    (46, NOW(), 55),             -- Member 55 has a ticket for Psytrance Universe
+    (47, NOW(), 58),             -- Member 58 has a ticket for Flamenco Fire
+    (48, NOW(), 60),             -- Member 60 has a ticket for Neo Soul Groove
+    (49, NOW(), 62),             -- Member 62 has a ticket for Blues on the Bayou
+    (50, NOW(), 65),             -- Member 65 has a ticket for Bollywood Beats
+    (50, NOW(), 68);             -- Member 68 has a ticket for Indie Acoustic Evening
 
 -- Creating Polls for events
 INSERT INTO poll (event_id, start_date, end_date)
