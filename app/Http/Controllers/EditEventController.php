@@ -8,6 +8,7 @@ use App\Models\Event;
 use App\Models\Tag;
 use App\Models\Ticket;
 use Illuminate\Support\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class EditEventController extends Controller
 {   
@@ -61,7 +62,10 @@ class EditEventController extends Controller
     public function tickets($event_id)
     {
         $event = Event::findOrFail($event_id);
-        $requests = $event->requests()->with('member')->get(); // Use `get()` to retrieve as a collection    
+
+        // Fetch join requests
+        $requests = $event->requests()->with('member')->get();
+
         // Group tickets by member and count tickets per member
         $ticketsGrouped = $event->tickets()
             ->with('member')
@@ -74,10 +78,21 @@ class EditEventController extends Controller
                     'ticket_count' => $tickets->count(),
                 ];
             });
-        
+
+        // Paginate the grouped tickets
+        $perPage = 5;
+        $page = request()->input('page', 1); // Get the current page
+        $paginatedTickets = new LengthAwarePaginator(
+            $ticketsGrouped->forPage($page, $perPage), // Slice the collection for the current page
+            $ticketsGrouped->count(), // Total number of items
+            $perPage, // Items per page
+            $page, // Current page
+            ['path' => request()->url(), 'query' => request()->query()] // Keep existing query parameters
+        );
+
         return view('pages.manage-participants', [
             'event' => $event,
-            'ticketsGrouped' => $ticketsGrouped,
+            'ticketsGrouped' => $paginatedTickets, // Pass the paginated tickets
             'requests' => $requests,
         ]);
     }

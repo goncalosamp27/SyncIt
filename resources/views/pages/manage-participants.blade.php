@@ -79,6 +79,10 @@
                     @endcan
                 </div>
             @endforeach
+
+            <div class="pagination-container">
+                {{ $ticketsGrouped->links('pagination::bootstrap-4') }}
+            </div>
         @endif
         
 

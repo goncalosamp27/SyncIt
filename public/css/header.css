@@ -186,7 +186,7 @@ body {
 }
 
 .side-menu a:hover {
-    color: var(--primary-color); /* Adjust to match your site theme */
+    color: var(--hover-color); /* Adjust to match your site theme */
 }
 
 .side-menu .close-btn {
