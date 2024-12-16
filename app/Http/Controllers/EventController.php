@@ -50,23 +50,14 @@ class EventController extends Controller
         try {
             $event = Event::findOrFail($event_id);
 
-            if (!$event) {
-                return redirect()->route('your-events')->with('error', "Event not found.");
-            }
-
-            if ($event->event_status !== 'Cancelled') {
-                return redirect()->route('your-events')->with('error', "Only canceled events can be deleted.");
-            }
-
-            if (!$event->cancel_date || now()->diffInDays($event->cancel_date) < 7) {
-                return redirect()->route('your-events')->with('error', "Events can only be deleted a week after being canceled.");
-            }
-
-            // Attempt to delete the event
+            if (!$event) {return redirect()->route('your-events')->with('error', "Event not found.");}
+            if ($event->event_status !== 'Cancelled') {return redirect()->route('your-events')->with('error', "Only cancelled events can be deleted.");}
+            if (!$event->cancel_date || now()->diffInDays($event->cancel_date) < 7) {return redirect()->route('your-events')->with('error', "Events can only be deleted a week after being cancelled.");}
             $event->delete();
 
             return redirect()->route('your-events')->with('success', "Event #{$event_id} deleted successfully!");
-        } catch (\Exception $e) {
+        } 
+        catch (\Exception $e) {
 
             return redirect()->route('your-events')->with('error', "Failed to delete the event.");
         }

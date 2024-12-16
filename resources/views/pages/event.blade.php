@@ -56,7 +56,6 @@
 					@can('cancel', $event)
 						<button type="button" class="event-button2" onclick="openModal2	()">Cancel Event</button>
 					@endcan
-
 				</div>
 			</div>			
 			<a class="user-event-owner" href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}" style="display: flex; align-items: center; margin-top:1rem;">
@@ -74,18 +73,20 @@
 
 			<div class="title-edit">
 				<h5> 👥 {{ $event->ticket_count }} / {{ $event->capacity }} Participants</h5>
+				
+				@can('seeParticipants', $event)
+					@can('edit', $event)
+					<a href="{{ route('participants', ['event_id' => $event->event_id]) }}" class="event-button">
+						Manage Participants
+					</a>
+					@endcan
 
-				@can('edit', $event)
-				<a href="{{ route('participants', ['event_id' => $event->event_id]) }}" class="event-button">
-					Manage Participants
-				</a>
-				@endcan
-
-				@cannot('edit', $event)
+					@cannot('edit', $event)
 					<a href="{{ route('participants', ['event_id' => $event->event_id]) }}" class="event-button">
 						View Participants
 					</a>
-				@endcannot
+					@endcannot
+				@endcan	
 			</div>
 		
 			@php
