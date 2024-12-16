@@ -24,6 +24,7 @@ class Event extends Model
         'capacity',
         'event_media',
         'event_status',
+        'cancel_date',
         'artist_id',
     ];
     public static function validate($data)
@@ -40,6 +41,7 @@ class Event extends Model
             'capacity' => 'required|numeric|min:10',
             'event_media' => 'required|string|max:100',
             'event_status' => 'required|in:Active,Cancelled',
+            'cancel_date' => 'nullable|date', 
             'artist_id' => 'required|string'
         ]);
         return $validator;
