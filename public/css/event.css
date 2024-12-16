@@ -543,3 +543,118 @@ form.buy-tickets-form {
 .delete-button:hover {
     background-color: #d32f2f;
 }
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem; 
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap; /* Ensure buttons wrap on smaller screens */
+}
+
+.cancel-button-buy, .confirm-button-buy {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    flex: 1;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effect */
+    margin: 0.3rem;
+}
+
+.cancel-button-buy {
+    background-color: #dc3545; /* Red color */
+    color: white;
+}
+
+.confirm-button-buy {
+    background-color: #28a745; /* Green color */
+    color: white;
+}
+
+
+.cancel-button-buy:hover {
+    background-color: red;
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.confirm-button-buy:hover {
+    background-color: var(--hover-color);
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+#purchaseModal .new-modal-content {
+    padding: 2rem; /* Spacing inside the modal */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    max-width: 90%; /* Ensure it doesn't overflow horizontally */
+    max-height: 91vh; /* Ensure it doesn't overflow vertically */
+    overflow: auto; /* Allow scrolling inside the modal for large content */
+    box-sizing: border-box; /* Include padding in width and height */
+    margin-top: 3rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column; /* Stack the label on top of the input */
+    align-items: flex-start; /* Align the label to the left */
+    margin-top: 1rem;
+}
+
+.form-input {
+    color: #000;
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid var(--hover-color);
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    align-self: flex-start; /* Ensure the label is left-aligned */
+}
+
+  #total-price {
+    font-size: 1.2rem;
+    color: #28a745;
+    font-weight: bold;
+  }
+  
+  #refund-per-ticket{
+    font-size: 1rem;
+    color: #007bff;
+    font-weight: bold;
+}
+
+/* Style for the Heading (h2) */
+.new-modal-content h2 {
+    font-family: 'Arial', sans-serif; /* Change to a cleaner font */
+    font-size: 2rem; /* Larger font size */
+    font-weight: 600; /* Semi-bold weight for emphasis */
+    text-align: center; /* Center the title */
+    color: var(--primary-color); /* Dark color for better readability */
+    margin-bottom: 1rem; /* Spacing between title and content */
+    letter-spacing: 1px; /* Slightly spread out letters for elegance */
+    text-transform: uppercase; /* Uppercase letters for more visual appeal */
+    border-bottom: 2px solid var(--hover-color); /* Add a border beneath to highlight the title */
+    padding-bottom: 0.5rem; /* Add some spacing between the text and border */
+}
+
+/* Style for the Paragraph (p) */
+.new-modal-content p {
+    font-family: 'Arial', sans-serif; /* Same font for consistency */
+    font-size: 1.125rem; /* Slightly larger text for better readability */
+    text-align: center; /* Center the paragraph text */
+    color: #fff; /* A lighter color for less emphasis */
+    margin-bottom: 2rem; /* Add some space after the paragraph */
+    line-height: 1.5; /* Increase line height for readability */
+}
+

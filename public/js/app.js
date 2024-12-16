@@ -103,3 +103,27 @@ function openModal2() {
 function closeModal2() {
     document.getElementById('cancelEventModal').style.display = 'none';
 }
+
+function openPurchaseModal() {
+    document.getElementById('purchaseModal').style.display = 'block';
+}
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const modal = document.getElementById('purchaseModal');
+    const modalContent = document.querySelector('.new-modal-content');
+
+    modal.addEventListener('click', function (event) {
+        // Close modal only if the click is outside the modal content
+        if (event.target === modal) {
+            closePurchaseModal(); // Call the function to close the modal
+        }
+    });
+});
+
+function closePurchaseModal() {
+    const modal = document.getElementById('purchaseModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto'; // Re-enable body scroll if it was disabled
+}
