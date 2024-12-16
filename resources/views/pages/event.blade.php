@@ -3,7 +3,6 @@
 @section('content')
 	<script src="{{ asset('js/app.js') }}" defer></script>
 	<script src="{{ asset('js/comment.js') }}" defer></script>
-	<script src="{{ asset('js/vote.js') }}" defer></script>
 
 	<script>
 		const commentUrl = @json(route('comments.store', ['event_id' => $event->event_id]));
