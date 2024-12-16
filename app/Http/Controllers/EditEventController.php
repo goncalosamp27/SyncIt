@@ -62,6 +62,7 @@ class EditEventController extends Controller
     public function tickets($event_id)
     {
         $event = Event::findOrFail($event_id);
+        $this->authorize('seeParticipants', $event);
 
         // Fetch join requests
         $requests = $event->requests()->with('member')->get();
