@@ -31,7 +31,7 @@ class Member extends Authenticatable
     {
         $validator = Validator::make($data, [
             'username' => 'required|string|max:255|regex:/^[a-zA-Z0-9_]+$/',
-            'display_name' => 'required|regex:/^[A-Za-z0-9_ ]+$/|min:3|max:50',
+            'display_name' => 'required|regex:/^[A-Za-z0-9_. ]+$/|min:3|max:50',
             'email' => 'required|email|unique:member,email',
             'password' => 'required|min:8|max:100',
             'member_status' => 'required|in:Active,Suspended,Banned',
