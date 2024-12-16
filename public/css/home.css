@@ -7,52 +7,55 @@
     box-shadow: 0 0 0.5rem var(--primary-color);
 }
 
-.slogan{
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
+.slogan {
+    width: 60%; /* Set to 60% of the screen width */
+    margin: 0 auto; /* Center the container horizontally */
 }
 
 .slogan-container {
-	margin-top: 2em;
-	margin-bottom: 4em;
+    margin-top: 2em;
+    margin-bottom: 4em;
     display: grid;
-	align-items: center;
-	text-align: center;
-	grid-template-columns: repeat(2, 1fr);
     align-items: center;
-    justify-content: space-between;
+    text-align: center;
+    grid-template-columns: 1fr; /* Stack on smaller screens by default */
+    gap: 2rem; /* Add spacing between elements */
     background: var(--black-color);
     color: var(--white-color);
     padding: 2rem;
     overflow: hidden;
-	width:100%;
-	border-radius: 3em;
-	box-shadow: 0em 0em 2em rgb(0,0,0,0.8);
+    width: 100%;
+    border-radius: 3em;
+    box-shadow: 0em 0em 2em rgb(0, 0, 0, 0.8);
+}
+
+@media (min-width: 768px) { /* Switch to side-by-side layout for larger screens */
+    .slogan-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .slogan-container-text {
     flex: 1;
     min-width: 15rem;
-    max-width: 100%;
 }
 
 .slogan-container-text h1 {
-	font-size: 2.5em;
-	margin-bottom: 1.5rem;
-	color: var(--white-color);
+    font-size: 2.8rem; /* Increased font size for better readability */
+    margin-bottom: 1rem;
+    color: var(--white-color);
 }
 
 .slogan-container-text h2 {
-	font-size: 2.5rem;
-	margin-bottom: 1rem;
-	color: var(--white-color);
+    font-size: 2.4rem; /* Larger font for better prominence */
+    margin-bottom: 1rem;
+    color: var(--white-color);
 }
 
 .slogan-container-text p {
-	font-size: 1.5rem;
-	line-height: 1.5;
-	color: var(--white-color);
+    font-size: 1.6rem; /* Increased paragraph font size */
+    line-height: 1.6; /* Adjusted for readability */
+    color: var(--white-color);
 }
 
 .highlighter {
@@ -64,12 +67,13 @@
     text-decoration: none;
     background: var(--primary-color);
     color: var(--text-color);
-    padding: 1rem 6rem; /* 10px 20px equivalent */
-    font-size: 3rem;
+    padding: 1rem 4rem; /* Adjusted padding for balance */
+    font-size: 1.8rem; /* Increased button font size */
+    font-weight: bold;
     border-radius: 1em;
-	box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
-	transition: all 0.3s ease-in-out;
-	margin-top: 2rem;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
+    transition: all 0.3s ease-in-out;
+    margin-top: 1.5rem;
 }
 
 .take-me-button:hover {
@@ -82,12 +86,13 @@
 }
 
 .slogan-container-image img {
-    width: 30rem;
-    height: 20rem;
+    width: 100%; /* Image scales with container */
+    max-width: 25rem; /* Reduced max width for balance */
+    height: auto; /* Maintains aspect ratio */
     border-radius: 2.5em;
-	box-shadow: 0 0 1rem rgba(0, 0, 0, 0.8);
-    max-width: 30rem;
-}	
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.8);
+}
+
  
 .home-page-bottom{
 	margin-left: 13rem;
@@ -102,22 +107,18 @@
 	color: var(--white-color);
 }
 
+.home-page-bottom .event-row,
 .home-page-bottom .artist-row {
     display: flex;
-    flex-wrap: wrap; /* Allows wrapping if needed */
-    gap: 20px; /* Space between cards */
-}
-
-.home-page-bottom .artist-card {
-    flex: 1 1 calc(20% - 20px); /* Adjust width for 5 in a row */
-    max-width: calc(20% - 20px); /* Ensure cards don't exceed this width */
-    box-sizing: border-box; /* Include padding and border in width */
-}
-
-.home-page-bottom .event-row {
-    display: flex;
-    flex-wrap: wrap; /* Wrap items to the next line if necessary */
+    flex-wrap: wrap; /* Allows wrapping of items */
     gap: 20px; /* Space between items */
+}
+
+.home-page-bottom .event-card,
+.home-page-bottom .artist-card {
+    flex: 1 1 100%; /* Default to 1 item per row */
+    max-width: 100%; /* Ensure the card spans the full width */
+    box-sizing: border-box; /* Include padding and borders in width */
 }
 
 .home-page-bottom .event-card {
@@ -126,3 +127,14 @@
     box-sizing: border-box; /* Include padding and borders within the width */
 }
 
+@media (min-width: 768px) { /* Adjust for larger screens */
+    .home-page-bottom .event-card {
+        flex: 1 1 calc(33.33% - 20px); /* 3 items per row */
+        max-width: calc(33.33% - 20px); /* Ensure cards don't exceed this width */
+    }
+
+    .home-page-bottom .artist-card {
+        flex: 1 1 calc(20% - 20px); /* 5 items per row */
+        max-width: calc(20% - 20px); /* Ensure cards don't exceed this width */
+    }
+}

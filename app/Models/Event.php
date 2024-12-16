@@ -9,13 +9,9 @@ use Illuminate\Support\Facades\Validator;
 class Event extends Model
 {
     use HasFactory;
-
     protected $table = 'event';
-
     public $timestamps = false;
-
     protected $primaryKey = 'event_id';
-
     protected $fillable = [
         'event_name',
         'event_date',
@@ -27,9 +23,9 @@ class Event extends Model
         'rating',
         'capacity',
         'event_media',
+        'event_status',
         'artist_id'
     ];
-
     public static function validate($data)
     {
         $validator = Validator::make($data, [
@@ -43,63 +39,45 @@ class Event extends Model
             'rating' => 'required|numeric|between:0,5',
             'capacity' => 'required|numeric|min:10',
             'event_media' => 'required|string|max:100',
+            'event_status' => 'required|in:Active,Cancelled',
             'artist_id' => 'required|string'
         ]);
         return $validator;
     }
-    //Relationships
-    // 1 Event has many Tickets
-    public function tickets()
-    {
-        return $this->hasMany(Ticket::class, 'event_id', 'event_id');
-    }
-
-    // Many Events belong to 1 Artist
-    public function artist()
-    {
-        return $this->belongsTo(Artist::class, 'artist_id', 'artist_id');
-    }
-
-    public function tags()
-    {
-        return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id');
-    }
-
-
-    // Accessor for ticket count
+    
+    public function tickets(){return $this->hasMany(Ticket::class, 'event_id', 'event_id');}
+    public function invitations(){return $this->hasMany(Invitation::class, 'event_id', 'event_id');}
+    public function requests(){return $this->hasMany(JoinRequest::class, 'event_id', 'event_id');}
+    public function artist(){return $this->belongsTo(Artist::class, 'artist_id', 'artist_id');}
+    public function tags(){return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id');}
     public function getTicketCountAttribute()
     {
         return $this->tickets()->count();
     }
-
     public static function upcomingEvents()
     {
-        return self::where('event_date', '>', now())->get();
-    }
+        return self::where('event_date', '>', now())
+                   ->where('event_status', '<>', 'Cancelled')
+                   ->get();
+    }    
     public static function pastEvents()
     {
         return self::where('event_date', '<', now())->get();
     }
-
     public static function createEvent($data)
     {
         $validator = self::validate($data);
-
         if ($validator->fails()) {
             return $validator->errors();
         }
         return self::create($data);
     }
-    //get feedback by given tags
-    // In Event.php model
-
     public static function getFeedbackByTags(array $tagIds)
     {
         // Retrieve events that have the given tags
         $events = self::whereHas('tags', function ($query) use ($tagIds) {
             $query->whereIn('tags.tag_id', $tagIds); // Filter events by tag IDs (using tag_id)
         }) ->get();
-
         // Prepare a collection of events and their feedback
         $eventsWithFeedback = $events->map(function ($event) {
             return [
@@ -107,18 +85,13 @@ class Event extends Model
                 'feedback' => $event->feedback // Get the feedback for the event
             ];
         });
-
         return $eventsWithFeedback;
     }
-
     public static function getEventsByTags(array $tagIds)
     {
         // Get event IDs that match the tag filter criteria
         $eventIds = EventTag::getEventIdsByTags($tagIds);
-
         // Retrieve events where event_id is in the filtered event IDs
         return self::whereIn('event_id', $eventIds)->get();
     }
-
-
 }

@@ -8,8 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Event;
 use App\Models\Tag;
 use App\Models\Ticket;
+use App\Models\JoinRequest;
 use App\Models\EventTag;
-use Illuminate\Support\Carbon;
+
 use Illuminate\Support\Facades\DB;
 use DateTime;
 
@@ -17,7 +18,11 @@ use DateTime;
 class EventController extends Controller
 {
     public function show(string $event_id): View
-    {
+    {   
+
+        if (!is_numeric($event_id) || $event_id > 2147483647) {
+            abort(404, 'Invalid event identifier');
+        }
         // Get the event card.
         $event = Event::findOrFail($event_id);
         $comments = $event->comments ?: collect();
@@ -93,14 +98,16 @@ class EventController extends Controller
     {
         $event = Event::findOrFail($event_id);
         $tickets = $event->tickets();
+        $requests = $event->requests();
 
+        $requests = $event->requests()->with('member')->get();
         $tickets = $event->tickets()->with('member')->get();
         return view('pages.manage-participants', [
             'event' => $event,
+            'requests' => $requests,
             'tickets' => $tickets
         ]);
     }
-
 
     public function create()
     {
@@ -128,8 +135,7 @@ class EventController extends Controller
                 ->withInput();
         }
 
-        // Create the event
-        $event = Event::create($request->only([
+        $data = $request->only([
             'event_name',
             'event_date',
             'location',
@@ -137,10 +143,12 @@ class EventController extends Controller
             'refund',
             'price',
             'type_of_event',
-            'rating',
             'artist_id',
-        ]));
+        ]);
+        $data['event_status'] = 'Active'; 
 
+        $event = Event::create($data);
+        
         // Attach tags (if any are selected)
         if ($request->has('tags')) {
             $event->tags()->sync($request->tags);
@@ -256,56 +264,25 @@ class EventController extends Controller
     //function to filter events 
     public function filterEvents(Request $request)
     {
-        $tagIds = $request->input('tags', []);  // Get the tag IDs from the request
+        $tagsMusic = Tag::type(['Music'])->get();
+        $tagsDance = Tag::type(['Dance'])->get();
+        $tagsMood = Tag::type(['Mood'])->get();
+        $tagsSettings = Tag::type(['Settings'])->get();
 
-        // Get the events based on selected tags
+        $tagIds = $request->input('tags', []);
+
         $events = Event::getEventsByTags($tagIds);
-
-        // Initialize an empty array to store tags and their colors for each event
-        $tagsArray = [];
-
-        // Loop through the events to get tags for each event
-        foreach ($events as $event) {
-            // Get the tag_ids associated with the current event using the getTagsByEventId method
-            $tagIdsForEvent = EventTag::getTagsByEventId($event->event_id);
-
-            // Initialize an array to store the tag names and their associated colors
-            $tagsForEventArray = [];
-
-            // Loop through each tag_id to retrieve the tag name and color
-            foreach ($tagIdsForEvent as $tagId) {
-                // Get the tag name using the getTagNameById method
-                $tagName = Tag::getTagNameById($tagId);
-
-                // Get the tag color using the getTagColorById method
-                $tagColor = Tag::getTagColorById($tagId);
-
-                // Add the tag name and color to the tags array for this event
-                $tagsForEventArray[] = [
-                    'tag_name' => $tagName,
-                    'color' => $tagColor,  // Return the tag color
-                ];
-            }
-
-            // Add the tags for the current event to the tagsArray
-            $tagsArray[] = [
-                'event_id' => $event->event_id,
-                'tags' => $tagsForEventArray,  // Associated tags with names and colors
-            ];
-        }
-
-        // Return the response with events and tags
-        return response()->json([
-            'success' => true,
-            'events' => $events,  // Return the events
-            'tags' => $tagsArray,  // Return the tags with names and colors for each event
-        ]);
+        
+        return response()->json(
+            [
+                'events' => $events,
+                'tagsMusic' => $tagsMusic,
+                'tagsDance' => $tagsDance,
+                'tagsMood' => $tagsMood,
+                'tagsSettings' => $tagsSettings
+            ]
+        );
     }
-
-
-
-
-
 
 
     public function updateFutureEventsPage(Request $request)
@@ -322,9 +299,32 @@ class EventController extends Controller
             'success' => true,
             'events' => $events,
         ]);
-
-
     }
+
+    public function cancelEvent(Request $request, string $event_id)
+    {
+        try {
+            // Find the event
+            $event = Event::findOrFail($event_id);
+
+            // Check if the event is currently active
+            if ($event->event_status !== 'Active') {
+                return redirect()->back()->with('error', "Only active events can be cancelled.");
+            }
+
+            // Update the event's status to 'Cancelled'
+            $event->update(['event_status' => 'Cancelled']);
+
+            // Return a success message
+            return redirect()->route('your-events')->with('success', "Event #{$event_id} has been successfully cancelled.");
+        } catch (\Exception $e) {
+            // Log the error and return an error message
+            \Log::error("Failed to cancel event: {$e->getMessage()}");
+
+            return redirect()->back()->with('error', "Failed to cancel the event.");
+        }
+    }
+
     /*
     public function getEventCards(Request $request)
     {
@@ -342,9 +342,4 @@ class EventController extends Controller
         return response()->json(['success' => true, 'html' => $html]);
     }
         */
-
-
-
-
-
 }

@@ -1,6 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
+	@if (session('success'))
+		<div class = "success">
+			{{ session('success') }}
+		</div>
+	@endif
+		@if (session('error'))
+		<div class="error">
+			{{ session('error') }}
+		</div>
+	@endif
+
 	<script src="{{ asset('js/app.js') }}" defer></script>
 	<script src="{{ asset('js/comment.js') }}" defer></script>
 
@@ -13,16 +24,42 @@
 	
 	
 
+	<div id="cancelEventModal" class="new-modal" style="display: none;">
+		<div class="new-modal-content">
+			<h2>Confirm Cancellation</h2>
+			<p>Are you sure you want to cancel this event?</p>
+			<div class="event-modal-buttons">
+				<form action="{{ route('event.cancel', ['event_id' => $event->event_id]) }}" method="POST">
+					@csrf
+					<button type="submit" class="confirm-button-cancel">Yes, Cancel</button>
+				</form>
+				<button type="button" class="cancel-button-cancel" onclick="closeModal2()">No, Go Back</button>
+			</div>
+		</div>
+	</div>
+
 	<div class="event-page-content">
 		<div class="event-page-info">
 			<div class="title-edit">
-				<h1> {{ $event->event_name }} </h1>
-				@can('edit', $event)
-				<a href="{{ route('edit.event.show', ['event_id' => $event->event_id]) }}" class="event-button">
-					Edit
-				</a>
-				@endcan
+				<h1>
+					@if ($event->event_status === 'Cancelled')
+						<span style="color: gray;"> [Cancelled] - </span><span style="text-decoration: line-through;">{{ $event->event_name }}</span>
+					@else
+						<span style="color: var(--primary-color);">{{ $event->event_name }}</span>
+					@endif
+				</h1>
+				<div class="event-edit-buttons">
+					@can('edit', $event)
+						<a href="{{ route('edit.event.show', ['event_id' => $event->event_id]) }}" class="event-button">
+							Edit
+						</a>
+					@endcan
 
+					@can('cancel', $event)
+						<button type="button" class="event-button2" onclick="openModal2	()">Cancel Event</button>
+					@endcan
+
+				</div>
 			</div>			
 			<a class="user-event-owner" href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}" style="display: flex; align-items: center; margin-top:1rem;">
 				<img 
@@ -45,11 +82,10 @@
 					Manage
 				</a>
 				@endcan
-
 			</div>
 		
-
 			@php
+				$eventCancelled = $event->event_status === 'Cancelled';
     			$eventExpired = $event->event_date <= now();
     			$userTicketCount = $event->tickets->where('member_id', auth()->id())->count();
 				$eventType = $event->type_of_event;
@@ -57,7 +93,9 @@
 
 			@cannot('edit', $event)
 			<div class="ticket-buttons">
-				@if($userTicketCount < 10 && $userTicketCount >= 1)
+				@if ($eventCancelled) <button type="submit" class="disabled-btn" disabled>Event Canceled</button>  
+				@elseif ($eventExpired) <button type="submit" class="disabled-btn" disabled>Event Expired</button>  
+				@elseif($userTicketCount < 10 && $userTicketCount >= 1)
 					<div class="button-container">
 						<button class="purchased-btn">
 							Tickets Purchased: {{ $userTicketCount }}
@@ -70,20 +108,30 @@
 							</button>
 						</form>
 					</div>  
+
 				@elseif ($userTicketCount == 10)
 					<button type="submit" class="disabled-btn" disabled>Ticket Limit Reached</button>
-				@elseif ($eventType == 'Private')
-					<button type="submit" class="disabled-btn">Private Event</button>    
+
+				@elseif ($eventType == 'Private' && $event->requests->contains('member_id', auth()->id()))
+					<button class="disabled-btn" disabled>Waiting for join request approval...</button>
+
+				@elseif ($eventType == 'Private' && !$event->invitations->contains('member_id', auth()->id()))
+					<div class="button-container">
+						<button type="submit" class="disabled-btn">Private Event</button>
+						<form action="{{ route('request-access') }}" method="POST">   
+							@csrf
+							<input type="hidden" name="event_id" value="{{ $event->event_id }}">
+							<button type="submit" class="request-btn">
+								Request Access
+							</button>    
+						</form>	
+					</div>  
 				@else            
 					<form action="{{ route('buy-ticket') }}" method="POST">
 						@csrf
 						<input type="hidden" name="event_id" value="{{ $event->event_id }}">
-						<button type="submit" class="buy-tickets-btn {{ $eventExpired ? 'disabled-btn' : '' }}" {{ $eventExpired ? 'disabled' : '' }}>
-							@if ($eventExpired)
-								Event Expired
-							@else
+						<button type="submit" class="buy-tickets-btn">
 								Get Tickets - {{ $event->price }}€
-							@endif
 						</button>
 					</form>
 				@endif  

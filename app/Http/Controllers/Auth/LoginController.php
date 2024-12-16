@@ -12,11 +12,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Models\Member;
 use App\Models\Admin;
+use App\Models\Restriction;
+use Carbon\Carbon;
 
 
 class LoginController extends Controller
 {
-
     /**
      * Display a login form.
      */
@@ -54,12 +55,46 @@ class LoginController extends Controller
         }
             
 
-        if (Auth::attempt([$loginField => $credentials['login'], 'password' => $credentials['password']], $request->filled('remember'))) {
-            $request->session()->regenerate();
+        $member = Member::where($loginField, $credentials['login'])->first();
 
-            return redirect()->intended('/home');
+        if ($member) {
+            switch ($member->member_status) {
+                case 'Banned':
+                    return back()->withErrors([
+                        'login' => 'Your account is banned. Please contact support for assistance.',
+                    ]);
+                case 'Suspended':
+                    $activeRestriction = Restriction::where('member_id', $member->member_id)
+                        ->where('type', 'Suspension')
+                        ->get()
+                        ->filter(function ($restriction) {
+                            $end = Carbon::parse($restriction->start)->addDays($restriction->duration);
+                            return $end->greaterThan(now());
+                        })
+                        ->first();
+
+                    if ($activeRestriction) {
+                        $end = Carbon::parse($activeRestriction->start)->addDays($activeRestriction->duration);
+                        $timeLeft = $end->diffForHumans(now(), true); // Get a human-readable difference (e.g., "3 days", "2 hours")
+                    
+                        return back()->withErrors([
+                            'login' => "Your account is suspended. Time remaining: $timeLeft.",
+                        ]);
+                    }
+
+                    else{
+                        $member->update(['member_status' => 'Active']);
+                    }
+
+                case 'Active':
+                    if (Auth::attempt([$loginField => $credentials['login'], 'password' => $credentials['password']], $request->filled('remember'))) {
+                        $request->session()->regenerate();
+
+                        return redirect()->intended('/home');
+                    }
+                    break;
+            }
         }
-
         return back()->withErrors([
             'login' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');

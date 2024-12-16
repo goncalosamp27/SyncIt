@@ -39,4 +39,28 @@ class MemberController extends Controller
         
         return redirect()->route('home')->with('success', "Your profile was updated successfully!");
     }
+
+    public function delete(Request $request)
+    {
+        // Validate the input
+        $request->validate([
+            'password' => 'required',
+            'confirmation' => 'required',
+        ]);
+
+        // Get the currently authenticated member
+        $member = Auth::user();
+
+        // Use the deleteAccount method from the Member model
+        $result = $member->deleteAccount($request->password, $request->confirmation);
+
+        // Handle the result
+        if ($result['status']) {
+            Auth::logout();
+            return redirect('/home')->with('success', "Your account was deleted.");
+        } else {
+            // Return with an error message
+            return back()->with('error', $result['message']);
+        }
+    }
 }

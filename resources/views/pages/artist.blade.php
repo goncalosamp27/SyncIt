@@ -8,20 +8,23 @@
       <div class="left-column">
         <div class="profile-section">
           <div class="profile-picture">
-          <img src="{{ asset('storage/profiles/' . $artist->member->profile_pic_url) }}" alt="User Profile Picture">
+            @can('isBanned', $artist->member)
+              <img src="{{ asset('storage/profiles/default_user.png') }}" alt="Default Profile Picture">
+            @else
+                <img src="{{ asset('storage/profiles/' . $artist->member->profile_pic_url) }}" alt="User Profile Picture">
+            @endcan
           </div>
+
           <div class="profile-info">
-            <h1>{{ $artist->member->display_name }}</h1>
-            <p class="username"><span class="username">@</span>{{ $artist->member->username }}</p>
-            <p class="followers-rating">
-                <span class="followers-count">{{ $followersCount }}</span>
-                <span class="rating-score">{{ $artist->rating }}/5.0</span>
-            </p>
-            <p class="followers-rating">
-                <span class="followers-label">Followers</span>
-                <span class="rating-label">Rating</span>
-            </p>
-            <p class="bio"> {{ $artist->member->bio }} </p>
+            @can('isBanned', $artist->member)
+              <h1>Anonymous</h1>
+              <p class="username">@anonymous_{{ $artist->member->member_id }}</p>
+              <p class="bio">This user has been banned.</p>
+            @else
+              <h1>{{ $artist->member->display_name }}</h1>
+              <p class="username"><span class="username">@</span>{{ $artist->member->username }}</p>
+              <p class="bio"> {{ $artist->member->bio }} </p>
+            @endcan
             <div class="profile-tags">
               <div class="profile-music-dance">
                 <span class="tag music">Music</span>
@@ -43,7 +46,9 @@
           <h2>Upcoming Events:</h2>
           <div class="events-list">
           @foreach ($artist->events->where('event_date', '>', now())->take(2) as $event)
+            @if ($event->event_status !== 'Cancelled')
               @include('partials.event-card', ['event' => $event])
+            @endif     
           @endforeach
 
           </div>
@@ -57,7 +62,7 @@
           <h2>Past Events:</h2>
           <div class="events-list">
           @foreach ($artist->events->where('event_date', '<', now())->take(2) as $event)
-              @include('partials.event-card', ['event' => $event])
+            @include('partials.event-card', ['event' => $event]) 
           @endforeach
           </div>
           <a href="{{ route('your-events') }}">

@@ -34,7 +34,6 @@ class EditEventController extends Controller
             'refund' => 'required|numeric|between:0,100',  
             'price' => 'required|numeric|min:0',  
             'type_of_event' => 'required|in:Public,Private',  
-            'rating' => 'required|numeric|between:0,5',
             'capacity' => 'required|numeric|min:10',
             'event_media' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
@@ -56,7 +55,7 @@ class EditEventController extends Controller
         }
         $event->event_date = $eventDateTime;
             $event->save();
-        return redirect()->route('event', ['event_id' => $event_id])->with('success', 'Member updated successfully!');
+        return redirect()->route('event', ['event_id' => $event_id])->with('success', 'Event updated successfully!');
     }
 
     public function tickets($event_id)
@@ -115,7 +114,7 @@ class EditEventController extends Controller
 
         // Create the event
         $event = Event::create($request->only([
-            'event_name', 'event_date', 'location', 'description', 'refund', 'price', 'type_of_event', 'rating', 'artist_id',
+            'event_name', 'event_date', 'location', 'description', 'refund', 'price', 'type_of_event', 'artist_id',
         ]));
 
         // Attach tags (if any are selected)

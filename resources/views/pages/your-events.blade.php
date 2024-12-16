@@ -21,16 +21,18 @@
 		<div class="tickets-list">
 			@if ($events->isEmpty())
     			<p class="no-tickets">You do not own any events.</p>
-				<a class="take-me-button-member" href="{{ route('create') }}">Create your first Event!</a>
+				<a class="take-me-button-member" href="{{ route('events.create') }}">Create your first Event!</a>
 			@else
 			<div class = "your-events">
     			@foreach ($events as $event)
 						<div class = "your-single-event">
         					@include('partials.event-card', ['events' => $event])
-							<form action="{{ route('delete-event', ['event_id' => $event->event_id]) }}" method="POST" class="delete-button-form">
-								@csrf
-								<button type="submit" class="delete-button">🗑️</button>
-							</form>
+							@can('delete', $event)
+								<form action="{{ route('delete-event', ['event_id' => $event->event_id]) }}" method="POST" class="delete-button-form">
+									@csrf
+									<button type="submit" class="delete-button">🗑️</button>
+								</form>
+							@endcan
 						</div>
     			@endforeach
 			</div>	
