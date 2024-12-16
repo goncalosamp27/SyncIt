@@ -100,13 +100,9 @@
 						<button class="purchased-btn">
 							Tickets Purchased: {{ $userTicketCount }}
 						</button>
-						<form action="{{ route('buy-ticket') }}" method="POST">
-							@csrf
-							<input type="hidden" name="event_id" value="{{ $event->event_id }}">
-							<button class="buy-tickets-btn2">
+							<button class="buy-tickets-btn2" onclick="openPurchaseModal()">
 								Get More Tickets - {{ $event->price }}€
 							</button>
-						</form>
 					</div>  
 
 				@elseif ($userTicketCount == 10)
@@ -141,24 +137,11 @@
 							@csrf
 							<input type="hidden" name="event_id" value="{{ $event->event_id }}">
 				
-							<!-- Name Input -->
-							<div class="form-group">
-								<label for="name">Ticket Owner Name</label>
-								<input type="text" name="name" id="name" class="form-input" required placeholder="Enter name">
-							</div>
-				
-							<!-- Surname Input -->
-							<div class="form-group">
-								<label for="surname">Ticket Owner Surname</label>
-								<input type="text" name="surname" id="surname" class="form-input" required placeholder="Enter surname">
-							</div>
-				
 							<!-- Ticket Count Input -->
 							<div class="form-group">
 								<label for="ticket-count">Number of Tickets</label>
 								<input type="number" name="ticket_count" id="ticket-count" class="form-input" min="1" max="10" value="1" required>
 							</div>
-							
 				
 							<!-- Credit Card Information -->
 							<div class="form-group">

@@ -1,6 +1,6 @@
 <div class="ticket-card">
     <div class="ticket-data">
-        <span class="ticket-owner">{{ $ticket->owner }}'s</span> ticket to:
+        <span class="ticket-owner">{{ $member->display_name }}'s</span> ticket to:
         <span class="ticket-id">Event #{{ $ticket->event->event_id }}</span>
         <span class="ticket-id">Ticket #{{ $ticket->ticket_id }}</span>
         <span class="ticket-event-name">{{ $ticket->event->event_name }}</span>

@@ -318,7 +318,7 @@ body {
     margin-top: 0.5rem;
 }
 .new-modal-content {
-    max-height: 90%;
+    overflow: hidden;
     color: var(--black-color);
     background-color: var(--black-color);
     margin: 15% auto;

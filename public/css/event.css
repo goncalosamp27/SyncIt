@@ -593,7 +593,7 @@ form.buy-tickets-form {
     max-height: 91vh; /* Ensure it doesn't overflow vertically */
     overflow: auto; /* Allow scrolling inside the modal for large content */
     box-sizing: border-box; /* Include padding in width and height */
-    margin-top: 3rem;
+    margin-top: 8rem;
 }
 
 .form-group {
