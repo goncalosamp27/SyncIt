@@ -20,10 +20,8 @@
 		console.log("Comment URL:", commentUrl);
 		console.log("getComment URL:", getCommentsUrl);
 	</script>
-	
-	
 
-	<div id="cancelEventModal" class="new-modal2" style="display: none;">
+	<div id="cancelEventModal" class="new-modal" style="display: none;">
 		<div class="new-modal-content">
 			<span class="close-btn" onclick="closeModal2()">×</span>
 			<h2>Confirm Cancellation</h2>

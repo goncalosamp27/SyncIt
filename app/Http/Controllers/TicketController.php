@@ -11,6 +11,7 @@ use App\Models\Event;
 use App\Models\Member;
 
 class TicketController extends Controller {
+
 	public function ticketAndEventData()
     {	
         $member = Auth::user()->load('tickets');
@@ -28,18 +29,21 @@ class TicketController extends Controller {
         ]);
     }
 
-
     public function ticketAndEventData2()
     {	
 		$member = Auth::user()->load('tickets');
-        $tickets = Ticket::where('member_id', Auth::id());
+        $tickets = Ticket::where('member_id', Auth::id())
+            ->whereHas('event', function ($query) {
+                $query->where('event_date', '<=', now()); // Only upcoming events
+            })
+            ->with('event') // Eager load the event data
+            ->paginate(3); // Limit to 3 tickets per page
 
-        return view('pages.attended', [
+        return view('pages.tickets', [
             'tickets' => $tickets, 
             'member' => $member,
         ]);
     }
-
 
     public function refundTicket(string $ticket_id)
     {   
@@ -91,9 +95,9 @@ class TicketController extends Controller {
             $ticket->member_id = $member->member_id;
             $ticket->save();
         }
-
+        
         // Redirect back to the event page with a success message
-        return redirect()->route('event.show', ['event_id' => $event->event_id])
+        return redirect()->route('tickets')
             ->with('success', "{$ticketCount} ticket(s) to '{$event->event_name}' purchased successfully!");
     }
 }
