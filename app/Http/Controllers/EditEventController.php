@@ -79,6 +79,16 @@ class EditEventController extends Controller
                 ];
             });
 
+        $perPageRequests = 5; // Number of requests per page
+        $pageRequests = request()->input('page_requests', 1); // Current page for requests
+        $paginatedRequests = new LengthAwarePaginator(
+            $requests->forPage($pageRequests, $perPageRequests),
+            $requests->count(),
+            $perPageRequests,
+            $pageRequests,
+            ['path' => request()->url(), 'query' => request()->query()] // Keep query parameters
+        );
+
         // Paginate the grouped tickets
         $perPage = 5;
         $page = request()->input('page', 1); // Get the current page
@@ -93,7 +103,7 @@ class EditEventController extends Controller
         return view('pages.participants', [
             'event' => $event,
             'ticketsGrouped' => $paginatedTickets, // Pass the paginated tickets
-            'requests' => $requests,
+            'requests' => $paginatedRequests,
         ]);
     }
 

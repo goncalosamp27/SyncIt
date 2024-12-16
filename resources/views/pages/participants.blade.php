@@ -117,6 +117,11 @@
                         </div>
                     </div>
                 @endforeach
+
+                <div class="pagination-container">
+                    {{ $requests->links('pagination::bootstrap-4') }}
+                </div>
+
                 @endcan
             @endif
     </div>

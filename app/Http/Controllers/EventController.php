@@ -48,17 +48,18 @@ class EventController extends Controller
     public function deleteEvent(string $event_id)
     {
         try {
-            // Fetch the event
             $event = Event::findOrFail($event_id);
 
-            // Debug: Check if event is valid
             if (!$event) {
                 return redirect()->route('your-events')->with('error', "Event not found.");
             }
 
-            // Validate event date
-            if (!$event->event_date || strtotime($event->event_date) < time()) {
-                return redirect()->route('your-events')->with('error', "Cannot delete past events.");
+            if ($event->event_status !== 'Cancelled') {
+                return redirect()->route('your-events')->with('error', "Only canceled events can be deleted.");
+            }
+
+            if (!$event->cancel_date || now()->diffInDays($event->cancel_date) < 7) {
+                return redirect()->route('your-events')->with('error', "Events can only be deleted a week after being canceled.");
             }
 
             // Attempt to delete the event
@@ -66,13 +67,11 @@ class EventController extends Controller
 
             return redirect()->route('your-events')->with('success', "Event #{$event_id} deleted successfully!");
         } catch (\Exception $e) {
-            // Log the actual error
-            dd($e->getMessage());
-            \Log::error("Failed to delete event: {$e->getMessage()}");
 
             return redirect()->route('your-events')->with('error', "Failed to delete the event.");
         }
     }
+
 
     public function member_events()
     {
@@ -314,14 +313,17 @@ class EventController extends Controller
             }
 
             // Update the event's status to 'Cancelled'
-            $event->update(['event_status' => 'Cancelled']);
-
+            $event->update([
+                'event_status' => 'Cancelled',
+                'cancel_date' => now(), // Laravel helper for the current timestamp
+            ]);
+    
             // Return a success message
             return redirect()->route('your-events')->with('success', "Event #{$event_id} has been successfully cancelled.");
         } catch (\Exception $e) {
             // Log the error and return an error message
             \Log::error("Failed to cancel event: {$e->getMessage()}");
-
+    
             return redirect()->back()->with('error', "Failed to cancel the event.");
         }
     }
