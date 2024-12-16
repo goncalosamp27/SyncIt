@@ -7,12 +7,13 @@
                     {{ $comment->member->username }}:
                 </div>
 
-                <div id="comment-text-{{ $comment->id }}">  <!-- Comment Text with an ID for Editing -->
-                    {{ $comment->text }}
+                <div id="comment-text-{{ $comment->member_id }}">
+                    <span class="comment-display">{{ $comment->text }}</span>
+                    <textarea id="edit-textarea-{{ $comment->member_id }}" style="display:none;">{{ $comment->text }}</textarea>
                 </div>
             
                 @if(Auth::check() && Auth::id() == $comment->member_id)
-                    <button class="edit-button" onclick="editComment({{ $comment->id }})" style="position: absolute; top: 10px; right: 10px; background-color: transparent; border: none; cursor: pointer; font-size: 16px;">
+                    <button class="edit-button" onclick="toggleEdit({{ $comment->member_id }})" style="position: absolute; top: 10px; right: 10px; background-color: transparent; border: none; cursor: pointer; font-size: 16px;">
                         ✏️
                     </button>
                 @endif
@@ -36,5 +37,4 @@
             </div>
         </div>    
     </div>
-
 @endforeach
