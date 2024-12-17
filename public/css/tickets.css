@@ -199,11 +199,18 @@
     color: var(--black-color);
     opacity: 0.3;
     cursor: pointer;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease, color 0.3s ease; 
 }
 
+.ticket-rating-label:hover,
+.ticket-rating-input:checked ~ .ticket-rating-label:hover {
+    color: #FFD700; 
+    opacity: 1; 
+}
+
+
 .ticket-rating-input:checked ~ .ticket-rating-label {
-    color: var(--primary-color);
+    color: #FFD700; 
     opacity: 1;
 }
 
