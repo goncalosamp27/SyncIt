@@ -10,8 +10,10 @@
         <p>
             Database and Web Applications Laboratory 24/25 - Project - Group 115
         </p>
+        <a href="{{ route('home') }}">
         <div class="footer-logo">
             <img src="{{ asset('storage/syncit.svg') }}" alt=Logo></img>
         </div>
+        </a>
     </div>
 </footer>
