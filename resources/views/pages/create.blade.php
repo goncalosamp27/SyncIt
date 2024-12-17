@@ -128,9 +128,9 @@
         <div class="create-event-input-inline">
             <div class="create-event-input-inline">
                 <div>
-                    <label for="music-dance" id="music-dance-label" class="form-label">Select a Music/Dance</label>
+                    <label for="music-dance" id="music-dance-label" class="form-label">Select the event type</label>
                     <select id="music-dance" name="music-dance" class="form-control" required>
-                        <option value="" disabled selected>Select a Music/Dance</option>
+                        <option value="" disabled selected>Select the event type</option>
                         <!-- Options will be dynamically populated via JavaScript -->
                     </select>
                     @error('music-dance')

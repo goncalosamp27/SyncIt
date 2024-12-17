@@ -56,7 +56,4 @@ class Comment extends Model
     {
         return $this->hasMany(Comment::class, 'response_comment_id', 'comment_id');
     }
-
-    // One comment to many Poll notifications 
-
 }

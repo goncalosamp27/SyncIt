@@ -14,6 +14,7 @@
 
 	<script src="{{ asset('js/app.js') }}" defer></script>
 	<script src="{{ asset('js/comment.js') }}" defer></script>
+
 	<script>
 		const commentUrl = @json(route('comments.store', ['event_id' => $event->event_id]));
 		const getCommentsUrl = @json(route('comments.index', ['event_id' => $event->event_id]));
@@ -23,16 +24,42 @@
 	
 	
 
+	<div id="cancelEventModal" class="new-modal" style="display: none;">
+		<div class="new-modal-content">
+			<h2>Confirm Cancellation</h2>
+			<p>Are you sure you want to cancel this event?</p>
+			<div class="event-modal-buttons">
+				<form action="{{ route('event.cancel', ['event_id' => $event->event_id]) }}" method="POST">
+					@csrf
+					<button type="submit" class="confirm-button-cancel">Yes, Cancel</button>
+				</form>
+				<button type="button" class="cancel-button-cancel" onclick="closeModal2()">No, Go Back</button>
+			</div>
+		</div>
+	</div>
+
 	<div class="event-page-content">
 		<div class="event-page-info">
 			<div class="title-edit">
-				<h1> {{ $event->event_name }} </h1>
-				@can('edit', $event)
-				<a href="{{ route('edit.event.show', ['event_id' => $event->event_id]) }}" class="event-button">
-					Edit
-				</a>
-				@endcan
+				<h1>
+					@if ($event->event_status === 'Cancelled')
+						<span style="color: gray;"> [Cancelled] - </span><span style="text-decoration: line-through;">{{ $event->event_name }}</span>
+					@else
+						<span style="color: var(--primary-color);">{{ $event->event_name }}</span>
+					@endif
+				</h1>
+				<div class="event-edit-buttons">
+					@can('edit', $event)
+						<a href="{{ route('edit.event.show', ['event_id' => $event->event_id]) }}" class="event-button">
+							Edit
+						</a>
+					@endcan
 
+					@can('cancel', $event)
+						<button type="button" class="event-button2" onclick="openModal2	()">Cancel Event</button>
+					@endcan
+
+				</div>
 			</div>			
 			<a class="user-event-owner" href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}" style="display: flex; align-items: center; margin-top:1rem;">
 				<img 
@@ -58,6 +85,7 @@
 			</div>
 		
 			@php
+				$eventCancelled = $event->event_status === 'Cancelled';
     			$eventExpired = $event->event_date <= now();
     			$userTicketCount = $event->tickets->where('member_id', auth()->id())->count();
 				$eventType = $event->type_of_event;
@@ -65,8 +93,8 @@
 
 			@cannot('edit', $event)
 			<div class="ticket-buttons">
-				@if ($eventExpired) <button type="submit" class="disabled-btn" disabled>Event Expired</button>  
-
+				@if ($eventCancelled) <button type="submit" class="disabled-btn" disabled>Event Canceled</button>  
+				@elseif ($eventExpired) <button type="submit" class="disabled-btn" disabled>Event Expired</button>  
 				@elseif($userTicketCount < 10 && $userTicketCount >= 1)
 					<div class="button-container">
 						<button class="purchased-btn">
@@ -151,18 +179,22 @@
 		<div class="purple-line"></div>
 		
 		<div class="event-page-comments">
-    		<div class="add-your-own-comment">
-        		<img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Profile Picture" class="profile-pic">
-        		<input type="text" placeholder="Add your comment..." id="new-comment" class="comment-input">
-        		<button class="post-button" data-event-id="{{ $event->event_id }}" onclick="postComment(this)">Post</button>
-    		</div>
+			@auth
+				<div class="add-your-own-comment">
+					<img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Profile Picture" class="profile-pic">
+					<input type="text" placeholder="Add your comment..." id="new-comment" class="comment-input">
+					<button class="post-button" data-event-id="{{ $event->event_id }}" onclick="postComment(this)">Post</button>
+				</div>
+			@else
+			<p><a href="{{ route('login') }}" style="color: #9b4dff;">Login</a> to add a comment.</p>    
+			@endauth
 			<div id="comment-list">
 				@include('partials.comment-list', ['comments' => $comments])
-		
 			</div>
-			
 		</div>
 
 		@include('partials.go-back')
 	</div>	
+
+
 @endsection	

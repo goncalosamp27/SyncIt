@@ -462,5 +462,16 @@ docker stop lbawYYXX
 docker rm lbawYYXX
 ```
 
+
+clear
+
+```
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan optimize:clear
+php artisan serve
+```
+
 ---
 -- LBAW, 2024

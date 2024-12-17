@@ -5,17 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class EventNotification extends Model
+class CommentNotification extends Model
 {
     use HasFactory;
 
-    protected $table = 'event_notification';
+    protected $table = 'comment_notification';
     protected $primaryKey = 'notification_id';
     public $timestamps = false;
 
-    public function event()
+    public function comment()
     {
-        return $this->belongsTo(Event::class, 'event_id', 'event_id');
+        return $this->belongsTo(Comment::class, 'comment_id', 'comment_id'); // Correct
     }
 
     public function notification()
