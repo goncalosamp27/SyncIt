@@ -31,4 +31,27 @@
     <div class="ticket-event-card">
          @include('partials.event-card', ['event' => $ticket->event])  
     </div>
+
+    @if ($ticket->event->event_date < $now && !$ticket->event->isRated)
+        <div class="event-rating-section">
+            <form action="{{ route('rate-event', ['ticket_id' => $ticket->ticket_id]) }}" method="POST">
+                @csrf
+                <div class="rating-stars">
+                    @for ($i = 1; $i <= 5; $i++)
+                        <input type="radio" name="rating" value="{{ $i }}" id="rating-{{ $ticket->ticket_id }}-{{ $i }}" class="rating-input" required>
+                        <label for="rating-{{ $ticket->ticket_id }}-{{ $i }}" class="rating-label">★</label>
+                    @endfor
+                </div>
+                <button type="submit" class="rate-event-button">Rate Event</button>
+            </form>
+        </div>
+    @elseif ($ticket->event->isRated)
+        <div class="event-rating-section">
+            <p>You rated this event: 
+                @for ($i = 1; $i <= $ticket->event->userRating; $i++)
+                    <span class="rated-star">★</span>
+                @endfor
+            </p>
+        </div>
+    @endif
 </div>
