@@ -9,6 +9,11 @@ class EventNotification extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'notification_id',
+        'event_id',
+    ];
+
     protected $table = 'event_notification';
     protected $primaryKey = 'notification_id';
     public $timestamps = false;
