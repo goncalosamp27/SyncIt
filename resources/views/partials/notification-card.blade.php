@@ -57,13 +57,15 @@
                 <div class="invitation-text">
                     Your ticket has been refunded.
                 </div>
-            @endif    
+            @endif  
+            <div class ="margin-delete">  
             <form action="{{ route('delete-notification', ['notification_id' => $notification->notification_id]) }}" method="POST">
                 @csrf
                 <button class="delete-notification-button" type="submit">
                     Delete Notification
                 </button>
             </form>
+            </div>
         </div>
         <div class="invitation-event-card">
             @include('partials.event-card', ['event' => $notification->eventNotification->event])
@@ -85,12 +87,14 @@
             <div class="invitation-text" style="font-style: italic; color: var(--hover-color);">
                 "{{ $notification->commentNotification->comment->text }}"
             </div>
+            <div class ="margin-delete">
             <form action="{{ route('delete-notification', ['notification_id' => $notification->notification_id]) }}" method="POST">
                 @csrf
                 <button class="delete-notification-button" type="submit" style="margin-top: 5rem;">
                     Delete Notification
                 </button>
             </form>
+            </div>
         </div>
 
         <div class="invitation-event-card">
