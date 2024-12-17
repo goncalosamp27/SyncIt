@@ -21,10 +21,10 @@ class EventPolicy
         return $event->event_status !== 'Cancelled';
     }
     public function canInvite(Member $member, Event $event) {
-        if ($event->artist->member->member_id === $member->member_id) {
+        if ($event->artist->member->member_id === $member->member_id && $event->event_date > now()) {
             return true;
         }    
-        if ($event->type_of_event === 'Public') {
+        if ($event->type_of_event === 'Public' && $event->event_date > now()) {
             return true;
         }
         return false;
