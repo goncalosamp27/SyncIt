@@ -10,8 +10,12 @@
                 @if ($notification->invitationNotification->invitation->invitor->member_id === $notification->invitationNotification->invitation->event->artist->member->member_id)
                     <p>Invited you to their event!</p>
                 @else
-                    <p>Invited you to</p>
-                    <span class="invitation-username">@</span>{{ $notification->invitationNotification->invitation->event->artist->member->username }}'s event!
+                    <div class="invitation-message">
+                        <p>Invited you to</p>
+                        <span class="invitation-username">
+                            {{'@'}}{{ $notification->invitationNotification->invitation->event->artist->member->username }}'s 
+                        </span>event!
+                    </div>
             @endif
             </div>
             <div class="invitation-text">
