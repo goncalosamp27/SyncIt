@@ -96,10 +96,10 @@ window.onclick = function(event) {
     }
 }
 
-function openModal2() {
-    document.getElementById('cancelEventModal').style.display = 'block';
+function openModal(id) {
+    document.getElementById('confirmationModal' + id).style.display = 'block';
 }
 
-function closeModal2() {
-    document.getElementById('cancelEventModal').style.display = 'none';
+function closeModal(id) {
+    document.getElementById('confirmationModal' + id).style.display = 'none';
 }

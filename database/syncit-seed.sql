@@ -28,6 +28,7 @@ DROP TABLE IF EXISTS join_request CASCADE;
 DROP TABLE IF EXISTS join_request_notification CASCADE;
 DROP TABLE IF EXISTS vote_comment CASCADE;
 DROP TABLE IF EXISTS event_notification CASCADE;
+DROP TABLE IF EXISTS report CASCADE;
 
 DROP DOMAIN IF EXISTS email_domain CASCADE;
 DROP DOMAIN IF EXISTS price_domain CASCADE;
@@ -312,6 +313,15 @@ CREATE TABLE restriction_notification (
     restriction_id INT NOT NULL,
     FOREIGN KEY (notification_id) REFERENCES notification(notification_id),
     FOREIGN KEY (restriction_id) REFERENCES restriction(restriction_id)
+);
+
+CREATE TABLE report (
+    report_id SERIAL PRIMARY KEY,
+    event_id INT,
+    member_id INT,
+    message TEXT,
+    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
 
 -- Upon account deletion, shared user data (e.g. comments, reviews, likes) is kept but made anonymous.
