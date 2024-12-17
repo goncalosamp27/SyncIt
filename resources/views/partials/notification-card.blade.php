@@ -6,17 +6,25 @@
                 {{ date('d/m/Y - h:i A', strtotime($notification->notification_date)) }}
             </div>
             <div class = "invitation-username">
-             <span class = "invitation-username">@</span>{{ $notification->invitationNotification->invitation->event->artist->member->username }}
+                <span class="invitation-username">@</span>{{ $notification->invitationNotification->invitation->invitor->username }}
+                @if ($notification->invitationNotification->invitation->invitor->member_id === $notification->invitationNotification->invitation->event->artist->member->member_id)
+                    <p>Invited you to their event!</p>
+                @else
+                    <p>Invited you to</p>
+                    <span class="invitation-username">@</span>{{ $notification->invitationNotification->invitation->event->artist->member->username }}'s event!
+            @endif
             </div>
             <div class="invitation-text">
                 {{ $notification->notification_message }}
             </div>
+            <div class ="margin-delete">
             <form action="{{ route('delete-notification', ['notification_id' => $notification->notification_id]) }}" method="POST">
                 @csrf
                 <button class="delete-notification-button" type="submit">
                     Delete Notification
                 </button>
             </form>
+            </div>
         </div>
 
         <div class="invitation-event-card">

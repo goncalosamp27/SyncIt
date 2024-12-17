@@ -16,7 +16,7 @@
         <div class="participants-header">
         <h1>Participants</h1>
         <div class="add-participant-container">
-            @can('edit', $event)
+            @can('canInvite', $event)
             <button class="add-participant-btn" onclick="toggleSearchBar()">➕</button>
             <div id="search-bar-container" class="search-bar-container">
                 <form action="/create-invitation" method="POST" class="invitation-form">
@@ -35,6 +35,7 @@
                         placeholder="Enter a custom invitation message"
                         class="search-bar-input2"
                     ></textarea>
+                    <input type = "hidden" name = "invitor_id" value = "{{ Auth::user()->member_id }}">
                     <input type="hidden" name="event_id" value="{{ $event->event_id }}">
                     <button type="submit" class="search-submit-btn">Invite</button></form>
             </div>
@@ -110,6 +111,7 @@
                             @csrf
                             <input type = "hidden" name = "member_id" value = "{{ $member -> member_id }}">
                             <input type="hidden" name="event_id" value="{{ $event->event_id }}">
+                            <input type = "hidden" name = "invitor_id" value = "{{ Auth::user()->member_id }}">
                             <button class="remove-participant" type="submit">
                                 Invite
                             </button>
