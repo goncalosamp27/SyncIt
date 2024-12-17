@@ -17,6 +17,7 @@ class InvitationController extends Controller
         $request->validate([
             'username' => 'required',
             'event_id' => 'required|exists:event,event_id',
+            'invitor_id' => 'required|exists:member,member_id',
         ]);
 
         $member = Member::where('username', $request->input('username'))->first();
@@ -31,6 +32,7 @@ class InvitationController extends Controller
 
 		$existingInvitation = Invitation::where('event_id', $request->input('event_id'))
         ->where('member_id', $member->member_id)
+        ->where('invitor_id', Auth::user()->member_id) // Ensure invitor_id matches the logged-in user
         ->first();
 
 		if ($existingInvitation) {
@@ -38,8 +40,11 @@ class InvitationController extends Controller
 		}
 
         $invitation = new Invitation();
-        $invitation->invitation_message = $request->input('message') ?? "Come to my event!";
+        $invitation->invitation_message = $request->input('message') ?? ($invitation->invitor_id === $event->artist->member_id 
+            ? "Come to my event!" 
+            : "Join me in this event!");
         $invitation->invitation_date = now(); // Example: set today's date
+        $invitation->invitor_id = $request->input('invitor_id');
         $invitation->event_id = $request->input('event_id');
         $invitation->member_id = $member->member_id;
         $invitation->save();
@@ -52,6 +57,7 @@ class InvitationController extends Controller
         $request->validate([
             'member_id' => 'required|exists:member,member_id',
             'event_id' => 'required|exists:event,event_id',
+            'invitor_id' => 'required|exists:member,member_id',
         ]);
 
         $member = Member::findOrFail($request->input('member_id'));
@@ -68,6 +74,7 @@ class InvitationController extends Controller
         $invitation->invitation_message = null;
         $invitation->invitation_date = now(); 
         $invitation->event_id = $request->input('event_id');
+        $invitation->invitor_id = $request->input('invitor_id');
         $invitation->member_id = $request->input('member_id');
         $invitation->save();
 

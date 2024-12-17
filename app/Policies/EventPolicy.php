@@ -20,4 +20,13 @@ class EventPolicy
     public function seeParticipants(Member $member, Event $event) {
         return $event->event_status !== 'Cancelled';
     }
+    public function canInvite(Member $member, Event $event) {
+        if ($event->artist->member->member_id === $member->member_id) {
+            return true;
+        }    
+        if ($event->type_of_event === 'Public') {
+            return true;
+        }
+        return false;
+    }
 }

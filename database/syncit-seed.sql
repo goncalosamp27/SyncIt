@@ -220,14 +220,15 @@ CREATE TABLE option (
     FOREIGN KEY (poll_id) REFERENCES poll(poll_id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE invitation (
     invitation_id SERIAL PRIMARY KEY,
     invitation_message TEXT,
     invitation_date TIMESTAMP NOT NULL CHECK (invitation_date >= CURRENT_DATE),
     event_id INT NOT NULL,
+    invitor_id INT NOT NULL,
     member_id INT NOT NULL,
     FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
+    FOREIGN KEY (invitor_id) REFERENCES member(member_id) ON DELETE CASCADE,
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
 
@@ -510,7 +511,7 @@ DECLARE
 BEGIN
     INSERT INTO notification (notification_message, notification_date, member_id)
     VALUES (
-        COALESCE('You have a new invitation: ' || NEW.invitation_message, 'You have a new invitation.'),
+        NEW.invitation_message, 
         CURRENT_TIMESTAMP,
         NEW.member_id
     )
@@ -522,7 +523,6 @@ BEGIN
     RETURN NEW;  
 END;
 $$ LANGUAGE plpgsql;
-
 
 
 
@@ -1151,6 +1151,7 @@ VALUES
 
 
 
+
 INSERT INTO event_tag (event_id, tag_id)
 VALUES 
     -- Salsa Night Fever
@@ -1397,44 +1398,44 @@ VALUES
     ('Evening', 11);
 -- Poll 12: What theme would you like for Afro-Cuban Salsa Night?
 
-    INSERT INTO invitation (invitation_message, invitation_date, event_id, member_id)
+INSERT INTO invitation (invitation_message, invitation_date, event_id, invitor_id, member_id)
 VALUES 
     -- Invitations for Salsa Night Fever
-    ('You’re invited to join us at Salsa Night Fever! Let’s dance the night away!', NOW(), 1, 5),
-    ('Come experience the passion of Salsa Night Fever. It’s going to be an unforgettable night!', NOW(), 1, 8),
+    ('You’re invited to join us at Salsa Night Fever! Let’s dance the night away!', NOW(), 1, 5, 2),
+    ('Come experience the passion of Salsa Night Fever. It’s going to be an unforgettable night!', NOW(), 1, 8, 2),
     -- Invitations for Tech Beats Bash
-    ('Join us at Tech Beats Bash for an electrifying night of techno music!', NOW(), 2, 12),
-    ('Ready to rave? Tech Beats Bash is the place to be this weekend!', NOW(), 2, 15),
+    ('Join us at Tech Beats Bash for an electrifying night of techno music!', NOW(), 2, 12, 2),
+    ('Ready to rave? Tech Beats Bash is the place to be this weekend!', NOW(), 2, 15, 2),
     -- Invitations for Reggae Beach Party
-    ('Feel the vibes at Reggae Beach Party! You won’t want to miss it.', NOW(), 5, 20),
-    ('Relax by the beach with reggae tunes. Join us at Reggae Beach Party!', NOW(), 5, 18),
+    ('Feel the vibes at Reggae Beach Party! You won’t want to miss it.', NOW(), 5, 20, 2),
+    ('Relax by the beach with reggae tunes. Join us at Reggae Beach Party!', NOW(), 5, 18, 2),
     -- Invitations for Jazz Night
-    ('You’re invited to Jazz Night! A perfect evening for jazz lovers.', NOW(), 9, 25),
-    ('Join us for a smooth evening at Jazz Night. Great music and great company!', NOW(), 9, 22),
+    ('You’re invited to Jazz Night! A perfect evening for jazz lovers.', NOW(), 9, 25, 2),
+    ('Join us for a smooth evening at Jazz Night. Great music and great company!', NOW(), 9, 22, 2),
     -- Invitations for Pop Fiesta
-    ('Pop Fiesta awaits! Get ready for an energetic night of pop hits.', NOW(), 10, 28),
-    ('Let’s party at Pop Fiesta! Join us for a colorful and lively night.', NOW(), 10, 30),
+    ('Pop Fiesta awaits! Get ready for an energetic night of pop hits.', NOW(), 10, 28, 2),
+    ('Let’s party at Pop Fiesta! Join us for a colorful and lively night.', NOW(), 10, 30, 2),
     -- Invitations for Afrobeat Summer Jam
-    ('Afrobeat Summer Jam is here! Let’s celebrate with good vibes and music.', NOW(), 21, 35),
-    ('You’re invited to Afrobeat Summer Jam! A night of Afrobeat rhythms awaits.', NOW(), 21, 32),
+    ('Afrobeat Summer Jam is here! Let’s celebrate with good vibes and music.', NOW(), 21, 35, 2),
+    ('You’re invited to Afrobeat Summer Jam! A night of Afrobeat rhythms awaits.', NOW(), 21, 32, 2),
     -- Invitations for Folk Fest
-    ('Come be a part of the community at Folk Fest! An event full of tradition and music.', NOW(), 22, 40),
-    ('Join us for Folk Fest and enjoy some heartwarming folk music.', NOW(), 22, 45),
+    ('Come be a part of the community at Folk Fest! An event full of tradition and music.', NOW(), 22, 40,2),
+    ('Join us for Folk Fest and enjoy some heartwarming folk music.', NOW(), 22, 45, 2),
     -- Invitations for Disco Fever
-    ('Disco Fever is calling! Get your best disco outfit ready and join us!', NOW(), 27, 50),
-    ('It’s time to groove at Disco Fever! We can’t wait to see you there.', NOW(), 27, 55),
+    ('Disco Fever is calling! Get your best disco outfit ready and join us!', NOW(), 27, 50, 2),
+    ('It’s time to groove at Disco Fever! We can’t wait to see you there.', NOW(), 27, 55, 2),
     -- Invitations for Lo-Fi Chillout
-    ('Unwind with us at Lo-Fi Chillout, the perfect way to relax and enjoy.', NOW(), 38, 60),
-    ('You’re invited to a mellow evening at Lo-Fi Chillout. See you there!', NOW(), 38, 62),
+    ('Unwind with us at Lo-Fi Chillout, the perfect way to relax and enjoy.', NOW(), 38, 60, 2),
+    ('You’re invited to a mellow evening at Lo-Fi Chillout. See you there!', NOW(), 38, 62, 2),
     -- Invitations for Hard Rock Havoc
-    ('Hard Rock Havoc is back! Get ready for an intense night of rock music.', NOW(), 40, 65),
-    ('Join us for Hard Rock Havoc and experience the power of rock and roll!', NOW(), 40, 68),
+    ('Hard Rock Havoc is back! Get ready for an intense night of rock music.', NOW(), 40, 65, 2),
+    ('Join us for Hard Rock Havoc and experience the power of rock and roll!', NOW(), 40, 68, 2),
     -- Invitations for Classical Harmony
-    ('You’re invited to a magical night at Classical Harmony. Don’t miss it!', NOW(), 3, 70),
-    ('Join us for an enchanting evening of classical music at Classical Harmony.', NOW(), 3, 72),
+    ('You’re invited to a magical night at Classical Harmony. Don’t miss it!', NOW(), 3, 70, 2),
+    ('Join us for an enchanting evening of classical music at Classical Harmony.', NOW(), 3, 72, 2),
     -- Invitations for Zumba Fiesta
-    ('Dance it out at Zumba Fiesta! Get ready for an energetic experience.', NOW(), 45, 75),
-    ('You’re invited to Zumba Fiesta! Join us for a fun-filled workout session.', NOW(), 45, 77);
+    ('Dance it out at Zumba Fiesta! Get ready for an energetic experience.', NOW(), 45, 75, 2),
+    ('You’re invited to Zumba Fiesta! Join us for a fun-filled workout session.', NOW(), 45, 77, 2);
     -- Invitations for Jazz Fusion Nights
 
 -- Voting Data for Updated Polls
