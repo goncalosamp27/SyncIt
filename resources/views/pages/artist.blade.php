@@ -14,6 +14,27 @@
                 <img src="{{ asset('storage/profiles/' . $artist->member->profile_pic_url) }}" alt="User Profile Picture">
             @endcan
           </div>
+          <div class="artist-rating">
+            <div class="rating-display">
+                @php
+                    $averageRating = $artist->averageRating ?? 0;
+                    $roundedRating = round($averageRating, 1);
+                @endphp
+                
+                <div class="stars">
+                    @for ($i = 1; $i <= 5; $i++)
+                        @if ($i <= floor($roundedRating))
+                            <span class="star filled">★</span>
+                        @elseif ($i - 0.5 <= $roundedRating)
+                            <span class="star half">½</span>
+                        @else
+                            <span class="star empty">☆</span>
+                        @endif
+                    @endfor
+                </div>
+                <span class="rating-value">({{ $roundedRating }} / 5)</span>
+            </div>
+          </div>
 
           <div class="profile-info">
             @can('isBanned', $artist->member)
