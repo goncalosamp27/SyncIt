@@ -622,19 +622,18 @@ BEGIN
             FROM ticket
             WHERE ticket.event_id = NEW.event_id
         LOOP
-            -- Check if a similar notification already exists
+            -- Check if a similar notification for this event already exists
             IF NOT EXISTS (
                 SELECT 1
                 FROM notification n
                 JOIN event_notification en ON n.notification_id = en.notification_id
                 WHERE n.member_id = ticket_member_id
                   AND en.event_id = NEW.event_id
-                  AND n.notification_message = 'Event details have changed. Please check the updates!'
-                  AND n.notification_date >= CURRENT_TIMESTAMP - INTERVAL '1 minute'
+                  AND n.notification_message = 'Event details changed for: ' || NEW.event_name
             ) THEN
                 -- Insert the notification only if it doesn't exist
                 INSERT INTO notification (notification_message, notification_date, member_id)
-                VALUES ('Event details changed', CURRENT_TIMESTAMP, ticket_member_id)
+                VALUES ('Event details changed for: ' || NEW.event_name, CURRENT_TIMESTAMP, ticket_member_id)
                 RETURNING notification_id INTO new_notification_id;
 
                 -- Link the notification to the event
@@ -648,6 +647,7 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
 
 
 CREATE TRIGGER trigger_notify_event_changes

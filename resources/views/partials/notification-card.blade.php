@@ -45,7 +45,7 @@
             </div>
             @if ($notification->notification_message !== "The event has been cancelled. Your ticket has been refunded.")
                 <div class = "invitation-username">
-                    <span class = "invitation-username">@</span>{{ $notification->eventNotification->event->artist->member->username }}<span class = "invitation-username">'s</span>
+                    <span class = "invitation-username">@</span>{{ $notification->eventNotification->event->artist->member->username }}<span class = "invitation-username"></span>
                 </div>
                 <div class="invitation-text">
                     {{ $notification->notification_message }}
