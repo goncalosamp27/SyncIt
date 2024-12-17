@@ -32,5 +32,9 @@
 				@endforeach
 			@endif
 		</div>
+
+		<div class="pagination-container">
+            {{ $tickets->links('pagination::bootstrap-4') }}
+        </div>
 	</div>
 @endsection
