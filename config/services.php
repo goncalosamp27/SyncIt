@@ -30,5 +30,10 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+    'google' => [                                                       // service name
+        'client_id' => env('GOOGLE_CLIENT_ID'),                         // client id
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),                 // client secret
+        'redirect' => env('GOOGLE_CALL_BACK_ROUTE'),                    // call-back route
+    ],
 
 ];

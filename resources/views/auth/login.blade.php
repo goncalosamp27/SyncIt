@@ -6,10 +6,11 @@
         {{ csrf_field() }}
 
         <label for="login">E-mail/Username</label>
-        <input id="login" type="text" name="login" value="{{ old('login') }}" required autofocus placeholder="e.g: example@example.com or username123">
+        <input id="login" type="text" name="login" value="{{ old('login') }}" required autofocus
+            placeholder="e.g: example@example.com or username123">
         @if ($errors->has('login'))
             <span class="error">
-              {{ $errors->first('login') }}
+                {{ $errors->first('login') }}
             </span>
         @endif
 
@@ -31,6 +32,12 @@
             <p class="success">
                 {{ session('success') }}
             </p>
+        @endif
+        <!-- Reset Password link -->
+        <a href="{{ route('password.request') }}">Forgot Your Password?</a>
+        @if (session('success'))
+            <p class="success">
+                {{ session('success') }}
         @endif
     </form>
 </div>

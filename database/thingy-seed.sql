@@ -1,5 +1,5 @@
---show search_path;
---ALTER ROLE postgres 
+show search_path;
+ALTER ROLE postgres 
 set search_path to syncit;
 
 DROP TABLE IF EXISTS member CASCADE;
@@ -74,15 +74,13 @@ CHECK (CHAR_LENGTH(VALUE) BETWEEN 8 AND 100);
 CREATE DOMAIN rating_domain AS DECIMAL(2, 1)
 CHECK (VALUE >= 0.0 AND VALUE <= 5.0);
 
-<<<<<<< HEAD
-=======
 CREATE DOMAIN request_status_domain AS VARCHAR(10)
 CHECK (VALUE IN ('Approved', 'Rejected', 'Pending'));
 
 CREATE DOMAIN restriction_type_domain AS VARCHAR(11)
 CHECK (VALUE IN ('Ban', 'Suspension'));
 
->>>>>>> admin
+
 CREATE TABLE member (
     member_id SERIAL PRIMARY KEY,
     username username_domain UNIQUE NOT NULL,
@@ -91,7 +89,8 @@ CREATE TABLE member (
     password password_domain NOT NULL,
     bio VARCHAR(200),
     profile_pic_url VARCHAR(200),
-    member_status member_status_domain NOT NULL
+    member_status member_status_domain NOT NULL,
+    google_id VARCHAR
 );
 CREATE INDEX member_username_idx ON member (username);
 CREATE INDEX member_display_name_idx ON member (display_name);

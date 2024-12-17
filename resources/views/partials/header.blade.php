@@ -45,7 +45,7 @@
 	<!--				
                     <img src="{{ asset('storage/profiles/' . Auth::user()->profile_pic_url) }}" alt="Profile Picture" class="profile-pic">
 -->
-                    <img src="{{ Auth::user()->getProfileImage() }}" alt="Profile Picture" class="profile-pic">
+                    <img src="{{ Auth::user()->profile_pic_url }}" alt="Profile Picture" class="profile-pic">
 
 					<h3>{{ Auth::user()->display_name }}</h3>
 					<p><strong>Username:</strong> {{ Auth::user()->username }}</p>
