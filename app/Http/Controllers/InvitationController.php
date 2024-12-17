@@ -77,6 +77,15 @@ class InvitationController extends Controller
 
 		$event = Event::findOrFail($request->input('event_id'));
 
+        $existingInvitation = Invitation::where('event_id', $request->input('event_id'))
+        ->where('member_id', $member->member_id)
+        ->where('invitor_id', Auth::user()->member_id) // Ensure invitor_id matches the logged-in user
+        ->first();
+
+		if ($existingInvitation) {
+			return redirect()->back()->with('error', "You have already invited this member to this event.");
+		}
+
         $invitation = new Invitation();
         $invitation->invitation_message = null;
         $invitation->invitation_date = now(); 
