@@ -27,6 +27,7 @@ DROP TABLE IF EXISTS join_request CASCADE;
 DROP TABLE IF EXISTS join_request_notification CASCADE;
 DROP TABLE IF EXISTS vote_comment CASCADE;
 DROP TABLE IF EXISTS event_notification CASCADE;
+DROP TABLE IF EXISTS report CASCADE;
 
 DROP DOMAIN IF EXISTS email_domain CASCADE;
 DROP DOMAIN IF EXISTS price_domain CASCADE;
@@ -40,6 +41,7 @@ DROP DOMAIN IF EXISTS rating_domain CASCADE;
 DROP DOMAIN IF EXISTS restriction_type_domain CASCADE;
 DROP DOMAIN IF EXISTS request_status_domain CASCADE;
 DROP DOMAIN IF EXISTS event_status_domain CASCADE;
+DROP DOMAIN IF EXISTS report_status_domain CASCADE;
 
 CREATE DOMAIN event_status_domain AS VARCHAR(9)
 CHECK (VALUE IN ('Active', 'Cancelled'));
@@ -55,6 +57,9 @@ CHECK (VALUE IN ('Public', 'Private'));
 
 CREATE DOMAIN member_status_domain AS VARCHAR(10)
 CHECK (VALUE IN ('Active', 'Suspended', 'Banned'));
+
+CREATE DOMAIN report_status_domain AS VARCHAR(10)
+CHECK (VALUE IN ('Solved', 'Unsolved'));
 
 CREATE DOMAIN refund_policy AS DECIMAL(5, 2)
 CHECK (VALUE BETWEEN 0 AND 100);
@@ -306,6 +311,23 @@ CREATE TABLE restriction (
     type restriction_type_domain NOT NULL,
     FOREIGN KEY (member_id) REFERENCES member(member_id),
     FOREIGN KEY (admin_id) REFERENCES admin(admin_id)
+);
+
+CREATE TABLE restriction_notification (
+    notification_id INT PRIMARY KEY,
+    restriction_id INT NOT NULL,
+    FOREIGN KEY (notification_id) REFERENCES notification(notification_id),
+    FOREIGN KEY (restriction_id) REFERENCES restriction(restriction_id)
+);
+
+CREATE TABLE report (
+    report_id SERIAL PRIMARY KEY,
+    event_id INT,
+    member_id INT,
+    message TEXT,
+    status report_status_domain NOT NULL,
+    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
 
 -- Upon account deletion, shared user data (e.g. comments, reviews, likes) is kept but made anonymous.

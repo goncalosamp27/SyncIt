@@ -41,13 +41,12 @@
 }
 
 .info-page ul.contact-list a {
-    color: var(--hover-color); /* Updated */
+    color: var(--primary-color); /* Updated */
     text-decoration: none;
     font-weight: bold;
 }
 
 .info-page ul.contact-list a:hover {
-    text-decoration: underline;
     color: var(--hover-color); /* Updated */
 }
 
