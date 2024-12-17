@@ -25,6 +25,7 @@ use App\Http\Controllers\ReportController;
 use App\Models\Artist;
 
 Route::redirect('/', '/home');
+Route::redirect('/admin', '/admin/members/active');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::get('/artist/{artist_id}', [ArtistController::class, 'show'])->name('artist');
@@ -55,6 +56,8 @@ Route::controller(EventController::class)->group(function () {
 });
 
 Route::post('/event/{event_id}/report', [ReportController::class, 'createReport'])->name('create.report');
+Route::get('/admin/reports/{status}', [ReportController::class, 'showReports'])->middleware('admin')->name('admin.reports');
+Route::put('/admin/reports/{report}/mark-solved', [ReportController::class, 'markAsSolved'])->middleware('admin')->name('reports.markSolved');
 
 Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
 Route::get('/events/create', [EventController::class, 'create'])->middleware('auth')->name('events.create');
