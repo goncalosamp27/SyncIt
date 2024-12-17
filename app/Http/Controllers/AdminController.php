@@ -15,11 +15,11 @@ class AdminController extends Controller
     public function getMembersByStatus($type = 'active')
     {
         if ($type == 'active') {
-            $members = Member::where('member_status', 'Active')->get();
+            $members = Member::where('member_status', 'Active')->paginate(5);
         } elseif ($type == 'banned') {
-            $members = Member::where('member_status', 'Banned')->get();
+            $members = Member::where('member_status', 'Banned')->paginate(5);
         } elseif ($type == 'suspended') {
-            $members = Member::where('member_status', 'Suspended')->get();
+            $members = Member::where('member_status', 'Suspended')->paginate(5);
         } 
 
         return view('pages.admin', compact('members'));

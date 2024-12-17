@@ -36,7 +36,8 @@ class ReportController extends Controller {
             Report::create([
                 'event_id' => $event_id,
                 'member_id' => Auth::id(),
-                'message' => $request->input('message')
+                'message' => $request->input('message'),
+                'status' => 'Unsolved'
             ]);
 
             return redirect()->back()->with('success', 'Report sent successfully!');
@@ -48,5 +49,28 @@ class ReportController extends Controller {
             return redirect()->route('home')->withErrors('An error occurred while creating the report.');
         }
     }
-    
+
+    public function showReports($type = 'unsolved')
+    {
+        if ($type == 'solved') {
+            $reports = Report::where('status', 'Solved')->paginate(5);
+        } elseif ($type == 'unsolved') {
+            $reports = Report::where('status', 'Unsolved')->paginate(5);
+        }
+
+        return view('pages.admin', compact('reports'));
+    }
+
+    public function markAsSolved(Report $report)
+    {
+        try {
+            if ($report->status === 'Unsolved') $report->update(['status' => 'Solved']);
+            else if ($report->status === 'Solved') $report->update(['status' => 'Unsolved']);
+
+            return redirect()->back()->with('success', 'Done!');
+        } catch (\Exception $e) {
+            \Log::error("Failed to mark report as solved: " . $e->getMessage());
+            return redirect()->back()->withErrors('An error occurred while marking the report as solved.');
+        }
+    }
 }

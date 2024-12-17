@@ -19,6 +19,7 @@ class Report extends Model
         'event_id',
         'member_id',
         'message',
+        'status',
     ];
 
     public function event()
@@ -28,6 +29,6 @@ class Report extends Model
 
     public function member()
     {
-        return $this->belongsTo(Artist::class, 'member_id', 'member_id');
+        return $this->belongsTo(Member::class, 'member_id', 'member_id');
     }
 }
