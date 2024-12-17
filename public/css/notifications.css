@@ -45,7 +45,27 @@
 		font-weight: bold;
 		color: var(--hover-color);
 }
+
+.invitation-message {
+    display: flex; /* Use flexbox for horizontal alignment */
+    align-items: center; /* Vertically align elements in the center */
+    gap: 5px; /* Adds spacing between the elements */
+    color: var(--black-color);
+}
+
+.invitation-message p {
+    margin: 0; /* Remove default margin from <p> */
+}
+
+.invitation-username {
+    font-size: 1.5rem;
+	font-weight: bold;
+	color: var(--primary-color);
+    font-weight: bold; /* Optional: Make the @username bold */
+}
+
 .invitation-text {
+    gap: 5px;
     width: 100%; /* Ensures full container width */
     max-width: 600px; /* Optional: Set a reasonable max width for better readability */
     margin: 0 auto; /* Center align the text block horizontally */
@@ -56,7 +76,7 @@
     word-wrap: break-word; /* Legacy support */
     white-space: normal; /* Allow text to wrap naturally */
 
-    color: #fff); /* Use variable for color */
+    color: #fff; /* Use variable for color */
     font-size: 1.2rem; /* Maintain text size */
     font-weight: bold; /* Emphasize the text */
     line-height: 1.5; /* Improve line spacing for readability */
@@ -99,11 +119,6 @@
 	margin-top: 10rem;
 }
 
-.invitation-username{
-	font-size: 1.5rem;
-	font-weight: bold;
-	color: var(--primary-color);
-}
 
 .invitation-username p{
     color: var(--black-color);
