@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
+use App\Models\EventNotification;
 
 class Event extends Model
 {
@@ -52,6 +53,9 @@ class Event extends Model
     public function requests(){return $this->hasMany(JoinRequest::class, 'event_id', 'event_id');}
     public function artist(){return $this->belongsTo(Artist::class, 'artist_id', 'artist_id');}
     public function tags(){return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id');}
+    public function notifications(){
+        return $this->hasMany(EventNotification::class, 'event_id');
+    }
     public function getTicketCountAttribute()
     {
         return $this->tickets()->count();
