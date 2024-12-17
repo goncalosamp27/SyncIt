@@ -457,18 +457,20 @@ BEGIN
     JOIN artist ON event.artist_id = artist.artist_id
     WHERE event.event_id = NEW.event_id;
 
+    IF NEW.member_id <> event_owner_id THEN
     -- Insert a notification for the event owner
-    INSERT INTO notification (notification_message, notification_date, member_id)
-    VALUES (
-        'commented your event:',
-        CURRENT_TIMESTAMP,
-        event_owner_id
-    )
-    RETURNING notification_id INTO new_notification_id;  -- Capture the new notification ID
+        INSERT INTO notification (notification_message, notification_date, member_id)
+        VALUES (
+            'commented your event:',
+            CURRENT_TIMESTAMP,
+            event_owner_id
+        )
+        RETURNING notification_id INTO new_notification_id;  -- Capture the new notification ID
 
     -- Insert the notification record into comment_notification
-    INSERT INTO comment_notification (notification_id, comment_id)
-    VALUES (new_notification_id, NEW.comment_id);
+        INSERT INTO comment_notification (notification_id, comment_id)
+        VALUES (new_notification_id, NEW.comment_id);
+    END IF;
 
     RETURN NEW;  -- Return the new comment row
 END;
@@ -1027,7 +1029,7 @@ VALUES
     ('Lo-Fi Chillout', NOW() + INTERVAL '17 days', 'Downtown Café', 'Relax with mellow lo-fi beats in a cozy café setting.', 20.00, 10.00, 'Private', 4.3, 70, 2400, 'default_event.png', 'Active', NULL),
     ('Bluegrass Bonanza', NOW() + INTERVAL '21 days', 'Country Barn', 'A fun-filled evening of bluegrass music and dance.', 40.00, 15.00, 'Public', 4.2, 45, 2450, 'default_event.png', 'Active', NULL),
     ('Hard Rock Havoc', NOW() + INTERVAL '33 days', 'Rock City Arena', 'A powerful night of hard rock music with top bands.', 60.00, 35.00, 'Public', 4.5, 65, 2500, 'default_event.png', 'Active', NULL),
-    ('House Set', NOW() + INTERVAL '5 days', 'AEFEUP', 'FEUP Café with House Music', 0.00, 0.00, 'Public', 5.0, 3, 500, 'default_event.png', 'Active', NULL);
+    ('House Set', NOW() + INTERVAL '1 day 3 minutes','AEFEUP','FEUP Café with House Music',0.00,0.00,'Public',5.0,3,500,'default_event.png','Active',NULL);
 
 INSERT INTO comment (text, comment_date, event_id, member_id, response_comment_id)
 VALUES 
