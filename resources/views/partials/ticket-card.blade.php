@@ -32,26 +32,34 @@
          @include('partials.event-card', ['event' => $ticket->event])  
     </div>
 
-    @if ($ticket->event->event_date < $now && !$ticket->event->isRated)
-        <div class="event-rating-section">
-            <form action="{{ route('rate-event', ['ticket_id' => $ticket->ticket_id]) }}" method="POST">
-                @csrf
-                <div class="rating-stars">
-                    @for ($i = 1; $i <= 5; $i++)
-                        <input type="radio" name="rating" value="{{ $i }}" id="rating-{{ $ticket->ticket_id }}-{{ $i }}" class="rating-input" required>
-                        <label for="rating-{{ $ticket->ticket_id }}-{{ $i }}" class="rating-label">★</label>
-                    @endfor
+    @if ($ticket->event->event_date < $now)
+        <div class="ticket-event-rating">
+            @if (!$ticket->event->isRated)
+                <form action="{{ route('rate-event', ['ticket_id' => $ticket->ticket_id]) }}" method="POST" class="rating-form">
+                    @csrf
+                    <div class="rating-container">
+                        <div class="ticket-rating-stars">
+                            @for ($i = 5; $i >= 1; $i--)
+                                <input type="radio" name="rating" value="{{ $i }}" 
+                                    id="rating-{{ $ticket->ticket_id }}-{{ $i }}" 
+                                    class="ticket-rating-input" required>
+                                <label for="rating-{{ $ticket->ticket_id }}-{{ $i }}" 
+                                    class="ticket-rating-label">★</label>
+                            @endfor
+                        </div>
+                        <button type="submit" class="ticket-rate-event-button">Rate Event</button>
+                    </div>
+                </form>
+            @else
+                <div class="ticket-rated-display">
+                    <span class="ticket-rating-text">You rated this event:</span>
+                    <div class="rated-stars">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <span class="ticket-rated-star {{ $i <= $ticket->event->userRating ? 'filled' : '' }}">★</span>
+                        @endfor
+                    </div>
                 </div>
-                <button type="submit" class="rate-event-button">Rate Event</button>
-            </form>
-        </div>
-    @elseif ($ticket->event->isRated)
-        <div class="event-rating-section">
-            <p>You rated this event: 
-                @for ($i = 1; $i <= $ticket->event->userRating; $i++)
-                    <span class="rated-star">★</span>
-                @endfor
-            </p>
+            @endif
         </div>
     @endif
 </div>
