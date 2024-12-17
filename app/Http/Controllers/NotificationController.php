@@ -12,7 +12,7 @@ use App\Models\Notification;
 use App\Models\Member;
 
 class NotificationController extends Controller
-{
+{   
     public function getNotifications()
     {
         // Get the authenticated member

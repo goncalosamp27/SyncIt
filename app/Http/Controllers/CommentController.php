@@ -72,24 +72,6 @@ class CommentController extends Controller
             'comment' => $comment,
         ]);
     }
- 
-    // Delete a comment.
-    public function destroy($comment_id)
-    {
-        try {
-            $comment = Comment::findOrFail($comment_id);
-
-            if ($comment->member_id != Auth::id()) {
-                return redirect()->back()->with('error', 'You do not have permission to delete this comment.');
-            }
-
-            $comment->delete();
-            return redirect()->back()->with('success', 'Comment deleted successfully.');
-        } catch (Exception $e) {
-            Log::error('Failed to delete comment: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Failed to delete comment.');
-        }
-    }
 
     //Update a comment.
     public function update(Request $request, $comment_id)

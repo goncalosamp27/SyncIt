@@ -18,7 +18,6 @@ use Carbon\Carbon;
 
 class LoginController extends Controller
 {
-
     /**
      * Display a login form.
      */

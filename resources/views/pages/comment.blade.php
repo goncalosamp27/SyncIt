@@ -4,6 +4,7 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="{{ asset('js/comment.js') }}" defer></script>
 
+
     <div class="event-page-content">
         <div class="event-page-info">
 
@@ -82,23 +83,6 @@
                 return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
             }
 
-            // Delete comment
-            window.deleteComment = function(commentId) {
-                if (!confirm('Are you sure you want to delete this comment?')) return;
-
-                fetch(`/comments/${commentId}`, {
-                    method: 'DELETE',
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.querySelector(`[data-comment-id="${commentId}"]`).remove();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => console.error('Error deleting comment:', error));
-            };
 
             // Edit comment (placeholder logic)
             window.editComment = function(commentId) {

@@ -18,7 +18,11 @@ use DateTime;
 class EventController extends Controller
 {
     public function show(string $event_id): View
-    {
+    {   
+
+        if (!is_numeric($event_id) || $event_id > 2147483647) {
+            abort(404, 'Invalid event identifier');
+        }
         // Get the event card.
         $event = Event::findOrFail($event_id);
         $comments = $event->comments ?: collect();
@@ -131,8 +135,7 @@ class EventController extends Controller
                 ->withInput();
         }
 
-        // Create the event
-        $event = Event::create($request->only([
+        $data = $request->only([
             'event_name',
             'event_date',
             'location',
@@ -141,8 +144,11 @@ class EventController extends Controller
             'price',
             'type_of_event',
             'artist_id',
-        ]));
+        ]);
+        $data['event_status'] = 'Active'; 
 
+        $event = Event::create($data);
+        
         // Attach tags (if any are selected)
         if ($request->has('tags')) {
             $event->tags()->sync($request->tags);
@@ -278,4 +284,62 @@ class EventController extends Controller
         );
     }
 
+
+    public function updateFutureEventsPage(Request $request)
+    {
+        // If the request contains specific event IDs to filter
+        if ($request->has('event_ids') && !empty($request->input('event_ids'))) {
+            $eventIds = $request->input('event_ids');
+
+            // Get filtered events by IDs
+            $events = Event::whereIn('event_id', $eventIds)->get();
+        }
+
+        return response()->json([
+            'success' => true,
+            'events' => $events,
+        ]);
+    }
+
+    public function cancelEvent(Request $request, string $event_id)
+    {
+        try {
+            // Find the event
+            $event = Event::findOrFail($event_id);
+
+            // Check if the event is currently active
+            if ($event->event_status !== 'Active') {
+                return redirect()->back()->with('error', "Only active events can be cancelled.");
+            }
+
+            // Update the event's status to 'Cancelled'
+            $event->update(['event_status' => 'Cancelled']);
+
+            // Return a success message
+            return redirect()->route('your-events')->with('success', "Event #{$event_id} has been successfully cancelled.");
+        } catch (\Exception $e) {
+            // Log the error and return an error message
+            \Log::error("Failed to cancel event: {$e->getMessage()}");
+
+            return redirect()->back()->with('error', "Failed to cancel the event.");
+        }
+    }
+
+    /*
+    public function getEventCards(Request $request)
+    {
+        // Accept an array of event objects directly
+        $events = $request->input('events'); // This will now be an array of event objects
+
+        if (empty($events)) {
+            return response()->json(['success' => false, 'message' => 'No events found.']);
+        }
+
+        // Return the rendered event cards as HTML
+        $html = view('partials.event-cards', compact('events'))->render(); // Renders the Blade partial
+        dd($html);
+
+        return response()->json(['success' => true, 'html' => $html]);
+    }
+        */
 }

@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(selectedGenre);
         // Clear current options
         
-        musicDanceSelect.innerHTML = '<option value="" disabled selected>Select a Music/Dance</option>';
+        musicDanceSelect.innerHTML = '<option value="" disabled selected>Select the event type</option>';
 
         console.log(musicDanceSelect.innerHTML);
         // Update label and options
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 musicDanceSelect.appendChild(option);
             });
         } else {
-            musicDanceLabel.textContent = "Select a Music/Dance";
+            musicDanceLabel.textContent = "Select the event type";
         }
     });
 });

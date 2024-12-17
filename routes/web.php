@@ -60,31 +60,28 @@ Route::get('/events', [EventController::class, 'showTagsPerType'])->name('events
 Route::get('/past-events', [EventController::class, 'showTagsPerTypePast'])->name('past-events');
 Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])->name('future-events');
 Route::get('/events/search', [EventController::class, 'search'])->name('events.search');
-
-Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])
-    ->name('buy-ticket')
-    ->middleware('auth');
-
+Route::post('/event/{event_id}/cancel', [EventController::class, 'cancelEvent'])->name('event.cancel');
 Route::post('/events/getTags', [EventController::class, 'getTags'])->name('events.filters.tags');
+
+Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])->name('buy-ticket')->middleware('auth');
+
 Route::post('/event/request-access', [JoinRequestController::class, 'requestAccess'])->name('request-access')
     ->middleware(['auth', 'notAdmin']);
 
+// Public route: allows unauthenticated users to fetch comments
+Route::get('/event/{event_id}/comments', [CommentController::class, 'index'])->name('comments.index');
+
+// Protected routes: require authentication
 Route::controller(CommentController::class)->middleware(['auth'])->group(function () {
     Route::post('/event/{event_id}/comments', 'store')->name('comments.store');
-    Route::get('/event/{event_id}/comments', 'index')->name('comments.index');
     Route::put('/event/{event_id}/comments/{comment_id}', 'update')->name('comments.update');
     Route::delete('/event/{event_id}/comments/{comment_id}', 'destroy')->name('comments.destroy');
 });
 
 
-Route::controller(CommentVoteController::class)->middleware(['auth'])->group(function () {
-    Route::post('/comments/{comment_id}/upvote', 'upvote')->name('comments.upvote');
-    Route::post('/comments/{comment_id}/downvote', 'downvote')->name('comments.downvote');  
-    Route::delete('/comments/{comment_id}/vote', 'removeVote')->name('comments.removeVote');
-});
 
-Route::controller(ReplyController::class)->middleware(['auth'])->group(function () {
-    Route::post('/reply/store', 'store')->name('reply.store');
+Route::controller(CommentVoteController::class)->middleware(['auth'])->group(function () {
+    Route::post('/comments/{comment_id}/vote', 'vote')->name('comments.vote');
 });
 
 
@@ -113,10 +110,6 @@ Route::post('/future-events', function (Request $request) {
     
 });
 
-
-
-
-
 Route::post('/tickets/{ticket_id}', [TicketController::class, 'refundTicket'])->name('refund-ticket');
 Route::post('/your-events/{event_id}', [EventController::class, 'deleteEvent'])->name('delete-event');
 
@@ -140,6 +133,7 @@ Route::controller(NotificationController::class)->middleware(['notAdmin', 'auth'
 Route::controller(MemberController::class)->middleware(['notAdmin', 'auth'])->group(function () {
     Route::get('/edit_profile', 'edit')->name('profile.edit');
     Route::put('/edit_profile', 'updateMember')->name('member.profile.edit');
+    Route::post('/account/delete', [MemberController::class, 'delete'])->name('account.delete');
 });
 
 Route::controller(LoginController::class)->group(function () {
