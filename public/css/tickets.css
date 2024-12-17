@@ -165,3 +165,86 @@
     border-radius: 0.5rem;
     cursor: pointer;
 }
+
+.ticket-event-rating {
+    width: 100%;
+    background-color: #f9f9f9;
+    padding: 1rem;
+    border-top: 0.2rem solid var(--primary-color);
+}
+
+.rating-form {
+    width: 100%;
+}
+
+.rating-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ticket-rating-stars {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.ticket-rating-input {
+    display: none;
+}
+
+.ticket-rating-label {
+    font-size: 2rem;
+    color: var(--black-color);
+    opacity: 0.3;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.ticket-rating-input:checked ~ .ticket-rating-label {
+    color: var(--primary-color);
+    opacity: 1;
+}
+
+.ticket-rate-event-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 1rem;
+    box-shadow: 0 0 0.5rem var(--primary-color);
+}
+
+.ticket-rate-event-button:hover {
+    background-color: color-mix(in srgb, var(--primary-color) 80%, black);
+}
+
+.ticket-rated-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--black-color);
+}
+
+.rated-stars {
+    display: flex;
+}
+
+.ticket-rated-star {
+    color: var(--black-color);
+    opacity: 0.3;
+    font-size: 1.5rem;
+}
+
+.ticket-rated-star.filled {
+    color: var(--primary-color);
+    opacity: 1;
+}
+
+.ticket-rating-text {
+    font-size: 1rem;
+}
