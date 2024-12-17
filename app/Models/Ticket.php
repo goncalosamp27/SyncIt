@@ -15,7 +15,7 @@ class Ticket extends Model
     protected $fillable = [
         'event_id',
         'ticket_date',
-        'member_id'
+        'member_id',
     ];
     public $timestamps = false;
 
@@ -39,5 +39,4 @@ class Ticket extends Model
     {
         return $this->belongsTo(Member::class, 'member_id', 'member_id');
     }
-    
 }

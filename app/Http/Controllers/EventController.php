@@ -10,6 +10,7 @@ use App\Models\Tag;
 use App\Models\Ticket;
 use App\Models\JoinRequest;
 use App\Models\EventTag;
+use App\Models\Member;
 
 use Illuminate\Support\Facades\DB;
 use DateTime;
@@ -19,7 +20,6 @@ class EventController extends Controller
 {
     public function show(string $event_id): View
     {   
-
         if (!is_numeric($event_id) || $event_id > 2147483647) {
             abort(404, 'Invalid event identifier');
         }
@@ -47,36 +47,26 @@ class EventController extends Controller
     public function deleteEvent(string $event_id)
     {
         try {
-            // Fetch the event
             $event = Event::findOrFail($event_id);
 
-            // Debug: Check if event is valid
-            if (!$event) {
-                return redirect()->route('your-events')->with('error', "Event not found.");
-            }
-
-            // Validate event date
-            if (!$event->event_date || strtotime($event->event_date) < time()) {
-                return redirect()->route('your-events')->with('error', "Cannot delete past events.");
-            }
-
-            // Attempt to delete the event
+            if (!$event) {return redirect()->route('your-events')->with('error', "Event not found.");}
+            if ($event->event_status !== 'Cancelled') {return redirect()->route('your-events')->with('error', "Only cancelled events can be deleted.");}
+            if (!$event->cancel_date || now()->diffInDays($event->cancel_date) < 7) {return redirect()->route('your-events')->with('error', "Events can only be deleted a week after being cancelled.");}
             $event->delete();
 
             return redirect()->route('your-events')->with('success', "Event #{$event_id} deleted successfully!");
-        } catch (\Exception $e) {
-            // Log the actual error
-            dd($e->getMessage());
-            \Log::error("Failed to delete event: {$e->getMessage()}");
+        } 
+        catch (\Exception $e) {
 
             return redirect()->route('your-events')->with('error', "Failed to delete the event.");
         }
     }
 
+
     public function member_events()
     {
         $member = Auth::user();
-        $events = Event::where('artist_id', $member->member_id)->get();
+        $events = Event::where('artist_id', $member->member_id)->paginate(9); // Paginate with 6 events per page;
         return view('pages.your-events', [
             'events' => $events,
             'member' => $member,
@@ -102,7 +92,7 @@ class EventController extends Controller
 
         $requests = $event->requests()->with('member')->get();
         $tickets = $event->tickets()->with('member')->get();
-        return view('pages.manage-participants', [
+        return view('pages.participants', [
             'event' => $event,
             'requests' => $requests,
             'tickets' => $tickets
@@ -283,8 +273,6 @@ class EventController extends Controller
             ]
         );
     }
-
-
     public function updateFutureEventsPage(Request $request)
     {
         // If the request contains specific event IDs to filter
@@ -313,14 +301,17 @@ class EventController extends Controller
             }
 
             // Update the event's status to 'Cancelled'
-            $event->update(['event_status' => 'Cancelled']);
-
+            $event->update([
+                'event_status' => 'Cancelled',
+                'cancel_date' => now(), // Laravel helper for the current timestamp
+            ]);
+    
             // Return a success message
             return redirect()->route('your-events')->with('success', "Event #{$event_id} has been successfully cancelled.");
         } catch (\Exception $e) {
             // Log the error and return an error message
             \Log::error("Failed to cancel event: {$e->getMessage()}");
-
+    
             return redirect()->back()->with('error', "Failed to cancel the event.");
         }
     }

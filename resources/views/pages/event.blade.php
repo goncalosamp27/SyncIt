@@ -21,11 +21,10 @@
 		console.log("Comment URL:", commentUrl);
 		console.log("getComment URL:", getCommentsUrl);
 	</script>
-	
-	
 
 	<div id="cancelEventModal" class="new-modal" style="display: none;">
 		<div class="new-modal-content">
+			<span class="close-btn" onclick="closeModal2()">×</span>
 			<h2>Confirm Cancellation</h2>
 			<p>Are you sure you want to cancel this event?</p>
 			<div class="event-modal-buttons">
@@ -58,7 +57,6 @@
 					@can('cancel', $event)
 						<button type="button" class="event-button2" onclick="openModal2	()">Cancel Event</button>
 					@endcan
-
 				</div>
 			</div>			
 			<a class="user-event-owner" href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}" style="display: flex; align-items: center; margin-top:1rem;">
@@ -76,12 +74,20 @@
 
 			<div class="title-edit">
 				<h5> 👥 {{ $event->ticket_count }} / {{ $event->capacity }} Participants</h5>
+				
+				@can('seeParticipants', $event)
+					@can('edit', $event)
+					<a href="{{ route('participants', ['event_id' => $event->event_id]) }}" class="event-button">
+						Manage Participants
+					</a>
+					@endcan
 
-				@can('edit', $event)
-				<a href="{{ route('participants', ['event_id' => $event->event_id]) }}" class="event-button">
-					Manage
-				</a>
-				@endcan
+					@cannot('edit', $event)
+					<a href="{{ route('participants', ['event_id' => $event->event_id]) }}" class="event-button">
+						View Participants
+					</a>
+					@endcannot
+				@endcan	
 			</div>
 		
 			@php
@@ -91,7 +97,7 @@
 				$eventType = $event->type_of_event;
 			@endphp
 
-			@cannot('edit', $event)
+		@cannot('edit', $event)
 			<div class="ticket-buttons">
 				@if ($eventCancelled) <button type="submit" class="disabled-btn" disabled>Event Canceled</button>  
 				@elseif ($eventExpired) <button type="submit" class="disabled-btn" disabled>Event Expired</button>  
@@ -100,13 +106,9 @@
 						<button class="purchased-btn">
 							Tickets Purchased: {{ $userTicketCount }}
 						</button>
-						<form action="{{ route('buy-ticket') }}" method="POST">
-							@csrf
-							<input type="hidden" name="event_id" value="{{ $event->event_id }}">
-							<button class="buy-tickets-btn2">
+							<button class="buy-tickets-btn2" onclick="openPurchaseModal()">
 								Get More Tickets - {{ $event->price }}€
 							</button>
-						</form>
 					</div>  
 
 				@elseif ($userTicketCount == 10)
@@ -127,14 +129,83 @@
 						</form>	
 					</div>  
 				@else            
-					<form action="{{ route('buy-ticket') }}" method="POST">
-						@csrf
-						<input type="hidden" name="event_id" value="{{ $event->event_id }}">
-						<button type="submit" class="buy-tickets-btn">
-								Get Tickets - {{ $event->price }}€
-						</button>
-					</form>
+					<button type="button" class="buy-tickets-btn" onclick="openPurchaseModal()">Get Tickets - {{ $event->price }}€</button>
 				@endif  
+			</div>
+				<!-- Purchase Modal -->
+				<div class = "marg">
+				<div id="purchaseModal" class="new-modal" style="display: none;">
+					<div class="new-modal-content">
+						<span class="close-btn" onclick="closePurchaseModal()">×</span>
+						<h2>Confirm Purchase</h2>
+						<p>Fill in the details to complete your ticket purchase:</p>
+						<form action="{{ route('buy-ticket') }}" method="POST">
+							@csrf
+							<input type="hidden" name="event_id" value="{{ $event->event_id }}">
+				
+							<!-- Ticket Count Input -->
+							<div class="form-group">
+								<label for="ticket-count">Number of Tickets</label>
+								<input type="number" name="ticket_count" id="ticket-count" class="form-input" min="1" max="10" value="1" required>
+							</div>
+				
+							<!-- Credit Card Information -->
+							<div class="form-group">
+								<label for="card-number">Card Number</label>
+								<input type="text" name="card_number" id="card-number" class="form-input" maxlength="16" required placeholder="1234 5678 9012 3456" pattern="\d{16}">
+							</div>
+							<div class="form-group">
+								<label for="expiry-date">Expiration Date</label>
+								<input type="text" name="expiry_date" id="expiry-date" class="form-input" required placeholder="MM/YY" pattern="(0[1-9]|1[0-2])\/\d{2}">
+							</div>
+							<div class="form-group">
+								<label for="cvv">CVV</label>
+								<input type="text" name="cvv" id="cvv" class="form-input" maxlength="3" required placeholder="123" pattern="\d{3}">
+							</div>
+
+
+							<!-- Total Price Display -->
+							<div class="form-group2">
+								<p>Total Price: <strong id="total-price">{{ $event->price }}€</strong></p>
+							</div>
+				
+							<div class="button-group">
+								<button type="button" class="cancel-button-buy" onclick="closePurchaseModal()">Cancel</button>
+								<button type="submit" class="confirm-button-buy" id="confirm-button" disabled>Confirm Purchase</button>
+							</div>
+
+							<p class="refund-section">
+								[Refund Per Ticket: 
+								<strong id="refund-per-ticket">{{ number_format($event->price * ($event->refund / 100), 2) }}€</strong>]
+							</p>						
+						</form>
+					</div>
+				</div>
+				<script>
+					document.addEventListener("DOMContentLoaded", function () {
+						const ticketCountInput = document.getElementById('ticket-count');
+						const totalPriceElement = document.getElementById('total-price');
+						const confirmButton = document.getElementById('confirm-button');
+						const ticketPrice = parseFloat({{ $event->price }}); 
+
+						function validateTicketCount() {
+							const ticketCount = parseInt(ticketCountInput.value) || 0;
+
+							if (ticketCount >= 1 && ticketCount <= 10) {
+								confirmButton.disabled = false; 
+								const totalPrice = (ticketCount * ticketPrice).toFixed(2);
+								totalPriceElement.textContent = `${totalPrice}€`; 
+								totalPriceElement.style.color = "#28a745"; 
+							} else {
+								confirmButton.disabled = true; 
+								totalPriceElement.textContent = "Invalid Ticket Count"; 
+								totalPriceElement.style.color = "red"; 
+							}
+						}
+						ticketCountInput.addEventListener('input', validateTicketCount);
+						validateTicketCount();
+					});
+				</script>
 			</div>
 		@endcannot
 
@@ -195,6 +266,4 @@
 
 		@include('partials.go-back')
 	</div>	
-
-
 @endsection	

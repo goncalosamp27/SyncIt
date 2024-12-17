@@ -17,6 +17,7 @@ class InvitationController extends Controller
         $request->validate([
             'username' => 'required',
             'event_id' => 'required|exists:event,event_id',
+            'invitor_id' => 'required|exists:member,member_id',
         ]);
 
         $member = Member::where('username', $request->input('username'))->first();
@@ -28,18 +29,29 @@ class InvitationController extends Controller
 		}
 
 		$event = Event::findOrFail($request->input('event_id'));
+        $loggedMemberId = Auth::user()->member_id;
 
+        if ($member->member_id === $loggedMemberId) {
+            return redirect()->back()->with('error', "You cannot invite yourself to the event.");
+        }
+        if ($member->member_id === $event->artist->member->member_id) {
+            return redirect()->back()->with('error', "You cannot invite the owner of the event.");
+        }
 		$existingInvitation = Invitation::where('event_id', $request->input('event_id'))
         ->where('member_id', $member->member_id)
+        ->where('invitor_id', Auth::user()->member_id) // Ensure invitor_id matches the logged-in user
         ->first();
 
 		if ($existingInvitation) {
-			return redirect()->back()->with('error', "This member has already been invited to this event.");
+			return redirect()->back()->with('error', "You have already invited this member to this event.");
 		}
 
         $invitation = new Invitation();
-        $invitation->invitation_message = $request->input('message') ?? "Come to my event!";
+        $invitation->invitation_message = $request->input('message') ?? ($invitation->invitor_id === $event->artist->member->member_id 
+            ? "Come to my event!" 
+            : "Join me in this event!");
         $invitation->invitation_date = now(); // Example: set today's date
+        $invitation->invitor_id = $request->input('invitor_id');
         $invitation->event_id = $request->input('event_id');
         $invitation->member_id = $member->member_id;
         $invitation->save();
@@ -52,6 +64,7 @@ class InvitationController extends Controller
         $request->validate([
             'member_id' => 'required|exists:member,member_id',
             'event_id' => 'required|exists:event,event_id',
+            'invitor_id' => 'required|exists:member,member_id',
         ]);
 
         $member = Member::findOrFail($request->input('member_id'));
@@ -64,10 +77,20 @@ class InvitationController extends Controller
 
 		$event = Event::findOrFail($request->input('event_id'));
 
+        $existingInvitation = Invitation::where('event_id', $request->input('event_id'))
+        ->where('member_id', $member->member_id)
+        ->where('invitor_id', Auth::user()->member_id) // Ensure invitor_id matches the logged-in user
+        ->first();
+
+		if ($existingInvitation) {
+			return redirect()->back()->with('error', "You have already invited this member to this event.");
+		}
+
         $invitation = new Invitation();
         $invitation->invitation_message = null;
         $invitation->invitation_date = now(); 
         $invitation->event_id = $request->input('event_id');
+        $invitation->invitor_id = $request->input('invitor_id');
         $invitation->member_id = $request->input('member_id');
         $invitation->save();
 
@@ -76,11 +99,14 @@ class InvitationController extends Controller
 
     public function memberinvitations()
     {	
+        $now = now();
 		$member = Auth::user()->load('invitations');
-        $invitations = Invitation::where('member_id', Auth::id());
+        $validinvitations = Invitation::where('member_id', Auth::id())
+            ->whereHas('event', function ($query) use ($now) {$query->where('event_date', '>', $now);})
+            ->paginate(3); 
 
         return view('pages.invitations', [
-            'invitations' => $invitations, 
+            'validinvitations' => $validinvitations, 
             'member' => $member,
         ]);
     }
