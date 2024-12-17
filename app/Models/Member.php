@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Notifications\Notifiable;
 
 class Member extends Authenticatable
 {
     use HasFactory;
 
+    use Notifiable;
     protected $table = 'member';
     protected $primaryKey = 'member_id';
     public $timestamps = false;
@@ -23,7 +25,7 @@ class Member extends Authenticatable
         'bio',
         'profile_pic_url',
         'member_status',
-        'remember_token', 
+        'remember_token',
     ];
 
     // Constraints
@@ -103,10 +105,6 @@ class Member extends Authenticatable
         return $this->hasMany(Invitation::class, 'member_id', 'member_id');
     }
 
-    public function followNotifications()
-    {
-        return $this->hasMany(FollowNotification::class, 'follower_id', 'member_id');
-    }
     public function tickets()
     {
         return $this->hasMany(Ticket::class, 'member_id', 'member_id');
@@ -116,4 +114,5 @@ class Member extends Authenticatable
     {
         return Artist::where('artist_id', $member_id)->exists();
     }
+    //Reset token functions 
 }
