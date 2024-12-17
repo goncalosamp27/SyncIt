@@ -20,7 +20,6 @@ class EventController extends Controller
 {
     public function show(string $event_id): View
     {   
-
         if (!is_numeric($event_id) || $event_id > 2147483647) {
             abort(404, 'Invalid event identifier');
         }
@@ -67,7 +66,7 @@ class EventController extends Controller
     public function member_events()
     {
         $member = Auth::user();
-        $events = Event::where('artist_id', $member->member_id)->get();
+        $events = Event::where('artist_id', $member->member_id)->paginate(9); // Paginate with 6 events per page;
         return view('pages.your-events', [
             'events' => $events,
             'member' => $member,
@@ -274,8 +273,6 @@ class EventController extends Controller
             ]
         );
     }
-
-
     public function updateFutureEventsPage(Request $request)
     {
         // If the request contains specific event IDs to filter
