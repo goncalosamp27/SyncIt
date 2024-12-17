@@ -20,6 +20,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\JoinRequestController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\ReportController;
 
 use App\Models\Artist;
 
@@ -52,6 +53,8 @@ Route::controller(EventController::class)->group(function () {
         Route::post('/your-events/{event_id}', 'deleteEvent')->name('delete-event');
     });
 });
+
+Route::post('/event/{event_id}/report', [ReportController::class, 'createReport'])->name('create.report');
 
 Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
 Route::get('/events/create', [EventController::class, 'create'])->middleware('auth')->name('events.create');

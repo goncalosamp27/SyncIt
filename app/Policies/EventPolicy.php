@@ -11,9 +11,6 @@ class EventPolicy
     public function edit(Member $member, Event $event) {
         return $event->event_status === 'Active' && $event->artist->member->member_id === $member->member_id && $event->event_date > now();
     }
-    public function cancel(Member $member, Event $event) {
-        return $event->event_status === 'Active' && $event->artist->member->member_id === $member->member_id && $event->event_date > now();
-    }
     public function delete(Member $member, Event $event) {
         return $event->event_status === 'Cancelled' && $event->artist->member->member_id === $member->member_id;
     }
