@@ -19,7 +19,6 @@ DROP TABLE IF EXISTS poll_notification CASCADE;
 DROP TABLE IF EXISTS follow_notification CASCADE;
 DROP TABLE IF EXISTS comment_notification CASCADE;
 DROP TABLE IF EXISTS invitation_notification CASCADE;
-DROP TABLE IF EXISTS restriction_notification CASCADE;
 DROP TABLE IF EXISTS following CASCADE;
 DROP TABLE IF EXISTS rating CASCADE;
 DROP TABLE IF EXISTS restriction CASCADE;
