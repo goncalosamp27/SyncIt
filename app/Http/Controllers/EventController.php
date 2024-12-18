@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 use App\Models\Event;
 use App\Models\Tag;
@@ -19,7 +20,7 @@ use DateTime;
 class EventController extends Controller
 {
     public function show(string $event_id): View
-    {   
+    {
         if (!is_numeric($event_id) || $event_id > 2147483647) {
             abort(404, 'Invalid event identifier');
         }
@@ -28,7 +29,7 @@ class EventController extends Controller
         $comments = $event->comments ?: collect();
         return view('pages.event', [
             'event' => $event,
-            'comments' => $comments 
+            'comments' => $comments
         ]);
     }
 
@@ -49,14 +50,19 @@ class EventController extends Controller
         try {
             $event = Event::findOrFail($event_id);
 
-            if (!$event) {return redirect()->route('your-events')->with('error', "Event not found.");}
-            if ($event->event_status !== 'Cancelled') {return redirect()->route('your-events')->with('error', "Only cancelled events can be deleted.");}
-            if (!$event->cancel_date || now()->diffInDays($event->cancel_date) < 7) {return redirect()->route('your-events')->with('error', "Events can only be deleted a week after being cancelled.");}
+            if (!$event) {
+                return redirect()->route('your-events')->with('error', "Event not found.");
+            }
+            if ($event->event_status !== 'Cancelled') {
+                return redirect()->route('your-events')->with('error', "Only cancelled events can be deleted.");
+            }
+            if (!$event->cancel_date || now()->diffInDays($event->cancel_date) < 7) {
+                return redirect()->route('your-events')->with('error', "Events can only be deleted a week after being cancelled.");
+            }
             $event->delete();
 
             return redirect()->route('your-events')->with('success', "Event #{$event_id} deleted successfully!");
-        } 
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
 
             return redirect()->route('your-events')->with('error', "Failed to delete the event.");
         }
@@ -135,10 +141,10 @@ class EventController extends Controller
             'type_of_event',
             'artist_id',
         ]);
-        $data['event_status'] = 'Active'; 
+        $data['event_status'] = 'Active';
 
         $event = Event::create($data);
-        
+
         // Attach tags (if any are selected)
         if ($request->has('tags')) {
             $event->tags()->sync($request->tags);
@@ -173,18 +179,14 @@ class EventController extends Controller
 
     public function deleteParticipant($event_id, $ticket_id)
     {
-        try 
-        {
+        try {
             $ticket = Ticket::findOrFail($ticket_id);
-            $member = $ticket->member; 
+            $member = $ticket->member;
             $ticket->delete();
-            return redirect()->route('event', ['event_id' => $event_id ])->with('success', "'{$member->username}'s Ticket #'{$ticket_id}' deleted successfully!");
+            return redirect()->route('event', ['event_id' => $event_id])->with('success', "'{$member->username}'s Ticket #'{$ticket_id}' deleted successfully!");
+        } catch (\Exception $e) {
+            return redirect()->route('event', ['event_id' => $event_id])->with('error', "Failed to delete '{$member->username}'s ticket.");
         }
-
-        catch (\Exception $e) 
-        {
-            return redirect()->route('event', ['event_id' => $event_id ])->with('error', "Failed to delete '{$member->username}'s ticket.");
-        }   
     }
 
     public function showTagsPerType()
@@ -207,10 +209,13 @@ class EventController extends Controller
     {
         // Fetch tags where tag_name is 'Music' or 'Dance' (Genres)
         $tagsMusic = Tag::type(['Music'])->get();
-		$tagsDance = Tag::type(['Dance'])->get();
-		$tagsMood = Tag::type(['Mood'])->get();
-		$tagsSettings = Tag::type(['Settings'])->get();
-        $events = Event::where('event_date', '<', now())->get();
+        $tagsDance = Tag::type(['Dance'])->get();
+        $tagsMood = Tag::type(['Mood'])->get();
+        $tagsSettings = Tag::type(['Settings'])->get();
+        $events = Event::where('event_date', '<', now())
+            ->where('event_status', '!=', 'Cancelled')
+            ->get();
+
 
         return view('pages.events', [
             'events' => $events,
@@ -224,10 +229,12 @@ class EventController extends Controller
     {
         // Fetch tags of different types
         $tagsMusic = Tag::type(['Music'])->get();
-		$tagsDance = Tag::type(['Dance'])->get();
-		$tagsMood = Tag::type(['Mood'])->get();
-		$tagsSettings = Tag::type(['Settings'])->get();
-        $events = Event::where('event_date', '>', now())->get();
+        $tagsDance = Tag::type(['Dance'])->get();
+        $tagsMood = Tag::type(['Mood'])->get();
+        $tagsSettings = Tag::type(['Settings'])->get();
+        $events = Event::where('event_date', '>', now())
+            ->where('event_status', '!=', 'Cancelled')
+            ->get();
 
         return view('pages.events', [
             'events' => $events,
@@ -260,12 +267,14 @@ class EventController extends Controller
         $tagsSettings = Tag::type(['Settings'])->get();
 
         $tagIds = $request->input('tags', []);
+        $eventType = $request->input('event_type', []);
 
-        $events = Event::getEventsByTags($tagIds);
-        
+        //filter events by tags
+        $events = Event::getEventsByTagsAndType($tagIds,$eventType);
+      
         return response()->json(
             [
-                'events' => $events,
+                'events' => $events ,
                 'tagsMusic' => $tagsMusic,
                 'tagsDance' => $tagsDance,
                 'tagsMood' => $tagsMood,
@@ -273,22 +282,6 @@ class EventController extends Controller
             ]
         );
     }
-    public function updateFutureEventsPage(Request $request)
-    {
-        // If the request contains specific event IDs to filter
-        if ($request->has('event_ids') && !empty($request->input('event_ids'))) {
-            $eventIds = $request->input('event_ids');
-
-            // Get filtered events by IDs
-            $events = Event::whereIn('event_id', $eventIds)->get();
-        }
-
-        return response()->json([
-            'success' => true,
-            'events' => $events,
-        ]);
-    }
-
     public function cancelEvent(Request $request, string $event_id)
     {
         try {
@@ -305,13 +298,13 @@ class EventController extends Controller
                 'event_status' => 'Cancelled',
                 'cancel_date' => now(), // Laravel helper for the current timestamp
             ]);
-    
+
             // Return a success message
             return redirect()->route('your-events')->with('success', "Event #{$event_id} has been successfully cancelled.");
         } catch (\Exception $e) {
             // Log the error and return an error message
             \Log::error("Failed to cancel event: {$e->getMessage()}");
-    
+
             return redirect()->back()->with('error', "Failed to cancel the event.");
         }
     }

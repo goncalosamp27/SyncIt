@@ -166,3 +166,13 @@
 .filter-bar form button {
     margin-left: 10px; /* Space between the button and dropdowns */
 }
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px; /* Space between items */
+  }
+  
+  .dropdown-item:last-child {
+    margin-bottom: 0; /* Remove margin for the last item */
+  }
