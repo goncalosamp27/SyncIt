@@ -11,15 +11,12 @@
 			{{ session('error') }}
 		</div>
 	@endif
-
 	<script src="{{ asset('js/app.js') }}" defer></script>
 	<script src="{{ asset('js/comment.js') }}" defer></script>
-
+	<script src="{{ asset('js/comment-list.js') }}" defer></script>
 	<script>
 		const commentUrl = @json(route('comments.store', ['event_id' => $event->event_id]));
 		const getCommentsUrl = @json(route('comments.index', ['event_id' => $event->event_id]));
-		console.log("Comment URL:", commentUrl);
-		console.log("getComment URL:", getCommentsUrl);
 	</script>
 	<div id="confirmationModal1" class="new-modal" style="display: none">
 		@include('partials.confirm-overlay', [
