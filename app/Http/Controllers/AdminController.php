@@ -56,17 +56,24 @@ class AdminController extends Controller
             $member->save();
         }
         
-        return redirect()->route('admin')->with('success', 'Member updated successfully!');
+        return redirect()->route('admin', ['status' => 'active'])->with('success', 'Member updated successfully!');
     }
 
     public function search(Request $request)
     {
         $searchTerm = $request->input('search');
 
-        $members =  Member::select('member.*')
-            ->whereRaw("fts_username @@ plainto_tsquery('english', ?)", [$searchTerm])
-            ->orWhereRaw("fts_display_name @@ plainto_tsquery('english', ?)", [$searchTerm])
-            ->get();
+        if (empty($searchTerm)) {
+            $members = Member::paginate(10);
+        } 
+
+        else{
+            $members =  Member::select('member.*')
+                ->whereRaw("fts_username @@ plainto_tsquery('english', ?)", [$searchTerm])
+                ->orWhereRaw("fts_display_name @@ plainto_tsquery('english', ?)", [$searchTerm])
+                ->paginate(10);
+        }
+
     
         return view('pages.admin', [
             'members' => $members,
@@ -107,10 +114,10 @@ class AdminController extends Controller
                 'type' => $data['type'],
             ]);
 
-            return redirect()->route('admin')->with('success', 'Restriction successfully applied.');
+            return redirect()->route('admin', ['status' => 'active'])->with('success', 'Restriction successfully applied.');
         } catch (\Exception $e) {
             \Log::error("Failed to apply restriction: {$e->getMessage()}");
-            return redirect()->route('admin')->with('error', 'An error occurred while applying the restriction.');
+            return redirect()->route('admin', ['status' => 'active'])->with('error', 'An error occurred while applying the restriction.');
         }        
     }
 
