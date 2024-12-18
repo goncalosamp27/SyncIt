@@ -21,6 +21,7 @@ use App\Http\Controllers\JoinRequestController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\FileController;
 
 use App\Models\Artist;
 
@@ -169,3 +170,4 @@ Route::view('/contacts', 'pages/contacts')->name('contacts');
 Route::view('/services', 'pages/services')->name('services');
 Route::view('/faq', 'pages/faq')->name('faq');
 
+Route::post('/file/upload', [FileController::class, 'upload']);

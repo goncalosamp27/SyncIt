@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use App\Models\EventNotification;
+use App\Http\Controllers\FileController;
 
 class Event extends Model
 {
@@ -116,4 +117,8 @@ class Event extends Model
         return $query->get();
     }
 
+    public function getEventImage() {
+        return FileController::get('event', $this->event_id);
+    }
+    
 }
