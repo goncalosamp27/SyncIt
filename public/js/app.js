@@ -78,9 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function openModal() {document.getElementById('deleteAccountModal').style.display = 'block';}
-function closeModal() {document.getElementById('deleteAccountModal').style.display = 'none';}
-
 window.onclick = function(event) {
     const modal = document.getElementById('deleteAccountModal');
     if (event.target === modal) {
@@ -88,8 +85,6 @@ window.onclick = function(event) {
     }
 }
 
-function openModal2() {document.getElementById('cancelEventModal').style.display = 'block';}
-function closeModal2() {document.getElementById('cancelEventModal').style.display = 'none';}
 function openPurchaseModal() {document.getElementById('purchaseModal').style.display = 'block';}
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -108,4 +103,11 @@ function closePurchaseModal() {
     const modal = document.getElementById('purchaseModal');
     modal.style.display = 'none';
     document.body.style.overflow = 'auto'; // Re-enable body scroll if it was disabled
+}
+function openModal(id) {
+    document.getElementById('confirmationModal' + id).style.display = 'block';
+}
+
+function closeModal(id) {
+    document.getElementById('confirmationModal' + id).style.display = 'none';
 }
