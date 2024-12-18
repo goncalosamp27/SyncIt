@@ -1,36 +1,49 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="forgot-password-wrapper">
-    <form class="forgot-password-form" method="POST" action="{{ route('password.update') }}">
+<script>
+    const resetPasswordUrl = @json(route('password.reset.submit'));
+</script>
+<script src="{{ asset('js/reset-password.js') }}" defer></script>
+
+<div class="form-container">
+    <div class="form-header">
+        <h2>Reset Password</h2>
+    </div>
+    <form class="form-body" method="POST">
         @csrf
 
         <!-- Include the token in a hidden input field -->
         <input type="hidden" name="token" value="{{ request('token') }}">
         <input type="hidden" name="email" value="{{ request('email') }}">
 
-        <h2>Reset Password</h2>
-
         <!-- New Password Input -->
-        <label for="password">New Password</label>
-        <input id="password" type="password" name="password" required placeholder="Enter new password">
-        @if ($errors->has('password'))
-            <span class="error">
-                {{ $errors->first('password') }}
-            </span>
-        @endif
+        <div class="form-group">
+            <label for="password">New Password</label>
+            <input id="new_password" type="password" name="password" required placeholder="Enter new password">
+            @if ($errors->has('password'))
+                <span class="error-message">
+                    {{ $errors->first('password') }}
+                </span>
+            @endif
+        </div>
 
         <!-- Confirm Password Input -->
-        <label for="password_confirmation">Confirm Password</label>
-        <input id="password_confirmation" type="password" name="password_confirmation" required placeholder="Confirm your new password">
-        @if ($errors->has('password_confirmation'))
-            <span class="error">
-                {{ $errors->first('password_confirmation') }}
-            </span>
-        @endif
+        <div class="form-group">
+            <label for="password_confirmation">Confirm Password</label>
+            <input id="password_confirmation" type="password" name="password_confirmation" required
+                placeholder="Confirm your new password">
+            @if ($errors->has('password_confirmation'))
+                <span class="error-message">
+                    {{ $errors->first('password_confirmation') }}
+                </span>
+            @endif
+        </div>
 
         <!-- Submit Button -->
-        <button type="submit">Reset Password</button>
+        <div class="form-group">
+            <button type="submit" class="submit-btn">Reset Password</button>
+        </div>
     </form>
 </div>
 @endsection
