@@ -19,6 +19,7 @@ DROP TABLE IF EXISTS poll_notification CASCADE;
 DROP TABLE IF EXISTS follow_notification CASCADE;
 DROP TABLE IF EXISTS comment_notification CASCADE;
 DROP TABLE IF EXISTS invitation_notification CASCADE;
+DROP TABLE IF EXISTS restriction_notification CASCADE;
 DROP TABLE IF EXISTS following CASCADE;
 DROP TABLE IF EXISTS rating CASCADE;
 DROP TABLE IF EXISTS restriction CASCADE;
@@ -311,13 +312,6 @@ CREATE TABLE restriction (
     type restriction_type_domain NOT NULL,
     FOREIGN KEY (member_id) REFERENCES member(member_id),
     FOREIGN KEY (admin_id) REFERENCES admin(admin_id)
-);
-
-CREATE TABLE restriction_notification (
-    notification_id INT PRIMARY KEY,
-    restriction_id INT NOT NULL,
-    FOREIGN KEY (notification_id) REFERENCES notification(notification_id),
-    FOREIGN KEY (restriction_id) REFERENCES restriction(restriction_id)
 );
 
 CREATE TABLE report (
