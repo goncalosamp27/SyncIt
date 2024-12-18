@@ -52,7 +52,6 @@
 				</div>
 
 				<!-- Menu Links -->
-                <a href="{{ route('events.create') }}">Create Event</a>
 				<a href="{{ route('profile.edit') }}">Edit Profile</a>
 				@if(Auth::user()->isArtist(Auth::user()->member_id))
 				<a href="{{ route('artist', ['artist_id' => Auth::user()->member_id]) }}">Artist page</a>
