@@ -3,50 +3,63 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class PasswordResetToken extends Model
 {
-    protected $table = 'password_reset_tokens'; 
-    protected $primaryKey = 'id'; 
+    // Specify the table name
+    protected $table = 'password_reset_tokens';
+
+    // Define primary key if different
+    protected $primaryKey = 'email';
+
+    // Disable timestamps if not used
     public $timestamps = false;
 
+    // Define fillable attributes
     protected $fillable = [
-        'member_id',
+        'email',
         'token',
         'created_at',
     ];
 
-    public function member()
+
+    public static function createToken(string $email): string
     {
-        return $this->belongsTo(Member::class, 'member_id');
-    }
+        // Delete any existing tokens for this email
+        self::where('email', $email)->delete();
 
-    public static function createToken($memberId)
-    {
-        // Delete old tokens for this user
-        self::where('member_id', $memberId)->delete();
+        // Generate a new token
+        $token = Str::random(60);
 
-        $token = \Illuminate\Support\Str::random(60);
-
+        // Store the token in the database
         self::create([
-            'member_id' => $memberId,
+            'email' => $email,
             'token' => $token,
-            'created_at' => Carbon::now(),
+            'created_at' => now(), // Use current timestamp
         ]);
 
         return $token;
     }
 
-    public static function isValidToken($memberId, $token)
+    public static function isValidToken(string $email, string $token): bool
     {
-        $record = self::where('member_id', $memberId)->where('token', $token)->first();
+        $record = self::where('email', $email)->where('token', $token)->first();
 
-        return $record && Carbon::parse($record->created_at)->diffInMinutes(Carbon::now()) <= 60; // Valid for 60 minutes
+        if (!$record) {
+            return false;
+        }
+
+        // Check if the token is expired (valid for 60 minutes)
+        $createdAt = strtotime($record->created_at);
+        $expiresAt = $createdAt + (60 * 60); // 60 minutes
+
+        return time() <= $expiresAt;
     }
 
-    public static function clearTokens($memberId)
+    public static function clearTokens(string $email): void
     {
-        self::where('member_id', $memberId)->delete();
+        self::where('email', $email)->delete();
     }
 }

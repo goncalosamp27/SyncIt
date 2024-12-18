@@ -324,6 +324,23 @@ CREATE TABLE report (
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
 
+CREATE TABLE password_reset_tokens (
+    email VARCHAR(255) NOT NULL PRIMARY KEY,
+    token VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL
+);
+
+/*
+CREATE TABLE password_reset (
+    password_reset_id SERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+*/
+
+/*CREATE INDEX idx_password_reset_email ON password_reset(email);*/
+
 -- Upon account deletion, shared user data (e.g. comments, reviews, likes) is kept but made anonymous.
 -- Function to handle anonymization logic
 CREATE OR REPLACE FUNCTION anonymize_member_data() RETURNS TRIGGER AS
@@ -1598,3 +1615,12 @@ VALUES
         (18, 18, false),
         (19, 19, true),
         (20, 20, false);
+
+/*
+INSERT INTO password_reset (email, token, created_at)
+VALUES
+    ('sonia.bliznyuk@gmail.com', '75607e98e221a129e707e238650f38f538f469c49ccfdbe0ea1a0634a838a245', '2024-12-18 14:56:38'),
+    ('john.doe@example.com', 'ad73f8be2f1f0c920f8124bb2313a5412156f951d75a9d87d59578c7c0e9bc2a', '2024-12-18 15:02:10'),
+    ('alice.smith@domain.com', 'dfc0bc8e94ed4a7a47bb6cf528d4f9273fc2a69f8e6ecfeee94f02cb9e38c09e', '2024-12-18 15:10:25');
+
+*/
