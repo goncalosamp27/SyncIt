@@ -14,7 +14,7 @@
             </a>
             <div style="margin-left: 15px;">
                 <a href="{{ route('events') }}" class="explore-btn">Explore Events</a>
-                <a href="{{ route('events') }}" class="explore-btn">Explore Artists</a>
+                <a href="{{ route('artists') }}" class="explore-btn">Explore Artists</a>
             </div>
             
         </div>

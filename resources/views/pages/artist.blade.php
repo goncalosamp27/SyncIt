@@ -17,7 +17,7 @@
           <div class="artist-rating">
             <div class="rating-display">
                 @php
-                    $averageRating = $artist->averageRating ?? 0;
+                    $averageRating = $artist->rating ?? 0;
                     $roundedRating = round($averageRating, 1);
                 @endphp
                 
