@@ -13,6 +13,10 @@ use Illuminate\View\View;
 use App\Models\Member;
 use App\Models\Admin;
 use App\Models\Restriction;
+use App\Models\Event;
+use App\Models\Ticket;
+use App\Models\Notification;
+use App\Models\EventNotification;
 use Carbon\Carbon;
 
 
@@ -90,6 +94,8 @@ class LoginController extends Controller
                     if (Auth::attempt([$loginField => $credentials['login'], 'password' => $credentials['password']], $request->filled('remember'))) {
                         $request->session()->regenerate();
 
+                        $this->sendEventNotifications($member->member_id);
+
                         return redirect()->intended('/home');
                     }
                     break;
@@ -100,10 +106,40 @@ class LoginController extends Controller
         ])->onlyInput('email');
     }
 
+    private function sendEventNotifications($memberId)
+    {
+        $now = now();
+        $nextDay = now()->addDay(); 
+    
+        $events = Ticket::with('event') // Load the related event
+            ->where('member_id', $memberId)
+            ->whereHas('event', function ($query) use ($now, $nextDay) {
+                $query->whereBetween('event_date', [$now, $nextDay])
+                      ->where('event_status', 'Active');
+            })
+            ->whereDoesntHave('event.notifications', function ($query) use ($memberId) {
+                $query->where('member_id', $memberId);
+            })
+            ->select('event_id') 
+            ->distinct() 
+            ->get();
+    
+        foreach ($events as $ticket) {
+            $event = $ticket->event;
+    
+            $notification = Notification::create([
+                'notification_message' => "Reminder! \"{$event->event_name}\" is tomorrow! Don't miss it!",
+                'notification_date' => now(),
+                'member_id' => $memberId,
+            ]);    
+            EventNotification::create([
+                'notification_id' => $notification->notification_id,
+                'event_id' => $event->event_id,
+            ]);
+        }
+    }
+    
 
-    /**
-     * Log out the user from application.
-     */
     public function logout(Request $request)
     {
         Auth::logout();

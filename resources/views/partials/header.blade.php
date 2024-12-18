@@ -12,16 +12,15 @@
             <a href="{{ route('home') }}">
                 <img src="{{ asset('storage/syncit.svg') }}" alt="Logo" />
             </a>
+            <div style="margin-left: 15px;">
+                <a href="{{ route('events') }}" class="explore-btn">Explore Events</a>
+                <a href="{{ route('events') }}" class="explore-btn">Explore Artists</a>
+            </div>
+            
         </div>
     </div>
 
-    <div class="navbar-center hidden"> <!-- Search bar initially hidden -->
-        <form method="GET" action="{{ route('events.search') }}" class="search-bar">
-            <button type="submit" class="search-button">🔍</button>
-            <input type="text" name="search" placeholder="Search for events or locations..." value="{{ request('search') }}">
-            <button class="search-btn" type="submit">Search</button>
-        </form>
-        <a href="{{ route('events') }}" class="explore-btn">Explore</a>
+    <div class="navbar-center hidden"> <!-- Search bar initially hidden --> 
     </div>
 
     <div class="navbar-right">

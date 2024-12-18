@@ -59,7 +59,7 @@ body {
     border-radius: 2rem;
     font-weight: bold;
     text-align: center;
-    width: 30%;
+    width: 20rem;
     margin-left: auto;
     margin-right: auto;
 }
@@ -93,4 +93,59 @@ html, body {
 .faq-item h3{
   color: var(--hover-color);
   font-size: 1.2rem;
+}
+
+.nothing-to-see {
+  text-align: center;
+  padding: 50px 20px;
+  border-radius: 12px;
+  margin: 20px auto;
+  width: 80%;
+  max-width: 600px;
+  color: #ffffff;
+}
+
+.nothing-to-see-image {
+  max-width: 150px;
+  margin-right: 20px;
+  height: auto;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+      transform: translateY(0);
+  }
+  50% {
+      transform: translateY(-10px);
+  }
+}
+
+.nothing-to-see h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.nothing-to-see p {
+  font-size: 16px;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.nothing-to-see .refresh-button {
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.nothing-to-see .refresh-button:hover {
+  background-color: var(--hover-color);
 }
