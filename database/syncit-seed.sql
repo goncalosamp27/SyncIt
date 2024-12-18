@@ -19,6 +19,7 @@ DROP TABLE IF EXISTS poll_notification CASCADE;
 DROP TABLE IF EXISTS follow_notification CASCADE;
 DROP TABLE IF EXISTS comment_notification CASCADE;
 DROP TABLE IF EXISTS invitation_notification CASCADE;
+DROP TABLE IF EXISTS restriction_notification CASCADE;
 DROP TABLE IF EXISTS following CASCADE;
 DROP TABLE IF EXISTS rating CASCADE;
 DROP TABLE IF EXISTS restriction CASCADE;
@@ -27,6 +28,7 @@ DROP TABLE IF EXISTS join_request CASCADE;
 DROP TABLE IF EXISTS join_request_notification CASCADE;
 DROP TABLE IF EXISTS vote_comment CASCADE;
 DROP TABLE IF EXISTS event_notification CASCADE;
+DROP TABLE IF EXISTS report CASCADE;
 
 DROP DOMAIN IF EXISTS email_domain CASCADE;
 DROP DOMAIN IF EXISTS price_domain CASCADE;
@@ -40,6 +42,7 @@ DROP DOMAIN IF EXISTS rating_domain CASCADE;
 DROP DOMAIN IF EXISTS restriction_type_domain CASCADE;
 DROP DOMAIN IF EXISTS request_status_domain CASCADE;
 DROP DOMAIN IF EXISTS event_status_domain CASCADE;
+DROP DOMAIN IF EXISTS report_status_domain CASCADE;
 
 CREATE DOMAIN event_status_domain AS VARCHAR(9)
 CHECK (VALUE IN ('Active', 'Cancelled'));
@@ -55,6 +58,9 @@ CHECK (VALUE IN ('Public', 'Private'));
 
 CREATE DOMAIN member_status_domain AS VARCHAR(10)
 CHECK (VALUE IN ('Active', 'Suspended', 'Banned'));
+
+CREATE DOMAIN report_status_domain AS VARCHAR(10)
+CHECK (VALUE IN ('Solved', 'Unsolved'));
 
 CREATE DOMAIN refund_policy AS DECIMAL(5, 2)
 CHECK (VALUE BETWEEN 0 AND 100);
@@ -308,6 +314,16 @@ CREATE TABLE restriction (
     FOREIGN KEY (admin_id) REFERENCES admin(admin_id)
 );
 
+CREATE TABLE report (
+    report_id SERIAL PRIMARY KEY,
+    event_id INT,
+    member_id INT,
+    message TEXT,
+    status report_status_domain NOT NULL,
+    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
+);
+
 -- Upon account deletion, shared user data (e.g. comments, reviews, likes) is kept but made anonymous.
 -- Function to handle anonymization logic
 CREATE OR REPLACE FUNCTION anonymize_member_data() RETURNS TRIGGER AS
@@ -457,18 +473,20 @@ BEGIN
     JOIN artist ON event.artist_id = artist.artist_id
     WHERE event.event_id = NEW.event_id;
 
+    IF NEW.member_id <> event_owner_id THEN
     -- Insert a notification for the event owner
-    INSERT INTO notification (notification_message, notification_date, member_id)
-    VALUES (
-        'commented your event:',
-        CURRENT_TIMESTAMP,
-        event_owner_id
-    )
-    RETURNING notification_id INTO new_notification_id;  -- Capture the new notification ID
+        INSERT INTO notification (notification_message, notification_date, member_id)
+        VALUES (
+            'commented your event:',
+            CURRENT_TIMESTAMP,
+            event_owner_id
+        )
+        RETURNING notification_id INTO new_notification_id;  -- Capture the new notification ID
 
     -- Insert the notification record into comment_notification
-    INSERT INTO comment_notification (notification_id, comment_id)
-    VALUES (new_notification_id, NEW.comment_id);
+        INSERT INTO comment_notification (notification_id, comment_id)
+        VALUES (new_notification_id, NEW.comment_id);
+    END IF;
 
     RETURN NEW;  -- Return the new comment row
 END;
@@ -1027,7 +1045,7 @@ VALUES
     ('Lo-Fi Chillout', NOW() + INTERVAL '17 days', 'Downtown Café', 'Relax with mellow lo-fi beats in a cozy café setting.', 20.00, 10.00, 'Private', 4.3, 70, 2400, 'default_event.png', 'Active', NULL),
     ('Bluegrass Bonanza', NOW() + INTERVAL '21 days', 'Country Barn', 'A fun-filled evening of bluegrass music and dance.', 40.00, 15.00, 'Public', 4.2, 45, 2450, 'default_event.png', 'Active', NULL),
     ('Hard Rock Havoc', NOW() + INTERVAL '33 days', 'Rock City Arena', 'A powerful night of hard rock music with top bands.', 60.00, 35.00, 'Public', 4.5, 65, 2500, 'default_event.png', 'Active', NULL),
-    ('House Set', NOW() + INTERVAL '5 days', 'AEFEUP', 'FEUP Café with House Music', 0.00, 0.00, 'Public', 5.0, 3, 500, 'default_event.png', 'Active', NULL);
+    ('House Set', NOW() + INTERVAL '1 day 3 minutes','AEFEUP','FEUP Café with House Music',0.00,0.00,'Public',5.0,3,500,'default_event.png','Active',NULL);
 
 INSERT INTO comment (text, comment_date, event_id, member_id, response_comment_id)
 VALUES 

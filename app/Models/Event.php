@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth; 
 
+use App\Models\EventNotification;
 
 class Event extends Model
 {
@@ -43,17 +44,36 @@ class Event extends Model
             'capacity' => 'required|numeric|min:10',
             'event_media' => 'required|string|max:100',
             'event_status' => 'required|in:Active,Cancelled',
-            'cancel_date' => 'nullable|date', 
+            'cancel_date' => 'nullable|date',
             'artist_id' => 'required|string'
         ]);
         return $validator;
     }
-    
-    public function tickets(){return $this->hasMany(Ticket::class, 'event_id', 'event_id');}
-    public function invitations(){return $this->hasMany(Invitation::class, 'event_id', 'event_id');}
-    public function requests(){return $this->hasMany(JoinRequest::class, 'event_id', 'event_id');}
-    public function artist(){return $this->belongsTo(Artist::class, 'artist_id', 'artist_id');}
-    public function tags(){return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id');}
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'event_id', 'event_id');
+    }
+    public function invitations()
+    {
+        return $this->hasMany(Invitation::class, 'event_id', 'event_id');
+    }
+    public function requests()
+    {
+        return $this->hasMany(JoinRequest::class, 'event_id', 'event_id');
+    }
+    public function artist()
+    {
+        return $this->belongsTo(Artist::class, 'artist_id', 'artist_id');
+    }
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'event_tag', 'event_id', 'tag_id');
+    }
+    public function notifications()
+    {
+        return $this->hasMany(EventNotification::class, 'event_id');
+    }
     public function getTicketCountAttribute()
     {
         return $this->tickets()->count();
@@ -61,9 +81,9 @@ class Event extends Model
     public static function upcomingEvents()
     {
         return self::where('event_date', '>', now())
-                   ->where('event_status', '<>', 'Cancelled')
-                   ->get();
-    }    
+            ->where('event_status', '<>', 'Cancelled')
+            ->get();
+    }
     public static function pastEvents()
     {
         return self::where('event_date', '<', now())->get();
@@ -76,27 +96,26 @@ class Event extends Model
         }
         return self::create($data);
     }
-    public static function getFeedbackByTags(array $tagIds)
+
+    //filter events by tags
+    public static function getEventsByTagsAndType(array $tagIds, array $eventTypes)
     {
-        // Retrieve events that have the given tags
-        $events = self::whereHas('tags', function ($query) use ($tagIds) {
-            $query->whereIn('tags.tag_id', $tagIds); // Filter events by tag IDs (using tag_id)
-        }) ->get();
-        // Prepare a collection of events and their feedback
-        $eventsWithFeedback = $events->map(function ($event) {
-            return [
-                'event' => $event,
-                'feedback' => $event->feedback // Get the feedback for the event
-            ];
-        });
-        return $eventsWithFeedback;
-    }
-    public static function getEventsByTags(array $tagIds)
-    {
-        // Get event IDs that match the tag filter criteria
-        $eventIds = EventTag::getEventIdsByTags($tagIds);
-        // Retrieve events where event_id is in the filtered event IDs
-        return self::whereIn('event_id', $eventIds)->get();
+        // Start with a base query
+        $query = self::query();
+
+        // Step 1: If tagIds is provided, filter by event tags
+        if (!empty($tagIds)) {
+            $eventIds = EventTag::getEventIdsByTags($tagIds);
+            $query->whereIn('event_id', $eventIds);
+        }
+
+        // Step 2: If eventTypes is provided, filter by event type
+        if (!empty($eventTypes)) {
+            $query->whereIn('type_of_event', $eventTypes);
+        }
+
+        // Step 3: Get the filtered events
+        return $query->get();
     }
 
     public function getIsRatedAttribute()
@@ -123,4 +142,5 @@ class Event extends Model
             ->where('event.artist_id', $this->artist_id)
             ->avg('rating');
     }
+
 }

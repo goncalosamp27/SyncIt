@@ -30,10 +30,16 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         const allSelectedTags = Object.values(selectedTags)
-            .flat() 
+            .flat()
             .filter(tag => tag !== '0');
 
         console.log('Selected Tags:', allSelectedTags);
+
+        const eventTypes = Array.from(document.querySelectorAll('input[name="event_type"]:checked'))
+            .map(input => input.value.charAt(0).toUpperCase() + input.value.slice(1)); // Capitalize the first letter
+
+        console.log('Selected Event Types:', eventTypes);
+
 
         // Fetch filtered events
         fetch(filterEventsUrl, {
@@ -42,13 +48,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             },
-            body: JSON.stringify({ tags: allSelectedTags }) // Send the selected tags inside an object
+            body: JSON.stringify({ tags: allSelectedTags, event_type: eventTypes })
         })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to fetch filtered events');
                 }
-                return response.json(); // Parse JSON for events data
+                return response.json();
             })
             .then(data => {
                 console.log('Filtered Events Data:', data);
@@ -73,10 +79,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!response.ok) {
                     throw new Error('Failed to render event');
                 }
-                return response.text(); // Expecting HTML response
+                return response.text();
             })
             .then(data => {
-                //console.log(data); 
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = data;
 

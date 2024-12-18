@@ -21,11 +21,13 @@ use App\Http\Controllers\JoinRequestController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\ReportController;
 
 
 use App\Models\Artist;
 
 Route::redirect('/', '/home');
+Route::redirect('/admin', '/admin/members/active');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::get('/artist/{artist_id}', [ArtistController::class, 'show'])->name('artist');
@@ -55,6 +57,10 @@ Route::controller(EventController::class)->group(function () {
     });
 });
 
+Route::post('/event/{event_id}/report', [ReportController::class, 'createReport'])->name('create.report');
+Route::get('/admin/reports/{status}', [ReportController::class, 'showReports'])->middleware('admin')->name('admin.reports');
+Route::put('/admin/reports/{report}/mark-solved', [ReportController::class, 'markAsSolved'])->middleware('admin')->name('reports.markSolved');
+
 Route::get('/event/{event_id}', [EventController::class, 'show'])->name('event');
 Route::get('/events/create', [EventController::class, 'create'])->middleware('auth')->name('events.create');
 Route::post('/events/store', [EventController::class, 'store'])->name('events.store');
@@ -80,21 +86,21 @@ Route::get('/event/{event_id}/comments', [CommentController::class, 'index'])->n
 // Protected routes: require authentication
 Route::controller(CommentController::class)->middleware(['auth'])->group(function () {
     Route::post('/event/{event_id}/comments', 'store')->name('comments.store');
-    Route::put('/event/{event_id}/comments/{comment_id}', 'update')->name('comments.update');
     Route::delete('/event/{event_id}/comments/{comment_id}', 'destroy')->name('comments.destroy');
+    Route::put('/update-comment/{comment_id}', 'update')->name('comments.update');
 });
 
 
-
+/*
 Route::controller(CommentVoteController::class)->middleware(['auth'])->group(function () {
     Route::post('/comments/{comment_id}/vote', 'vote')->name('comments.vote');
 });
-
+*/
 
 //AJAX
 Route::post('/future-events/filter', [EventController::class, 'filterEvents'])->name('events.filter');
 Route::post('/future-events', function (Request $request) {
-    Log::info($request->input('tagsMusic'));
+    //Log::info($request->input('tagsMusic'));
     $events = $request->input('events');
     $tagsMusic = $request->input('tagsMusic');
     $tagsDance = $request->input('tagsDance');
