@@ -3,6 +3,7 @@
 .event-comment-div {
     margin-top: 3rem;
     font-size: clamp(1rem, 2.5vw, 1.5rem); /* Dynamically adjust font size */
+    padding: 5px;
     line-height: 1.6; /* Adjust line height for readability */
     word-wrap: break-word; /* Ensure long words or URLs break nicely */
     max-width: 100%; /* Keep within container bounds */
@@ -10,6 +11,7 @@
     border-radius: 0.5rem;
     margin-bottom: 2rem;
     box-sizing: border-box; /* Include padding and border in size calculations */
+
 }
 
 .event-comment {
@@ -80,6 +82,16 @@
 	background-color: rgb(134, 58, 58);
 }
 
+.upvote-button.active {
+    background-color: rgb(81, 154, 250); 
+    color: white; 
+}
+
+.downvote-button.active {
+    background-color: rgb(134, 58, 58); 
+    color: white; 
+}
+
 .count{
 	color: var(--black-color);
 	font-weight: bold;
@@ -89,24 +101,34 @@ textarea {
 	color: black;
   }
 
-.comment-edit-textarea {
+  .comment-edit-textarea {
     width: 100%; /* Full width of the container */
-    padding: 10px; /* Inner spacing */
-    font-size: 22px; /* Font size */
-    font-family: Arial, sans-serif; /* Font style */
-    color: #333; /* Text color */
-    border: 1px solid #ccc; /* Border style */
-    border-radius: 5px; /* Rounded corners */
-    box-sizing: border-box; /* Ensures padding doesn't affect width */
-    background-color: #f9f9f9; /* Light gray background */
+    padding: 1rem; /* Match padding with .event-comment-text */
+    font-size: clamp(1rem, 2.5vw, 1.5rem); /* Responsive font size */
+    font-family: Arial, sans-serif; /* Match the font with the rest of the site */
+    color: var(--white-color); /* Match text color with .event-comment-text */
+    border: 1px solid var(--primary-color); /* Border color to match buttons */
+    border-radius: 0.5rem; /* Same radius as .event-comment-div */
+    box-sizing: border-box; /* Ensure padding doesn't affect width */
+    background-color: var(--black-color); /* Match background with .event-comment-div */
     resize: none; /* Disable resizing */
     outline: none; /* Remove default focus outline */
-    transition: border-color 0.3s ease-in-out; /* Smooth border transition */
+    transition: border-color 0.3s ease-in-out, background-color 0.3s ease-in-out; /* Smooth transitions */
 }
 
 /* Add hover and focus styles for better interaction */
-.comment-edit-textarea:focus {
-    border-color: #007BFF; /* Blue border on focus */
-    background-color: #ffffff; /* White background on focus */
+.comment-edit-textarea:hover {
+    border-color: var(--hover-color); /* Match hover color with .comment-highlighter */
 }
-  
+
+.comment-edit-textarea:focus {
+    border-color: rgb(81, 154, 250); /* Blue border on focus, similar to upvote hover */
+    background-color: var(--black-color); /* Keep the background consistent */
+    color: var(--white-color); /* Ensure text remains visible */
+}
+
+/* Optional: Placeholder styling */
+.comment-edit-textarea::placeholder {
+    color: var(--hover-color); /* Subtle placeholder color to match site design */
+    opacity: 0.8; /* Slightly faded */
+}

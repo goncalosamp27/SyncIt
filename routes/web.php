@@ -17,6 +17,7 @@ use App\Http\Controllers\EditEventController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CommentVoteController;
 use App\Http\Controllers\JoinRequestController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\Auth\LoginController;
@@ -81,22 +82,15 @@ Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])->name('
 Route::post('/event/request-access', [JoinRequestController::class, 'requestAccess'])->name('request-access')
     ->middleware(['auth', 'notAdmin']);
 
-// Public route: allows unauthenticated users to fetch comments
-Route::get('/event/{event_id}/comments', [CommentController::class, 'index'])->name('comments.index');
-
-// Protected routes: require authentication
 Route::controller(CommentController::class)->middleware(['auth'])->group(function () {
     Route::post('/event/{event_id}/comments', 'store')->name('comments.store');
     Route::delete('/event/{event_id}/comments/{comment_id}', 'destroy')->name('comments.destroy');
     Route::put('/update-comment/{comment_id}', 'update')->name('comments.update');
 });
 
+Route::get('/event/{event_id}/comments', [CommentController::class, 'index'])->name('comments.index');
 
-/*
-Route::controller(CommentVoteController::class)->middleware(['auth'])->group(function () {
-    Route::post('/comments/{comment_id}/vote', 'vote')->name('comments.vote');
-});
-*/
+Route::post('/comments/{comment_id}/vote', [CommentVoteController::class, 'voteComment'])->middleware('auth');
 
 //AJAX
 Route::post('/future-events/filter', [EventController::class, 'filterEvents'])->name('events.filter');
