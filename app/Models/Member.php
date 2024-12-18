@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\FileController;
 
 class Member extends Authenticatable
 {
@@ -147,4 +148,8 @@ class Member extends Authenticatable
     {
         return Artist::where('artist_id', $member_id)->exists();
     }
+
+    public function getProfileImage() {
+        return FileController::get('profile', $this->member_id);
+    }    
 }

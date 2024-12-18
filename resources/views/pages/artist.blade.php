@@ -11,7 +11,7 @@
             @can('isBanned', $artist->member)
               <img src="{{ asset('storage/profiles/default_user.png') }}" alt="Default Profile Picture">
             @else
-                <img src="{{ asset('storage/profiles/' . $artist->member->profile_pic_url) }}" alt="User Profile Picture">
+                <img src="{{ $artist->member->getProfileImage() }}" alt="User Profile Picture">
             @endcan
           </div>
           <div class="artist-rating">
