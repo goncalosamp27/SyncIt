@@ -33,7 +33,7 @@
             </div>
         </div>
 
-        @if(Auth::check() && Auth::id() == $comment->member_id)
+        @if(Auth::check() && Auth::id() != $comment->member_id)
         <div class="up-down-votes">
             <div class="upvote">
                 <button class="upvote-button" data-comment-id="{{ $comment->id }}" onclick="voteComment('up', this)">
