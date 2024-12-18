@@ -1,5 +1,12 @@
 @import url('variables.css');
 
+.invitation-data {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Ensures uniform spacing */
+    height: 0%; /* Ensures it takes up full container height */
+}
+
 .invitation-card{
 	margin-top: 2rem;
     background-color: #f9f9f9;
@@ -38,22 +45,59 @@
 		font-weight: bold;
 		color: var(--hover-color);
 }
-.invitation-text {
-    width: 100%; /* Adjust as needed for layout */
-    max-width: 100%; /* Prevent overflowing parent container */
-    overflow-wrap: break-word; /* Break long words to prevent overflow */
-    word-wrap: break-word; /* Legacy support for older browsers */
-    white-space: normal; /* Allow text to wrap normally */
-    overflow: hidden; /* Prevent content overflow */
-    text-overflow: ellipsis; /* Optional: Add ellipsis for trimmed overflow (use only if truncation is desired) */
-	color: var(--black-color);
-	font-size: 1.2rem;
-	font-weight: bold;
-	text-align:justify;
+
+.invitation-message {
+    display: flex; /* Use flexbox for horizontal alignment */
+    align-items: center; /* Vertically align elements in the center */
+    gap: 5px; /* Adds spacing between the elements */
+    color: var(--black-color);
 }
+
+.invitation-message p {
+    margin: 0; /* Remove default margin from <p> */
+}
+
+.invitation-username {
+    font-size: 1.5rem;
+	font-weight: bold;
+	color: var(--primary-color);
+    font-weight: bold; /* Optional: Make the @username bold */
+}
+
+.invitation-text {
+    gap: 5px;
+    width: 100%; /* Ensures full container width */
+    max-width: 600px; /* Optional: Set a reasonable max width for better readability */
+    margin: 0 auto; /* Center align the text block horizontally */
+    padding: 0.8rem 1rem; /* Add padding for spacing inside the container */
+    box-sizing: border-box; /* Ensure padding is included in width */
+    
+    overflow-wrap: break-word; /* Break long words to prevent overflow */
+    word-wrap: break-word; /* Legacy support */
+    white-space: normal; /* Allow text to wrap naturally */
+
+    color: #fff; /* Use variable for color */
+    font-size: 1.2rem; /* Maintain text size */
+    font-weight: bold; /* Emphasize the text */
+    line-height: 1.5; /* Improve line spacing for readability */
+    text-align: justify; /* Justify the text for a clean, professional look */
+
+    background-color: var(--black-color); /* Optional: Add a light background for contrast */
+    border-radius: 8px; /* Slightly round the corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow for depth */
+
+    overflow: hidden; /* Prevent content from overflowing */
+    text-overflow: ellipsis; /* Optional: Add ellipsis for trimmed text */
+}
+
 
 .delete-notification-button:hover{
     background-color: #d43a3a;
+}
+
+.margin-delete {
+    margin-top: -5rem; 
+    text-align: right; 
 }
 
 .delete-notification-button{
@@ -75,13 +119,61 @@
 	margin-top: 10rem;
 }
 
-.invitation-username{
-	font-size: 1.5rem;
-	font-weight: bold;
-	color: var(--primary-color);
-}
 
+.invitation-username p{
+    color: var(--black-color);
+    margin: 0; /* Prevents uneven margins */
+}
 .invitation-event-card {
 	margin-left: auto;
 	margin-right: auto;
 }
+
+
+.pagination-container {
+    text-align: center;
+    margin-top: 45px;
+}
+
+.pagination {
+    display: inline-flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination li {
+    margin: 0 5px;
+}
+
+.pagination li a,
+.pagination li span {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease
+}
+
+.pagination li a:hover {
+    background-color: var(--hover-color);
+    color: #fff;
+    border: 1px solid #fff;
+    transform: translateY(-5px);
+}
+
+.pagination li.active span {
+    background-color: var(--primary-color);
+    color: white;
+    border: 1px solid var(--primary-color);
+}
+
+.pagination li.disabled span {
+    color: #ccc;
+    cursor: not-allowed;
+    background-color: transparent;
+    border: 1px solid #ccc;
+}
+

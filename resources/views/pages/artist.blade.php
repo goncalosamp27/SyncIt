@@ -46,7 +46,9 @@
           <h2>Upcoming Events:</h2>
           <div class="events-list">
           @foreach ($artist->events->where('event_date', '>', now())->take(2) as $event)
+            @if ($event->event_status !== 'Cancelled')
               @include('partials.event-card', ['event' => $event])
+            @endif     
           @endforeach
 
           </div>
@@ -60,7 +62,7 @@
           <h2>Past Events:</h2>
           <div class="events-list">
           @foreach ($artist->events->where('event_date', '<', now())->take(2) as $event)
-              @include('partials.event-card', ['event' => $event])
+            @include('partials.event-card', ['event' => $event]) 
           @endforeach
           </div>
           <a href="{{ route('your-events') }}">

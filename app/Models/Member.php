@@ -33,7 +33,7 @@ class Member extends Authenticatable
     {
         $validator = Validator::make($data, [
             'username' => 'required|string|max:255|regex:/^[a-zA-Z0-9_]+$/',
-            'display_name' => 'required|regex:/^[A-Za-z0-9_ ]+$/|min:3|max:50',
+            'display_name' => 'required|regex:/^[A-Za-z0-9_. ]+$/|min:3|max:50',
             'email' => 'required|email|unique:member,email',
             'password' => 'required|min:8|max:100',
             'member_status' => 'required|in:Active,Suspended,Banned',
@@ -71,6 +71,41 @@ class Member extends Authenticatable
         }
 
         return false;
+    }
+
+
+    public function deleteAccount($password, $confirmation)
+    {
+        // Ensure the confirmation message is correct
+        if ($confirmation !== 'I want to delete my account') {
+            return [
+                'status' => false,
+                'message' => 'The confirmation message is incorrect.',
+            ];
+        }
+
+        // Verify the password
+        if (!Hash::check($password, $this->password)) {
+            return [
+                'status' => false,
+                'message' => 'The provided password is incorrect.',
+            ];
+        }
+
+        // Perform account deletion
+        try {
+            $this->delete();
+            return [
+                'status' => true,
+                'message' => 'Account deleted successfully.',
+            ];
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+            return [
+                'status' => false,
+                'message' => 'Failed to delete the account. Please try again later.',
+            ];
+        }
     }
 
     // Relationships

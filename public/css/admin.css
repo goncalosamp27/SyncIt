@@ -4,8 +4,9 @@
     width: 80%;
     align-content: center;
     margin: 0 auto; /* Centers horizontally */
-
+    margin-bottom: 2rem;
 }
+
 .member-card {
     display: flex;
     align-items: center;
@@ -18,6 +19,9 @@
     transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
+.admin_page h1 {
+    margin-top: 10px;
+}
 .member-card:hover {
     background-color: var(--secondary-color);
 }
@@ -35,6 +39,22 @@
     flex-grow: 1;
 }
 
+.report-details {
+    height: 150px;
+    max-width: 75%;
+    display:flex;
+    flex-direction: column;
+}
+
+.message {
+    max-width: 100%; /* Ensure it respects the parent's width */
+    width: 90%; /* Make it fill the parent */
+    word-wrap: break-word; /* Break long words if necessary */
+    overflow-wrap: break-word; /* Modern alternative to word-wrap */
+    word-break: break-word; /* Ensures long unbroken strings (like URLs) will break */
+    white-space: normal; /* Allow text to break into multiple lines */
+}
+
 .member-name {
     font-size: 1.2em;
     font-weight: bold;
@@ -43,17 +63,39 @@
 }
 
 .member-username {
+    color: var(--hover-color);
+    margin: 5px 0 0;
+}
+.member-username2 {
     color: var(--gray-color);
     margin: 5px 0 0;
 }
 
-.member-operations {
+.member-operations, .report-operations{
     margin-left: auto;
     flex-grow: 1; 
     display: flex; 
     justify-content: flex-end;
 }
 
+.report-operations button {
+    width: 100%;
+}
+
+.report-operations form {
+    margin: 0;
+    width: 100%;
+}
+
+.report-operations{
+    height: 150px;
+    max-width: 140px;
+    display: flex; /* Makes it a flex container */
+    flex-direction: column; /* Align children vertically (column) */
+    justify-content: center; /* Center children vertically */
+    align-items: flex-end; /* Align children to the start of the container */
+    gap: 10px; /* Space between children */
+}
 
 .admin_page .search-bar {
     display: flex;
@@ -163,7 +205,7 @@
 }
 
 /* Restrict Button */
-.admin_page .member-operations>button {
+.admin_page .member-operations button, .admin_page .report-operations button{
     padding: 10px 15px;
     background-color: var(--primary-color);
     color: #fff;
@@ -173,10 +215,10 @@
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
-    margin-left: 5px;
+    margin-left: 0px;
 }
 
-.admin_page .member-operations>button:hover {
+.admin_page .member-operations button:hover, .admin_page .report-operations button:hover{
     background-color: var(--hover-color);
 }
 
