@@ -23,6 +23,35 @@
             </form>  
         @elseif ($ticket->event->event_date < $now)
             <button class="no-refund-button-attended" disabled>Event Attended</button>
+
+            <div class="ticket-event-rating">
+                    @if (!$ticket->event->isRated)
+                        <form action="{{ route('rate-event', ['ticket_id' => $ticket->ticket_id]) }}" method="POST" class="rating-form">
+                            @csrf
+                            <div class="rating-container">
+                                <div class="ticket-rating-stars">
+                                    @for ($i = 5; $i >= 1; $i--)
+                                        <input type="radio" name="rating" value="{{ $i }}" 
+                                            id="rating-{{ $ticket->ticket_id }}-{{ $i }}" 
+                                            class="ticket-rating-input" required>
+                                        <label for="rating-{{ $ticket->ticket_id }}-{{ $i }}" 
+                                            class="ticket-rating-label">★</label>
+                                    @endfor
+                                </div>
+                                <button type="submit" class="ticket-rate-event-button">Rate Event</button>
+                            </div>
+                        </form>
+                    @else
+                        <div class="ticket-rated-display">
+                            <span class="ticket-rating-text">You rated this event:</span>
+                            <div class="rated-stars">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    <span class="ticket-rated-star {{ $i <= $ticket->event->userRating ? 'filled' : '' }}">★</span>
+                                @endfor
+                            </div>
+                        </div>
+                    @endif
+                </div>
         @else
             <button class="no-refund-button" disabled>Refund unavailable</button>
         @endif
@@ -31,4 +60,5 @@
     <div class="ticket-event-card">
          @include('partials.event-card', ['event' => $ticket->event])  
     </div>
+
 </div>

@@ -18,9 +18,11 @@ use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\JoinRequestController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ReportController;
+
 
 use App\Models\Artist;
 
@@ -68,6 +70,10 @@ Route::get('/future-events', [EventController::class, 'showTagsPerTypeFuture'])-
 Route::get('/events/search', [EventController::class, 'search'])->name('events.search');
 Route::post('/event/{event_id}/cancel', [EventController::class, 'cancelEvent'])->name('event.cancel');
 Route::post('/events/getTags', [EventController::class, 'getTags'])->name('events.filters.tags');
+
+Route::controller(RatingController::class)->middleware(['notAdmin', 'auth'])->group(function () {
+    Route::post('/rate-event/{ticket_id}', 'rateEvent')->name('rate-event');
+});
 
 Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])->name('buy-ticket')->middleware('auth');
 

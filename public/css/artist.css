@@ -39,6 +39,103 @@
     align-items: center;
 }
 
+.artist-rating {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.rating-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rating-display .stars {
+    display: flex;
+    align-items: center;
+}
+
+.rating-display .star {
+    font-size: 24px;
+    color: #9b4dff; /* Match your purple theme */
+}
+
+.rating-display .star.filled {
+    color: #FFD700; /* Gold color for filled stars */
+}
+
+.rating-display .star.half {
+    color: linear-gradient(90deg, #FFD700 50%, #9b4dff 50%);
+    background: linear-gradient(90deg, #FFD700 50%, #9b4dff 50%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.rating-display .star.empty {
+    color: #9b4dff; /* Purple color for empty stars */
+    opacity: 0.5;
+}
+
+.rating-value {
+    color: #9b4dff;
+    font-size: 18px;
+}
+
+/* Ticket card rating styles */
+.event-rating-section {
+    background-color: #333;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.rating-stars {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.rating-input {
+    display: none;
+}
+
+.rating-label {
+    font-size: 2rem;
+    color: #9b4dff;
+    cursor: pointer;
+    margin: 0 5px;
+    transition: color 0.3s ease;
+}
+
+.rating-input:checked ~ .rating-label,
+.rating-input:checked ~ .rating-input:checked ~ .rating-label {
+    color: #FFD700;
+}
+
+.rate-event-button {
+    background-color: #9b4dff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.rate-event-button:hover {
+    background-color: #7a3ad3;
+}
+
+.rated-star {
+    color: #FFD700;
+    font-size: 1.5rem;
+}
+
 .profile-picture {
     position: relative;
     width: 300px;
@@ -175,6 +272,8 @@
     max-width: calc(50% - 20px); /* Ensure no card exceeds 50% width */
     box-sizing: border-box; /* Include padding and borders in the width */
 }
+
+
 
 @media (max-width: 768px) {
     .events-section .event-card {

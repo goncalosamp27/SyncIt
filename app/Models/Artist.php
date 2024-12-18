@@ -119,4 +119,11 @@ class Artist extends Model
         return $artist ? $artist->artist_id : null;
     }
 
+    public function getAverageRatingAttribute()
+    {
+        return $this->events->avg(function ($event) {
+            return $event->ratings()->avg('rating');
+        });
+    }
+
 }
