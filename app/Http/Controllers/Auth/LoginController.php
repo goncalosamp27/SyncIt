@@ -128,7 +128,7 @@ class LoginController extends Controller
             $event = $ticket->event;
     
             $notification = Notification::create([
-                'notification_message' => "Reminder! \"{$event->event_name}\" is tomorrow! Don't miss it!",
+                'notification_message' => "\"{$event->event_name}\" is happening soon! Make sure you don't miss it!",
                 'notification_date' => now(),
                 'member_id' => $memberId,
             ]);    
