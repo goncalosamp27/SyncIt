@@ -31,6 +31,20 @@ class EventController extends Controller
             'event' => $event,
             'comments' => $comments
         ]);
+
+        $comments = Comment::withCount([
+            'votes as upvotes_count' => function ($query) {
+                $query->where('vote', true);
+            },
+            'votes as downvotes_count' => function ($query) {
+                $query->where('vote', false);
+            }
+        ])->where('event_id', $event_id)->get(); 
+
+        return view('pages.event', [
+            'event' => $event,
+            'comments' => $comments 
+        ]);
     }
 
     public function refundTicket(string $ticket_id)
