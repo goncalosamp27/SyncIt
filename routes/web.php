@@ -80,16 +80,16 @@ Route::get('/event/{event_id}/comments', [CommentController::class, 'index'])->n
 // Protected routes: require authentication
 Route::controller(CommentController::class)->middleware(['auth'])->group(function () {
     Route::post('/event/{event_id}/comments', 'store')->name('comments.store');
-    Route::put('/event/{event_id}/comments/{comment_id}', 'update')->name('comments.update');
     Route::delete('/event/{event_id}/comments/{comment_id}', 'destroy')->name('comments.destroy');
+    Route::put('/update-comment/{comment_id}', 'update')->name('comments.update');
 });
 
 
-
+/*
 Route::controller(CommentVoteController::class)->middleware(['auth'])->group(function () {
     Route::post('/comments/{comment_id}/vote', 'vote')->name('comments.vote');
 });
-
+*/
 
 //AJAX
 Route::post('/future-events/filter', [EventController::class, 'filterEvents'])->name('events.filter');
