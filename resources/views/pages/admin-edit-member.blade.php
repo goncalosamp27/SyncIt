@@ -59,7 +59,7 @@
             <button type="submit" class="save-button">Save Changes</button>
 
             <!-- Discard Changes Button -->
-            <a href="{{ route('admin') }}" class="discard-button">Discard Changes</a>
+            <a href="{{ route('admin', ['status' => 'active']) }}" class="discard-button">Discard Changes</a>
 
         </form>
     </div>
