@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth; 
 
 use App\Models\EventNotification;
+use App\Http\Controllers\FileController;
 
 class Event extends Model
 {
@@ -143,4 +144,8 @@ class Event extends Model
             ->avg('rating');
     }
 
+    public function getEventImage() {
+        return FileController::get('event', $this->event_id);
+    }
+    
 }

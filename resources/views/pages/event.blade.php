@@ -66,7 +66,7 @@
 			</div>			
 			<a class="user-event-owner" href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}" style="display: flex; align-items: center; margin-top:1rem;">
 				<img 
-					src="{{ asset('storage/profiles/' . $event->artist->member->profile_pic_url) }}" alt="Event Picture"
+					src="{{ $event->artist->member->getProfileImage() }}" alt="Event Picture"
 					alt="Profile Picture" 
 					style="width: 5rem; height: 5rem; object-fit: cover; border-radius: 50%; margin-right: 1rem; border: 0.15rem solid white; box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.8);"
 				>
@@ -224,7 +224,7 @@
 		</div>
 
 		<div class="event-page-img">
-			<img src="{{ asset('storage/events/' . $event->event_media) }}" alt="Event Picture">
+			<img src="{{ $event->getEventImage() }}" alt="Event Picture">
 		</div>
 	</div>
 	

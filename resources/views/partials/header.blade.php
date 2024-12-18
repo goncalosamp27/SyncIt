@@ -41,7 +41,7 @@
             @if (Auth::check())
             <!-- User Info -->
 				<div class="user-info">				
-                    <img src="{{ asset('storage/profiles/' . Auth::user()->profile_pic_url) }}" alt="Profile Picture" class="profile-pic">
+                    <img src="{{ Auth::user()->getProfileImage() }}" alt="Profile Picture" class="profile-pic">
 
                    {{-- <img src="{{ Auth::user()->getProfileImage() }}" alt="Profile Picture" class="profile-pic"> --}}
 
