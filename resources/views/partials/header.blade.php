@@ -5,7 +5,7 @@
         @endif
 
         @if(Auth::guard('admin')->check())
-        <a class="menu-icon" href="{{ route('admin') }}">⚙️</a>
+        <a class="menu-icon" href="{{ route('admin', ['status' => 'active']) }}">⚙️</a>
         @endif
 
         <div class="logo">

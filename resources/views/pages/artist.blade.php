@@ -73,7 +73,7 @@
           @endforeach
 
           </div>
-          <a href="{{ route('your-events') }}">
+          <a href="{{ route('events.search', ['search' => $artist->member->username]) }}">
 				    @include('partials.show-more')
 			    </a>             
         </div>
@@ -86,7 +86,7 @@
             @include('partials.event-card', ['event' => $event]) 
           @endforeach
           </div>
-          <a href="{{ route('your-events') }}">
+          <a href="{{ route('events.search', ['search' => $artist->member->username]) }}">
 				    @include('partials.show-more')
 			    </a>        
         </div>

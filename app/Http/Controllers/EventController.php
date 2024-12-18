@@ -163,10 +163,17 @@ class EventController extends Controller
         $tagsSettings = Tag::type(['Settings'])->get();
 
         // Handle the search query using PostgreSQL full-text search
-        $events = Event::select('event.*') // Select from the event table (not events)
-            ->whereRaw("to_tsvector('english', COALESCE(event_name, '')) @@ to_tsquery('english', ?)", [$searchTerm])
-            ->orWhereRaw("to_tsvector('english', COALESCE(location, '')) @@ to_tsquery('english', ?)", [$searchTerm])
-            ->get();
+
+        if (empty($searchTerm)) {
+            $events = Event::all();
+        } 
+        else{
+            $events = Event::select('event.*')
+            ->whereRaw("fts_name @@ plainto_tsquery('english', ?)", [$searchTerm])
+            ->orWhereRaw("fts_location @@ plainto_tsquery('english', ?)", [$searchTerm])
+            ->orWhereRaw("fts_artist @@ plainto_tsquery('english', ?)", [$searchTerm])
+            ->get(); 
+        }
 
         return view('pages.events', [
             'events' => $events,

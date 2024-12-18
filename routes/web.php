@@ -34,8 +34,8 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/artist/{artist_id}', [ArtistController::class, 'show'])->name('artist');
 
 Route::controller(AdminController::class)->middleware('admin')->group(function () {
-    Route::get('admin/members/{status?}', 'getMembersByStatus')->name('admin');
-    Route::get('admin/search', 'search')->name('members.search');
+    Route::get('admin/members/{status}', 'getMembersByStatus')->name('admin');
+    Route::get('admin/members/active/search', 'search')->name('members.search');
     Route::get('admin/edit/member/{id}', 'getMember')->name('admin.edit.member');
     Route::put('admin/edit/member/{id}', 'updateMemberAdmin')->name('member.updates');
     Route::get('admin/register', 'createMember')->name('create.member');

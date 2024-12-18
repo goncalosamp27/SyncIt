@@ -85,7 +85,7 @@
   <form method="GET" action="{{ route('events.search') }}" class="search-bar">
       <button type="submit" class="search-button">🔍</button>
 
-      <input type="text" name="search" placeholder="Search for events or locations..." value="{{ request('search') }}">
+      <input type="text" name="search" placeholder="Search for events, locations or artists..." value="{{ request('search') }}">
       <button class="search-btn" type="submit">Search</button>
   </form>
 </div>
