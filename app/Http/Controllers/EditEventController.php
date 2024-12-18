@@ -46,7 +46,7 @@ class EditEventController extends Controller
         $eventDateTime = $eventDate . ' ' . $eventTime;
 
         if ($request->hasFile('event_media')) {
-            $path = $request->file('event_media')->store('events', 'public');
+            $path = $request->file('event_media')->store('event', 'public');
             $event->event_media= $path;
             $filename = basename($path);
             $event->event_media = $filename;
