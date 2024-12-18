@@ -61,7 +61,7 @@
                 <a href="{{ route('attended-events')}}">Attended Events</a>
                 <a href="{{ route('invitations')}}">Invitations</a>
 				<a href="">Reset Password</a>
-                <a href="javascript:void(0)" onclick="openModal()"><span class="delete-account">Delete Account</span></a>
+                <a href="javascript:void(0)" onclick="openModal(3)"><span class="delete-account">Delete Account</span></a>
             @endif
         </div>
     </div>

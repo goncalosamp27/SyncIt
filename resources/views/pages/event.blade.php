@@ -53,7 +53,7 @@
 					@endcan
 
 					@can('cancel', $event)
-						<button type="button" class="event-button2" onclick="openModal2	()">Cancel Event</button>
+						<button type="button" class="event-button2" onclick="openModal2()">Cancel Event</button>
 					@endcan
 
 					@if(Auth::check())
@@ -154,7 +154,6 @@
 								<input type="number" name="ticket_count" id="ticket-count" class="form-input" min="1" max="10" value="1" required>
 							</div>
 				
-							<!-- Credit Card Information -->
 							<div class="form-group">
 								<label for="card-number">Card Number</label>
 								<input type="text" name="card_number" id="card-number" class="form-input" maxlength="16" required placeholder="1234 5678 9012 3456" pattern="\d{16}">
@@ -169,7 +168,6 @@
 							</div>
 
 
-							<!-- Total Price Display -->
 							<div class="form-group2">
 								<p>Total Price: <strong id="total-price">{{ $event->price }}€</strong></p>
 							</div>
@@ -192,18 +190,27 @@
 						const totalPriceElement = document.getElementById('total-price');
 						const confirmButton = document.getElementById('confirm-button');
 						const ticketPrice = parseFloat({{ $event->price }}); 
+						const maxTickets = 10; 
+						const existingTickets = {{ $userTicketCount }}; 
+						const validTicketCount = maxTickets - existingTickets; 
 
 						function validateTicketCount() {
 							const ticketCount = parseInt(ticketCountInput.value) || 0;
-
-							if (ticketCount >= 1 && ticketCount <= 10) {
+							
+							if (ticketCount <= 0) {
+								confirmButton.disabled = true;
+								totalPriceElement.textContent = "Please select at least one ticket.";
+								totalPriceElement.style.color = "red"; // Red color for error message
+								return;
+							}
+							else if (ticketCount >= 1 && ticketCount <= validTicketCount) {
 								confirmButton.disabled = false; 
 								const totalPrice = (ticketCount * ticketPrice).toFixed(2);
 								totalPriceElement.textContent = `${totalPrice}€`; 
 								totalPriceElement.style.color = "#28a745"; 
 							} else {
 								confirmButton.disabled = true; 
-								totalPriceElement.textContent = "Invalid Ticket Count"; 
+								totalPriceElement.textContent = `Max tickets available: ${validTicketCount}`; 
 								totalPriceElement.style.color = "red"; 
 							}
 						}
