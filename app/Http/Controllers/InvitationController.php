@@ -87,7 +87,7 @@ class InvitationController extends Controller
 		}
 
         $invitation = new Invitation();
-        $invitation->invitation_message = null;
+        $invitation->invitation_message = "I accepted your Request! Join my Event!";
         $invitation->invitation_date = now(); 
         $invitation->event_id = $request->input('event_id');
         $invitation->invitor_id = $request->input('invitor_id');

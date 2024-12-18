@@ -14,9 +14,9 @@
 <body>
     @include('partials.header')
 
-    <div id="deleteAccountModal" class="new-modal" style="display: none;">
+    <div id="confirmationModal3" class="new-modal" style="display: none;">
         <div class="new-modal-content">
-            <span class="close-btn" onclick="closeModal()">×</span>
+            <span class="close-btn" onclick="closeModal(3)">×</span>
             <div class = "delete-form">
                 <h2>Delete Account</h2>
                 <p class = "delete-text">To delete your account, please confirm your password and type "I want to delete my account" in the box below.</p>
