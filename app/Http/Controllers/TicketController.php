@@ -17,12 +17,13 @@ class TicketController extends Controller {
         $member = Auth::user()->load('tickets');
         
         // Get valid tickets (upcoming events) and paginate them
-    $tickets = Ticket::where('member_id', Auth::id())
-    ->whereHas('event', function ($query) {
-        $query->where('event_date', '>', now()); // Only upcoming events
-    })
-    ->with('event') // Eager load the event data
-    ->paginate(3); // Limit to 3 tickets per page
+        $tickets = Ticket::where('member_id', Auth::id())
+            ->whereHas('event', function ($query) {
+                $query->where('event_date', '>', now()); // Only upcoming events
+            })
+            ->with('event') // Eager load the event data
+            ->paginate(3); // Limit to 3 tickets per page
+        
         return view('pages.tickets', [
             'tickets' => $tickets, 
             'member' => $member,
@@ -31,19 +32,21 @@ class TicketController extends Controller {
 
     public function ticketAndEventData2()
     {	
-		$member = Auth::user()->load('tickets');
-        $tickets = Ticket::where('member_id', Auth::id())
+        $member = Auth::user();
+        
+        $tickets = Ticket::where('member_id', $member->member_id)
             ->whereHas('event', function ($query) {
-                $query->where('event_date', '<=', now()); // Only upcoming events
+                $query->where('event_date', '<=', now()); // Only past events
             })
             ->with('event') // Eager load the event data
             ->paginate(3); // Limit to 3 tickets per page
 
-        return view('pages.tickets', [
+        return view('pages.attended', [
             'tickets' => $tickets, 
             'member' => $member,
         ]);
     }
+
 
     public function refundTicket(string $ticket_id)
     {   

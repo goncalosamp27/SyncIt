@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth; 
+
 use App\Models\EventNotification;
 
 class Event extends Model
@@ -114,6 +116,31 @@ class Event extends Model
 
         // Step 3: Get the filtered events
         return $query->get();
+    }
+
+    public function getIsRatedAttribute()
+    {
+        return $this->ratings()->where('member_id', Auth::id())->exists();
+    }
+
+    public function getUserRatingAttribute()
+    {
+        $rating = $this->ratings()->where('member_id', Auth::id())->first();
+        return $rating ? $rating->rating : null;
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class, 'event_id');
+    }
+
+    // Method to get average rating for the artist
+    public function getArtistAverageRating()
+    {
+        return $this->hasMany(Rating::class, 'event_id')
+            ->join('event', 'rating.event_id', '=', 'event.event_id')
+            ->where('event.artist_id', $this->artist_id)
+            ->avg('rating');
     }
 
 }
