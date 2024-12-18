@@ -113,6 +113,20 @@ function voteComment(voteType, button) {
     
     .then(data => {
         if (data.success) {
+            const upvoteButton = document.querySelector(`.upvote-button[data-comment-id="${commentId}"]`);
+            const downvoteButton = document.querySelector(`.downvote-button[data-comment-id="${commentId}"]`);
+
+            // Remove active class from both buttons
+            upvoteButton.classList.remove('active');
+            downvoteButton.classList.remove('active');
+
+            // Add active class to the selected button
+            if (voteType === 'upvote') {
+                upvoteButton.classList.add('active');
+            } else {
+                downvoteButton.classList.add('active');
+            }
+            
             const upvoteCount = document.querySelector(`#upvote-count-${commentId}`);
             const downvoteCount = document.querySelector(`#downvote-count-${commentId}`);
             upvoteCount.textContent = data.upvotes;
