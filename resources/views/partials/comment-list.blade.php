@@ -37,16 +37,25 @@
             <div class="up-down-votes">
                 <div class="upvote">
                     <button class="upvote-button" data-comment-id="{{ $comment->comment_id }}" onclick="voteComment('upvote', this)">
-                        👍<span class="count" id="upvote-count-{{ $comment->comment_id }}">{{ $upvotes_count ?? 0 }}</span>
+                        👍<span class="count" id="upvote-count-{{ $comment->comment_id }}">
+                            @if(!empty($comment->upvotes_count) && $comment->upvotes_count > 0)
+                                {{ $comment->upvotes_count }}
+                            @endif
+                        </span>
                     </button>
                 </div>
                 <div class="downvote">
                     <button class="downvote-button" data-comment-id="{{ $comment->comment_id }}" onclick="voteComment('downvote', this)">
-                        👎<span class="count" id="downvote-count-{{ $comment->comment_id }}">{{ $downvotes_count ?? 0 }}</span>
+                        👎<span class="count" id="downvote-count-{{ $comment->comment_id }}">
+                            @if(!empty($comment->downvotes_count) && $comment->downvotes_count > 0)
+                                {{ $comment->downvotes_count }}
+                            @endif
+                        </span>
                     </button>
                 </div>
             </div>
         @endif
+
 
     </div>
 @endforeach
