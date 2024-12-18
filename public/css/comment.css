@@ -82,6 +82,16 @@
 	background-color: rgb(134, 58, 58);
 }
 
+.upvote-button.active {
+    background-color: rgb(81, 154, 250); /* Light blue for active upvote */
+    color: white; /* Ensure the text is readable */
+}
+
+.downvote-button.active {
+    background-color: rgb(134, 58, 58); /* Light red for active downvote */
+    color: white; /* Ensure the text is readable */
+}
+
 .count{
 	color: var(--black-color);
 	font-weight: bold;
