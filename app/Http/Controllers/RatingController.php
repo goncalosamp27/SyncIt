@@ -21,12 +21,12 @@ class RatingController extends Controller
             // Find the ticket
             $ticket = Ticket::findOrFail($ticket_id);
             
-            // Check if the ticket belongs to the authenticated user
+            // Check if  ticket belongs to this member
             if ($ticket->member_id !== Auth::id()) {
                 return redirect()->back()->with('error', 'You are not authorized to rate this event.');
             }
 
-            // Check if the event has already happened
+            // Check if event  happened
             if ($ticket->event->event_date >= now()) {
                 return redirect()->back()->with('error', 'You can only rate past events.');
             }
@@ -47,10 +47,11 @@ class RatingController extends Controller
                 'rating' => $request->input('rating')
             ]);
 
+
             return redirect()->back()->with('success', 'Event rated successfully!');
         } catch (\Exception $e) {
             // Log the error and return a generic error message
-            \Log::error('Error rating event: ' . $e->getMessage());
+            dd('Error rating event: ' . $e->getMessage());
             return redirect()->back()->with('error', 'An error occurred while rating the event.');
         }
     }

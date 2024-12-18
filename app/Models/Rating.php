@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Rating extends Model
 {
+
+    protected $primaryKey = 'rating';
+
     protected $table = 'rating';
     
     protected $fillable = [
@@ -13,6 +16,8 @@ class Rating extends Model
         'member_id',
         'rating'
     ];
+
+    public $timestamps = false;
 
     public function event()
     {
