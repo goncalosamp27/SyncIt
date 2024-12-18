@@ -12,16 +12,15 @@
             <a href="{{ route('home') }}">
                 <img src="{{ asset('storage/syncit.svg') }}" alt="Logo" />
             </a>
+            <div style="margin-left: 15px;">
+                <a href="{{ route('events') }}" class="explore-btn">Explore Events</a>
+                <a href="{{ route('events') }}" class="explore-btn">Explore Artists</a>
+            </div>
+            
         </div>
     </div>
 
-    <div class="navbar-center hidden"> <!-- Search bar initially hidden -->
-        <form method="GET" action="{{ route('events.search') }}" class="search-bar">
-            <button type="submit" class="search-button">🔍</button>
-            <input type="text" name="search" placeholder="Search for events or locations..." value="{{ request('search') }}">
-            <button class="search-btn" type="submit">Search</button>
-        </form>
-        <a href="{{ route('events') }}" class="explore-btn">Explore</a>
+    <div class="navbar-center hidden"> <!-- Search bar initially hidden --> 
     </div>
 
     <div class="navbar-right">
@@ -41,11 +40,10 @@
 
             @if (Auth::check())
             <!-- User Info -->
-				<div class="user-info">
-	<!--				
+				<div class="user-info">				
                     <img src="{{ asset('storage/profiles/' . Auth::user()->profile_pic_url) }}" alt="Profile Picture" class="profile-pic">
--->
-                    <img src="{{ Auth::user()->profile_pic_url }}" alt="Profile Picture" class="profile-pic">
+
+                   {{-- <img src="{{ Auth::user()->getProfileImage() }}" alt="Profile Picture" class="profile-pic"> --}}
 
 					<h3>{{ Auth::user()->display_name }}</h3>
 					<p><strong>Username:</strong> {{ Auth::user()->username }}</p>
@@ -54,6 +52,7 @@
 				</div>
 
 				<!-- Menu Links -->
+                <a href="{{ route('events.create') }}">Create Event</a>
 				<a href="{{ route('profile.edit') }}">Edit Profile</a>
 				@if(Auth::user()->isArtist(Auth::user()->member_id))
 				<a href="{{ route('artist', ['artist_id' => Auth::user()->member_id]) }}">Artist page</a>
@@ -63,6 +62,7 @@
                 <a href="{{ route('attended-events')}}">Attended Events</a>
                 <a href="{{ route('invitations')}}">Invitations</a>
 				<a href="">Reset Password</a>
+                <a href="javascript:void(0)" onclick="openModal()"><span class="delete-account">Delete Account</span></a>
             @endif
         </div>
     </div>

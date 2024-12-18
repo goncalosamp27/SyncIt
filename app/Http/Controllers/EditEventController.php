@@ -8,6 +8,7 @@ use App\Models\Event;
 use App\Models\Tag;
 use App\Models\Ticket;
 use Illuminate\Support\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class EditEventController extends Controller
 {   
@@ -61,29 +62,72 @@ class EditEventController extends Controller
     public function tickets($event_id)
     {
         $event = Event::findOrFail($event_id);
-        $tickets = $event->tickets();
+        $this->authorize('seeParticipants', $event);
 
-        $tickets = $event->tickets()->with('member')->get();
-        return view('pages.manage-participants', [
+        // Fetch join requests
+        $requests = $event->requests()->with('member')->get();
+
+        // Group tickets by member and count tickets per member
+        $ticketsGrouped = $event->tickets()
+            ->with('member')
+            ->get()
+            ->groupBy('member_id')
+            ->map(function ($tickets) {
+                $member = $tickets->first()->member;
+                return [
+                    'member' => $member,
+                    'ticket_count' => $tickets->count(),
+                ];
+            });
+
+        $perPageRequests = 5; // Number of requests per page
+        $pageRequests = request()->input('page_requests', 1); // Current page for requests
+        $paginatedRequests = new LengthAwarePaginator(
+            $requests->forPage($pageRequests, $perPageRequests),
+            $requests->count(),
+            $perPageRequests,
+            $pageRequests,
+            ['path' => request()->url(), 'query' => request()->query()] // Keep query parameters
+        );
+
+        // Paginate the grouped tickets
+        $perPage = 5;
+        $page = request()->input('page', 1); // Get the current page
+        $paginatedTickets = new LengthAwarePaginator(
+            $ticketsGrouped->forPage($page, $perPage), // Slice the collection for the current page
+            $ticketsGrouped->count(), // Total number of items
+            $perPage, // Items per page
+            $page, // Current page
+            ['path' => request()->url(), 'query' => request()->query()] // Keep existing query parameters
+        );
+
+        return view('pages.participants', [
             'event' => $event,
-            'tickets' => $tickets
+            'ticketsGrouped' => $paginatedTickets, // Pass the paginated tickets
+            'requests' => $paginatedRequests,
         ]);
     }
 
-    public function deleteParticipant($event_id, $ticket_id)
+    public function deleteParticipant($event_id, $member_id)
     {
-        try 
-        {
-            $ticket = Ticket::findOrFail($ticket_id);
-            $member = $ticket->member; 
-            $ticket->delete();
-            return redirect()->route('participants', ['event_id' => $event_id ])->with('success', "@{$member->username}'s Ticket #{$ticket_id} deleted successfully!");
-        }
+        try {
+            $event = Event::findOrFail($event_id);
 
-        catch (\Exception $e) 
-        {
-            return redirect()->route('participants', ['event_id' => $event_id ])->with('error', "Failed to delete {$member->username}'s ticket.");
-        }   
+            // Find all tickets for this member within the event and delete them
+            $tickets = $event->tickets()->where('member_id', $member_id)->get();
+            $member = $tickets->first()->member; // Get member details for confirmation
+
+            foreach ($tickets as $ticket) {
+                $ticket->delete();
+            }
+
+            return redirect()->route('participants', ['event_id' => $event_id])
+                ->with('success', "@{$member->username}'s tickets have been deleted successfully!");
+        } catch (\Exception $e) {
+            dd("Error occurred", $e->getMessage()); // Debug: Output error message
+            return redirect()->route('participants', ['event_id' => $event_id])
+                ->with('error', "Failed to delete @{$member->username}'s tickets.");
+        }
     }
 
 	public function create()

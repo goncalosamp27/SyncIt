@@ -14,6 +14,29 @@
 <body>
     @include('partials.header')
 
+    <div id="deleteAccountModal" class="new-modal" style="display: none;">
+        <div class="new-modal-content">
+            <span class="close-btn" onclick="closeModal()">×</span>
+            <div class = "delete-form">
+                <h2>Delete Account</h2>
+                <p class = "delete-text">To delete your account, please confirm your password and type "I want to delete my account" in the box below.</p>
+                <form method="POST" action="{{ route('account.delete') }}">
+                    @csrf
+                    <div class="form-group2">
+                        <label for="password">Password:</label>
+                        <input type="password" name="password" id="password" required autocomplete="new-password">
+                    </div>
+                    <div class="form-group2">
+                        <label for="confirmation">Confirmation Message:</label>
+                        <input type="text" name="confirmation" id="confirmation" placeholder="I want to delete my account" required>
+                    </div>
+                    
+                    <button type="submit" class="delete-btn">Delete Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="content">
         @yield('content')
     </div>

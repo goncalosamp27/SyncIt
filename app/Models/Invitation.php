@@ -22,6 +22,7 @@ class Invitation extends Model
             'invitation_message' => 'nullable|string|max:500',  
             'invitation_date' => 'required|date|after_or_equal:today',  
             'event_id' => 'required|exists:event,event_id',  
+            'invitor_id' => 'required|exists:member,member_id',
             'member_id' => 'required|exists:member,member_id',  
         ]);
 
@@ -36,5 +37,9 @@ class Invitation extends Model
     public function invitationNotifications() 
     {
         return $this->hasMany(InvitationNotification::class, 'invitation_id', 'invitation_id');
+    }
+
+    public function invitor() {
+        return $this->belongsTo(Member::class, 'invitor_id', 'member_id');
     }
 }

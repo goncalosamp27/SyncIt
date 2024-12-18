@@ -12,24 +12,26 @@ use App\Models\Notification;
 use App\Models\Member;
 
 class NotificationController extends Controller
-{
+{   
     public function getNotifications()
     {
-        // Get the authenticated member
+        $currentPage = request()->get('page', 1); // Get the current page from the query string
+        \Log::info("Current Page: " . $currentPage);
+
         $member = Auth::user();
 
-        // Load notifications relationship (if exists on the Member model)
-        $member->load('notifications');
+        $notifications = Notification::where('member_id', $member->member_id)
+            ->orderBy('notification_date', 'desc') // Optional: Order by date
+            ->paginate(3);
 
-        // Alternatively, fetch notifications directly from the Notification model
-        $notifications = Notification::where('member_id', $member->member_id)->get();
+        // dd($notifications->toArray());
 
-        // Pass notifications and member to the view
         return view('pages.notifications', [
             'notifications' => $notifications,
             'member' => $member,
         ]);
     }
+
 
     public function deleteNotification(string $notification_id)
     {

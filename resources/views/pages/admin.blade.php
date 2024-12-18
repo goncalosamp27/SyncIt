@@ -4,30 +4,63 @@
     <div class="admin_page">
         <div class="participants-header">
 
-        <div class="tabs">
-            <a href="{{ route('admin', ['status' => 'active']) }}" > Members</a>
-            <a href="{{ route('admin', ['status' => 'banned']) }}" > Banned</a>
-            <a href="{{ route('admin', ['status' => 'suspended']) }}" > Suspended</a>
-            <a href="{{ route('create.member') }}"> New account</a>
+            <div class="tabs">
+                <a href="{{ route('admin', ['status' => 'active']) }}" > Members</a>
+                <a href="{{ route('admin', ['status' => 'banned']) }}" > Banned</a>
+                <a href="{{ route('admin', ['status' => 'suspended']) }}" > Suspended</a>
+                <a href="{{ route('admin.reports', ['status' => 'unsolved']) }}" > Reports</a>
+                <a href="{{ route('admin.reports', ['status' => 'solved']) }}" > Archive </a> 
+                <a href="{{ route('create.member') }}"> New account</a>
+            </div>
         </div>
 
-        </div>
-
-		<form method="GET" action="{{ route('members.search') }}" class="search-bar">
-				<button type="submit" class="search-button">🔍</button>
-				<input type="text" name="search" placeholder="Search by name or username" value="{{ request('search') }}">
-				<button class="search-btn" type="submit">Search</button>
-		</form>
-
-        @foreach ($members as $member)
-            <div class="member-card">
-                <div class="member-profile-pic">
-                    <img src="{{ asset('storage/profiles/' . $member->profile_pic_url) }}" alt="{{ $member->display_name }}">
+        @isset($reports)
+            <h1>Reports</h1>
+            @foreach($reports as $report)
+                <div class="member-card">
+                    <div class="member-profile-pic">
+                        <img src="{{ asset('storage/events/' . $report->event->event_media) }}" alt="{{ $report->event->event_name }}">
+                    </div>
+                    <div class="report-details">
+                        <h3 class="member-name">{{ $report->event->event_name }} by {{'@' . $report->event->artist->member->username }}</h3>
+                        <p class="member-username">Issued by {{'@' . $report->member->username }}</p>
+                        <p class="message"> {{$report->message }}</p>
+                    </div> 
+                    <div class="report-operations">
+                        <button class="view-event-button" onclick="location.href='{{ route('artist', ['artist_id' => $report->event->artist->member->member_id]) }}'"> View Profile </button>
+                        <button class="view-profile-button" onclick="location.href='{{ route('event', ['event_id' => $report->event_id]) }}'"> View Event </button>
+                        <form action="{{ route('reports.markSolved', ['report' => $report->report_id]) }}" method="POST" style="display: inline;">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="report-solved-button">Mark as Solved</button>
+                        </form>                    
+                    </div>
                 </div>
-                <div class="member-details">
-                    <h3 class="member-name">{{ $member->display_name }}</h3>
-                    <p class="member-username">{{'@' . $member->username }}</p>
-                </div> 
+            @endforeach
+            @if ($reports->isEmpty())
+                @include('partials.empty')
+            @endif
+            <div class="pagination-container">
+                {{ $reports->links('pagination::bootstrap-4') }}
+            </div>
+        @elseif(isset($members))
+            <h1>Members</h1>
+
+            <form method="GET" action="{{ route('members.search') }}" class="search-bar">
+                <button type="submit" class="search-button">🔍</button>
+                <input type="text" name="search" placeholder="Search by name or username" value="{{ request('search') }}">
+                <button class="search-btn" type="submit">Search</button>
+            </form>
+
+            @foreach ($members as $member)
+                <div class="member-card">
+                    <div class="member-profile-pic">
+                        <img src="{{ asset('storage/profiles/' . $member->profile_pic_url) }}" alt="{{ $member->display_name }}">
+                    </div>
+                    <div class="member-details">
+                        <h3 class="member-name">{{ $member->display_name }}</h3>
+                        <p class="member-username">{{'@' . $member->username }}</p>
+                    </div> 
                     <div class="member-operations">
                         @can('viewProfile', $member)
                             <button class="view-profile-button" onclick="location.href='{{ route('artist', ['artist_id' => $member->member_id]) }}'"> View Profile </button>
@@ -44,7 +77,6 @@
                             </button>
                             <button class="restrict-button" data-member-id="{{ $member->member_id }}">Restrict</button>
                         @endcan
-                        
                     </div>
 
                     <div class="restriction-modal" id="restrictionModal-{{ $member->member_id }}">
@@ -67,17 +99,20 @@
                                 <label for="duration-{{ $member->member_id }}">Duration (Days, for suspensions only):</label>
                                 <input type="number" name="duration" id="duration-{{ $member->member_id }}" min="0" class="restriction-duration" data-member-id="{{ $member->member_id }}">
                                 
-                                <!-- Warning Message for Duration -->
                                 <p class="duration-warning" id="warning-{{ $member->member_id }}" style="color: red; display: none;">
                                     Please provide a valid duration for the suspension.
                                 </p>
 
                                 <button type="submit" class="restriction-submit" data-member-id="{{ $member->member_id }}">Apply Restriction</button>
                             </form>
-
                         </div>
                     </div>
+                </div>
+            @endforeach
+            <div class="pagination-container">
+                {{ $members->links('pagination::bootstrap-4') }}
             </div>
-        @endforeach
+        @endisset
+
     </div>
 @endsection

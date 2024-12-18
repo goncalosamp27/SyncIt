@@ -10,6 +10,12 @@ class Notification extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'notification_message',
+        'notification_date',
+        'member_id',
+    ];
+
     protected $table = 'notification';
 
     protected $primaryKey = 'notification_id';
@@ -28,4 +34,5 @@ class Notification extends Model
     public function member(){return $this->belongsTo(Member::class, 'member_id', 'member_id');}
     public function invitationNotification(){return $this->hasOne(InvitationNotification::class, 'notification_id');}
     public function eventNotification(){return $this->hasOne(EventNotification::class, 'notification_id');}
+    public function commentNotification(){return $this->hasOne(CommentNotification::class, 'notification_id');}
 }

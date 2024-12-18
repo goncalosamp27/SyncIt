@@ -79,7 +79,7 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: conic-gradient(from 0deg, #9b4dff, transparent, #9b4dff);
+    background: conic-gradient(from 0deg, #B132D8, transparent, #B132D8);
     border-radius: 50%;
     z-index: -1;
     animation: rotate 3s linear infinite;
