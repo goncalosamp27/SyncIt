@@ -78,7 +78,7 @@ class CreateEventController extends Controller
                 // Create and save the event
                 $event = new Event($eventData);
                 if ($request->hasFile('event_files')) {
-                    $path = $request->file('event_files')->store('events', 'public');
+                    $path = $request->file('event_files')->store('event', 'public');
                     $event->event_media = basename($path);
                 }
                 else{
@@ -126,7 +126,7 @@ class CreateEventController extends Controller
             $event = new Event($eventData);
             $event = new Event($eventData); 
                 if ($request->hasFile('event_files')) {
-                    $path = $request->file('event_files')->store('events', 'public');
+                    $path = $request->file('event_files')->store('event', 'public');
                     $event->event_media = basename($path);
                 }
                 else{

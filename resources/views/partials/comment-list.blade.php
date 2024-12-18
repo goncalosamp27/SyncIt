@@ -2,7 +2,7 @@
     <script src="{{ asset('js/comment-list.js') }}" defer></script>
     <div class="event-comment-div" style="position: relative;">
         <div class="event-comment">
-            <img src="{{ asset('storage/profiles/' . $comment->member->profile_pic_url) }}" alt="Profile Picture"
+            <img src="{{ comment->member->getProfileImage() }}" alt="Profile Picture"
                 class="profile-pic">
             <div class="event-comment-text">
                 <div class="comment-highlighter">

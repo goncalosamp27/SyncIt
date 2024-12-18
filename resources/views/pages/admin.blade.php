@@ -19,7 +19,7 @@
             @foreach($reports as $report)
                 <div class="member-card">
                     <div class="member-profile-pic">
-                        <img src="{{ asset('storage/events/' . $report->event->event_media) }}" alt="{{ $report->event->event_name }}">
+                        <img src="{{ $report->event->getEventImage() }}" alt="{{ $report->event->event_name }}">
                     </div>
                     <div class="report-details">
                         <h3 class="member-name">{{ $report->event->event_name }} by {{'@' . $report->event->artist->member->username }}</h3>
@@ -55,7 +55,7 @@
             @foreach ($members as $member)
                 <div class="member-card">
                     <div class="member-profile-pic">
-                        <img src="{{ asset('storage/profiles/' . $member->profile_pic_url) }}" alt="{{ $member->display_name }}">
+                        <img src="{{ $member->getProfileImage() }}" alt="{{ $member->display_name }}">
                     </div>
                     <div class="member-details">
                         <h3 class="member-name">{{ $member->display_name }}</h3>
