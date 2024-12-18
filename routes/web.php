@@ -94,7 +94,7 @@ Route::controller(CommentVoteController::class)->middleware(['auth'])->group(fun
 //AJAX
 Route::post('/future-events/filter', [EventController::class, 'filterEvents'])->name('events.filter');
 Route::post('/future-events', function (Request $request) {
-    Log::info($request->input('tagsMusic'));
+    //Log::info($request->input('tagsMusic'));
     $events = $request->input('events');
     $tagsMusic = $request->input('tagsMusic');
     $tagsDance = $request->input('tagsDance');
