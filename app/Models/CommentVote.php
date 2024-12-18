@@ -14,7 +14,13 @@ class CommentVote extends Model
 
     protected $primaryKey = 'vote_comment_id';
 
-    public $timestamps = false; // No timestamps in your table
+    public $timestamps = false; 
+
+    protected $fillable = [
+        'comment_id',
+        'member_id',
+        'vote'
+    ];
 
     public static function validate($data)
     {
