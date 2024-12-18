@@ -17,12 +17,9 @@
 @import url('edit-page.css');
 @import url('notifications.css');
 @import url('info-page.css');
-<<<<<<< HEAD
 @import url('forgot-password.css');
-=======
 @import url('404.css');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
->>>>>>> main
 
 * {
   color: var(--text-color);
