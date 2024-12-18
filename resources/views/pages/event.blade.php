@@ -11,17 +11,13 @@
 			{{ session('error') }}
 		</div>
 	@endif
-
 	<script src="{{ asset('js/app.js') }}" defer></script>
 	<script src="{{ asset('js/comment.js') }}" defer></script>
-
+	<script src="{{ asset('js/comment-list.js') }}" defer></script>
 	<script>
 		const commentUrl = @json(route('comments.store', ['event_id' => $event->event_id]));
 		const getCommentsUrl = @json(route('comments.index', ['event_id' => $event->event_id]));
-		console.log("Comment URL:", commentUrl);
-		console.log("getComment URL:", getCommentsUrl);
 	</script>
-
 	<div id="cancelEventModal" class="new-modal" style="display: none;">
 		<div class="new-modal-content">
 			<span class="close-btn" onclick="closeModal2()">×</span>

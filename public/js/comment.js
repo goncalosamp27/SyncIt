@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    const commentsContainer = document.getElementById('comments-container');
+    //const commentsContainer = document.getElementById('comments-container');
 
     fetchComments();
 
@@ -21,14 +21,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Voting functionality
     document.getElementById('comment-list').addEventListener('click', function (e) {
-        console.log('Clicked element:', e.target);
-
         if (e.target.classList.contains('upvote-button') || e.target.classList.contains('downvote-button')) {
             e.preventDefault();
             console.warn('Voting requires login. Button clicked:', e.target);
             alert('Please log in to vote on comments.');
         }
     });
+
 });
 
 function fetchComments() {
@@ -63,7 +62,7 @@ function fetchComments() {
             console.error('Error occurred while fetching comments:', error.message);
         });
 }
-
+//add comment to the page 
 function postComment(button) {
     const commentText = document.getElementById('new-comment').value;
     const eventId = button.getAttribute('data-event-id'); // Get the event ID from the button
@@ -92,7 +91,7 @@ function postComment(button) {
         })
         .then(data => {
             if (data.success) {
-                //alert('Comment posted!');
+                console.log("Comment was saved");
                 document.getElementById('new-comment').value = ''; // Clear input
                 fetchComments(); // Fetch comments dynamically
             } else {
@@ -102,62 +101,4 @@ function postComment(button) {
         .catch(error => {
             console.error('Error occurred:', error);
         });
-}
-
-function toggleEdit(commentId) {
-    console.log(`Toggling edit for comment ID: ${commentId}`); // Debug log
-    const commentDisplay = document.querySelector(`#comment-text-${commentId} .comment-display`);
-    const editTextarea = document.getElementById(`edit-textarea-${commentId}`);
-
-    if (!commentDisplay || !editTextarea) {
-        console.error(`Comment display or textarea not found for comment ID ${commentId}`);
-        return;
-    }
-
-    if (editTextarea.style.display === "none") {
-        // Switch to edit mode
-        commentDisplay.style.display = "none";
-        editTextarea.style.display = "block";
-        editTextarea.focus();
-    } else {
-        // Save changes and switch back to display mode
-        const newText = editTextarea.value;
-        saveComment(commentId, newText);
-    }
-}
-
-
-function saveComment(commentId, newText) {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-    fetch(`/event/${eventId}/comments/${commentId}`, { 
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
-        },
-        body: JSON.stringify({ text: newText }),
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to update comment');
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            // Update the displayed comment text
-            const commentDisplay = document.querySelector(`#comment-text-${commentId} .comment-display`);
-            const editTextarea = document.getElementById(`edit-textarea-${commentId}`);
-            
-            commentDisplay.textContent = newText;
-            commentDisplay.style.display = "block";
-            editTextarea.style.display = "none";
-        } else {
-            alert('Failed to update comment');
-        }
-    })
-    .catch(error => {
-        console.error('Error occurred while updating comment:', error);
-    });
 }
