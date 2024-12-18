@@ -34,18 +34,19 @@
         </div>
 
         @if(Auth::check() && Auth::id() != $comment->member_id)
-        <div class="up-down-votes">
-            <div class="upvote">
-                <button class="upvote-button" data-comment-id="{{ $comment->id }}" onclick="voteComment('up', this)">
-                    👍<span class="count" id="upvote-count-{{ $comment->id }}">{{ $comment->upvotes ?? 0 }}</span>
-                </button>
+            <div class="up-down-votes">
+                <div class="upvote">
+                    <button class="upvote-button" data-comment-id="{{ $comment->comment_id }}" onclick="voteComment('upvote', this)">
+                        👍<span class="count" id="upvote-count-{{ $comment->comment_id }}">{{ $upvotes_count ?? 0 }}</span>
+                    </button>
+                </div>
+                <div class="downvote">
+                    <button class="downvote-button" data-comment-id="{{ $comment->comment_id }}" onclick="voteComment('downvote', this)">
+                        👎<span class="count" id="downvote-count-{{ $comment->comment_id }}">{{ $downvotes_count ?? 0 }}</span>
+                    </button>
+                </div>
             </div>
-            <div class="downvote">
-                <button class="downvote-button" data-comment-id="{{ $comment->id }}" onclick="voteComment('down', this)">
-                    👎<span class="count" id="downvote-count-{{ $comment->id }}">{{ $comment->downvotes ?? 0 }}</span>
-                </button>
-            </div>
-        </div>
         @endif
+
     </div>
 @endforeach

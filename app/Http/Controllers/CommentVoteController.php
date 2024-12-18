@@ -3,30 +3,37 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Comment;
 use App\Models\CommentVote;
 use Illuminate\Support\Facades\Auth;
 
 class CommentVoteController extends Controller
 {
-    public function vote(Request $request, $comment_id)
-{
-    $request->validate([
-        'vote' => 'required|in:up,down',
-    ]);
+    public function voteComment(Request $request, $comment_id)
+    {
+        return response()->json([
+            'success' => true
+        ]);
+        $request->validate([
+            'vote' => 'required|boolean',
+        ]);
 
-    $comment = Comment::findOrFail($comment_id);
+        $comment = Comment::findOrFail($comment_id);
+        $member_id = Auth::id();
 
-    if ($request->vote === 'up') {
-        $comment->increment('upvotes');
-    } else {
-        $comment->increment('downvotes');
+        CommentVote::updateOrCreate(
+            ['comment_id' => $comment_id, 'member_id' => $member_id],
+            ['vote' => $request->vote]
+        );
+
+        $upvotes = CommentVote::where('comment_id', $comment_id)->where('vote', true)->count();
+        $downvotes = CommentVote::where('comment_id', $comment_id)->where('vote', false)->count();
+
+        return response()->json([
+            'success' => true,
+            'upvotes' => $upvotes,
+            'downvotes' => $downvotes,
+        ]);
     }
-
-    return response()->json([
-        'success' => true,
-        'upvotes' => $comment->upvotes,
-        'downvotes' => $comment->downvotes,
-    ]);
 }
 
-}
