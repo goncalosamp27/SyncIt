@@ -138,10 +138,6 @@ class Member extends Authenticatable
         return $this->hasMany(Invitation::class, 'member_id', 'member_id');
     }
 
-    public function followNotifications()
-    {
-        return $this->hasMany(FollowNotification::class, 'follower_id', 'member_id');
-    }
     public function tickets()
     {
         return $this->hasMany(Ticket::class, 'member_id', 'member_id');

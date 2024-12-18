@@ -11,30 +11,27 @@
 			{{ session('error') }}
 		</div>
 	@endif
-
 	<script src="{{ asset('js/app.js') }}" defer></script>
 	<script src="{{ asset('js/comment.js') }}" defer></script>
-
+	<script src="{{ asset('js/comment-list.js') }}" defer></script>
 	<script>
 		const commentUrl = @json(route('comments.store', ['event_id' => $event->event_id]));
 		const getCommentsUrl = @json(route('comments.index', ['event_id' => $event->event_id]));
-		console.log("Comment URL:", commentUrl);
-		console.log("getComment URL:", getCommentsUrl);
 	</script>
+	<div id="confirmationModal1" class="new-modal" style="display: none">
+		@include('partials.confirm-overlay', [
+			'message' => 'Are you sure you want to cancel this event? You will not be able to revert this action.',
+			'route' => route('event.cancel', ['event_id' => $event->event_id]),
+			'id' => 1
+		])
+	</div>
 
-	<div id="cancelEventModal" class="new-modal" style="display: none;">
-		<div class="new-modal-content">
-			<span class="close-btn" onclick="closeModal2()">×</span>
-			<h2>Confirm Cancellation</h2>
-			<p>Are you sure you want to cancel this event?</p>
-			<div class="event-modal-buttons">
-				<form action="{{ route('event.cancel', ['event_id' => $event->event_id]) }}" method="POST">
-					@csrf
-					<button type="submit" class="confirm-button-cancel">Yes, Cancel</button>
-				</form>
-				<button type="button" class="cancel-button-cancel" onclick="closeModal2()">No, Go Back</button>
-			</div>
-		</div>
+	<div id="confirmationModal2" class="new-modal" style="display: {{ $errors->any() ? 'block' : 'none' }};">
+		@include('partials.confirm-overlay', [
+			'message' => 'Are you sure you want to report this event?',
+			'route' => route('create.report', ['event_id' => $event->event_id]),
+			'id' => 2
+		])
 	</div>
 
 	<div class="event-page-content">
@@ -52,11 +49,19 @@
 						<a href="{{ route('edit.event.show', ['event_id' => $event->event_id]) }}" class="event-button">
 							Edit
 						</a>
+						<button type="button" class="event-button2" onclick="openModal(1)">Cancel Event</button>
 					@endcan
 
 					@can('cancel', $event)
 						<button type="button" class="event-button2" onclick="openModal2	()">Cancel Event</button>
 					@endcan
+
+					@if(Auth::check())
+						<button onclick="openModal(2)" class="event-button2">
+							Report
+						</button>
+					@endif
+
 				</div>
 			</div>			
 			<a class="user-event-owner" href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}" style="display: flex; align-items: center; margin-top:1rem;">

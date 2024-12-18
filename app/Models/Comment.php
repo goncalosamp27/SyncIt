@@ -17,17 +17,17 @@ class Comment extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        
+
     ];
 
     public static function validate($data)
     {
         $validator = Validator::make($data, [
-            'text' => 'required|string',  
-            'comment_date' => 'required|date|after_or_equal:today',  
-            'event_id' => 'required|exists:event,event_id', 
-            'member_id' => 'required|exists:member,member_id', 
-            'response_comment_id' => 'nullable|exists:comment,comment_id',  
+            'text' => 'required|string',
+            'comment_date' => 'required|date|after_or_equal:today',
+            'event_id' => 'required|exists:event,event_id',
+            'member_id' => 'required|exists:member,member_id',
+            'response_comment_id' => 'nullable|exists:comment,comment_id',
         ]);
 
         return $validator;

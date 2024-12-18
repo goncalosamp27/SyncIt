@@ -78,9 +78,9 @@
       Register
     </button>
 
-    @can('beAdmin()')
+    @if(!auth()->guard('admin')->check())
     <a class="button button-outline" href="{{ route('login') }}">Login</a>
-    @endcan
+    @endif
 
   </form>
 </div>
