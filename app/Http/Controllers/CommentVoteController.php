@@ -11,9 +11,7 @@ class CommentVoteController extends Controller
 {
     public function voteComment(Request $request, $comment_id)
     {
-        return response()->json([
-            'success' => true
-        ]);
+
         $request->validate([
             'vote' => 'required|boolean',
         ]);
@@ -21,11 +19,24 @@ class CommentVoteController extends Controller
         $comment = Comment::findOrFail($comment_id);
         $member_id = Auth::id();
 
-        CommentVote::updateOrCreate(
-            ['comment_id' => $comment_id, 'member_id' => $member_id],
-            ['vote' => $request->vote]
-        );
+        // Check if a vote already exists for this member
+        $existingVote = CommentVote::where('comment_id', $comment_id)->where('member_id', $member_id)->first();
 
+        if ($existingVote) {
+            // If the existing vote is different from the new vote, update it
+            if ($existingVote->vote !== $request->vote) {
+                $existingVote->update(['vote' => $request->vote]);
+            }
+        } else {
+            // Create a new vote since one doesn't exist
+            CommentVote::create([
+                'comment_id' => $comment_id,
+                'member_id' => $member_id,
+                'vote' => $request->vote,
+            ]);
+        }
+
+        // Recalculate upvotes and downvotes
         $upvotes = CommentVote::where('comment_id', $comment_id)->where('vote', true)->count();
         $downvotes = CommentVote::where('comment_id', $comment_id)->where('vote', false)->count();
 

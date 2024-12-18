@@ -102,7 +102,7 @@ function voteComment(voteType, button) {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
-        body: JSON.stringify({ vote: voteValue }) // Send boolean value
+        body: JSON.stringify({ vote: voteValue }) 
     })
     .then(response => {
         if (!response.ok) {
@@ -113,11 +113,13 @@ function voteComment(voteType, button) {
     
     .then(data => {
         if (data.success) {
-            console.log("coomment helo");
             const upvoteCount = document.querySelector(`#upvote-count-${commentId}`);
             const downvoteCount = document.querySelector(`#downvote-count-${commentId}`);
             upvoteCount.textContent = data.upvotes;
             downvoteCount.textContent = data.downvotes;
+        }
+        else{
+            alert('Failed to register vote');
         }
     })
     .catch(error => {
@@ -125,3 +127,4 @@ function voteComment(voteType, button) {
         console.error('Error:', error);
     });
 }
+
