@@ -8,7 +8,7 @@
         <label for="login">E-mail/Username</label>
         <input id="login" type="text" name="login" value="{{ old('login') }}" required autofocus placeholder="e.g: example@example.com or username123">
         @if ($errors->has('login'))
-            <span class="error">
+            <span class="error" style="color: red;">
               {{ $errors->first('login') }}
             </span>
         @endif
