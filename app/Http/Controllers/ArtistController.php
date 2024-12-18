@@ -46,9 +46,9 @@ class ArtistController extends Controller
     public function display_artists()
     {
         // Retrieve all events
-        $artists = Artist::all(); 
+        $artists = Artist::paginate(20); 
 
         // Return the view and pass the events data to the view
-        return view('pages.home', ['events' => $events]);
+        return view('pages.artists', ['artists' => $artists]);
     }
 }

@@ -32,6 +32,7 @@ Route::redirect('/admin', '/admin/members/active');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::get('/artist/{artist_id}', [ArtistController::class, 'show'])->name('artist');
+Route::get('/artists', [ArtistController::class, 'display_artists'])->name('artists');
 
 Route::controller(AdminController::class)->middleware('admin')->group(function () {
     Route::get('admin/members/{status}', 'getMembersByStatus')->name('admin');
