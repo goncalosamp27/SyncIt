@@ -12,6 +12,8 @@ use App\Models\Ticket;
 use App\Models\JoinRequest;
 use App\Models\EventTag;
 use App\Models\Member;
+use App\Models\Comment;
+
 
 use Illuminate\Support\Facades\DB;
 use DateTime;
@@ -30,6 +32,20 @@ class EventController extends Controller
         return view('pages.event', [
             'event' => $event,
             'comments' => $comments
+        ]);
+
+        $comments = Comment::withCount([
+            'votes as upvotes_count' => function ($query) {
+                $query->where('vote', true); // Count upvotes
+            },
+            'votes as downvotes_count' => function ($query) {
+                $query->where('vote', false); // Count downvotes
+            }
+        ])->where('event_id', $event_id)->get();
+    
+        return view('pages.event', [
+            'event' => $event,
+            'comments' => $comments, // Pass comments with vote counts
         ]);
     }
 
