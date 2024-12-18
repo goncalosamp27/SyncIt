@@ -52,18 +52,16 @@
 						<button type="button" class="event-button2" onclick="openModal(1)">Cancel Event</button>
 					@endcan
 
-<<<<<<< HEAD
 					@can('cancel', $event)
 						<button type="button" class="event-button2" onclick="openModal2	()">Cancel Event</button>
 					@endcan
-=======
+
 					@if(Auth::check())
 						<button onclick="openModal(2)" class="event-button2">
 							Report
 						</button>
 					@endif
 
->>>>>>> reports
 				</div>
 			</div>			
 			<a class="user-event-owner" href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}" style="display: flex; align-items: center; margin-top:1rem;">

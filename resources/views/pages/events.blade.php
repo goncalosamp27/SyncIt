@@ -8,6 +8,20 @@
 </script>
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="filter-bar">
+  {{-- Public/Private Dropdown --}}
+  <div class="dropdown">
+    <button class="dropdown-button" type="button">Event Type</button>
+    <div class="dropdown-menu">
+      <div class="dropdown-item">
+        <input type="checkbox" id="event-type-public" name="event_type" value="public" class="filter-radio">
+        <label for="event-type-public">Public</label>
+      </div>
+      <div class="dropdown-item">
+        <input type="checkbox" id="event-type-private" name="event_type" value="private" class="filter-radio">
+        <label for="event-type-private">Private</label>
+      </div>
+    </div>
+  </div>
   {{-- Dance Dropdown --}}
   <div class="dropdown">
     <button class="dropdown-button" type="button">Dance</button>
@@ -71,9 +85,7 @@
 {{-- Events Grid --}}
 <div id="events-grid" class="events-grid">
   @foreach ($events as $event)
-      @if ($event->event_status !== 'Cancelled')
-          @include('partials.event-card', ['event' => $event])
-      @endif
+    @include('partials.event-card', ['event' => $event])
   @endforeach
 </div>
 @endsection
