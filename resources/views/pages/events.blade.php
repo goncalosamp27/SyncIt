@@ -80,6 +80,8 @@
 
   {{-- Apply Filters Button --}}
   <button id="apply-filters" class="filter-button" type="submit">Apply Filters</button>
+  {{-- Reset Filters Button --}}
+  <button id="reset-filters" class="filter-button" type="button">Reset Filters</button>
 </div>
 
 {{-- Events Grid --}}
