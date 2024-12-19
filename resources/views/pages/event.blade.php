@@ -224,7 +224,7 @@
 		</div>
 
 		<div class="event-page-img">
-			<img src="{{ $event->getEventImage() }}" alt="Event Picture">
+			<img src="{{ $event->getEventImage()}}" alt="Event Picture">
 		</div>
 	</div>
 	
