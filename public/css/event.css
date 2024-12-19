@@ -14,7 +14,6 @@
 	padding: 1rem;
 	word-wrap: break-word;
 	overflow-wrap: break-word; 
-	overflow: hidden; 
 	text-overflow: ellipsis; 
 	white-space: normal; 
 	justify-content: space-between;

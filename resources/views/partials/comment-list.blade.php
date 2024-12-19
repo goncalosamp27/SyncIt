@@ -2,7 +2,7 @@
     <script src="{{ asset('js/comment-list.js') }}" defer></script>
     <div class="event-comment-div" style="position: relative;">
         <div class="event-comment">
-            <img src="{{ comment->member->getProfileImage() }}" alt="Profile Picture"
+            <img src="{{ $comment->member->getProfileImage() }}" alt="Profile Picture"
                 class="profile-pic">
             <div class="event-comment-text">
                 <div class="comment-highlighter">
@@ -15,7 +15,7 @@
                         style="display:none;">{{ $comment->text }}</textarea>
                 </div>
 
-                @if(Auth::check() && Auth::id() == $comment->member_id)
+                @if(Auth::check() && Auth::id() !== $comment->member_id)
                     <button class="edit-button" onclick="toggleEdit({{ $comment->member_id }})"
                         style="position: absolute; top: 10px; right: 10px; background-color: transparent; border: none; cursor: pointer; font-size: 16px;">
                         ✏️
