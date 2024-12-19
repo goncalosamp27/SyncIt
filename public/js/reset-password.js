@@ -44,19 +44,26 @@ document.addEventListener("DOMContentLoaded", function () {
             }),
         })
             .then(response => {
-                // Handle server response
-                return response.json();  // Parse JSON response
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw errorData;
+                    });
+                }
+                return response.json();
             })
             .then(data => {
-                if (data.message) {
-                    console.error(data.message || 'Password reset successfully!');
-                } else {
-                    console.error('Password reset failed.');
-                }
+                alert(data.message || 'Password reset successfully!');
+                
             })
             .catch(error => {
-                console.error('Error:', error);
-                console.error('An error occurred while resetting the password.');
+                if (error.errors) {
+                    const errorMessages = Object.values(error.errors).flat(); // Flatten error messages array
+                    alert('Error(s): ' + errorMessages.join('\n'));
+                } else if (error.message) {
+                    alert('Error: ' + error.message);
+                } else {
+                    alert('An unexpected error occurred while resetting the password.');
+                }
             });
     });
 

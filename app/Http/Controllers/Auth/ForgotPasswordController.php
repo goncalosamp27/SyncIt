@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
-use App\Models\PasswordReset;
+use App\Models\PasswordResetToken;
 
 class ForgotPasswordController extends Controller
 {
@@ -56,44 +56,32 @@ class ForgotPasswordController extends Controller
             'password_confirmation' => 'required',
             'token' => 'required|string',
         ]);
-        /*
-        $dataStamp = \DateTime::createFromFormat('d/m/Y H:i', $request->data_stamp);
 
-        if ($dataStamp === false) {
-            return response()->json(['message' => 'Invalid date format provided.'], 400);
+        // Check if the token is valid
+        $isValid = PasswordResetToken::isValidToken($request->email, $request->token);
+
+        if (!$isValid) {
+            return response()->json(['message' => 'This token is invalid or has expired.'], 400);
         }
 
-        $currentDate = new \DateTime();
-
-
-        $diff = $currentDate->diff($dataStamp);
-        $minutesDiff = ($diff->days * 24 * 60) + ($diff->h * 60) + $diff->i;
-    
-        if ($minutesDiff > 60) {
-            return response()->json(['message' => 'The data stamp is older than 60 minutes.'], 400);
-        }
-        */
-
-        $passwordReset = PasswordReset::where('email', $request->email)->first();
-        if (!$passwordReset) {
-
-            $passwordReset = PasswordReset::createToken($request->email);
-
-            return response()->json([
-                'message' => 'No existing token found. A new token has been generated and sent to your email.'
-            ], 200);
-        }
-
+        // Find the member by email
         $member = Member::where('email', $request->email)->first();
 
         if (!$member) {
             return response()->json(['message' => 'No member found with this email address.'], 404);
         }
 
-        $member->password =  Hash::make($request->password);
+        // Check if the new password is the same as the old password
+        if (Hash::check($request->password, $member->password)) {
+            return response()->json(['message' => 'Your new password cannot be the same as your old password. Please choose a new one.'], 400);
+        }
+
+        // If the new password is different, hash and save it
+        $member->password = Hash::make($request->password);
         $member->save();
 
-        PasswordReset::where('token', $request->token)->delete();
+        // Clear any existing password reset tokens
+        PasswordResetToken::clearTokens($request->email);
 
         return response()->json(['message' => 'Password successfully updated.']);
 
