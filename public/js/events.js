@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const applyFiltersButton = document.getElementById('apply-filters');
     const dropdownButtons = document.querySelectorAll('.dropdown-button');
+    const resetFiltersButton = document.getElementById('reset-filters');
 
     dropdownButtons.forEach(button => {
         button.addEventListener('click', function () {
@@ -97,5 +98,11 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => {
                 console.error("Error fetching filtered events:", error);
             });
+    });
+    resetFiltersButton.addEventListener('click', function () {
+        console.log("button was clicked");
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = false);
+
+        location.reload();
     });
 });
