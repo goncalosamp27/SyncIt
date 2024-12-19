@@ -49,19 +49,24 @@ document.addEventListener("DOMContentLoaded", function () {
                         throw errorData;
                     });
                 }
-                return response.json();
+                return response.json(); 
             })
             .then(data => {
-                alert(data.message || 'Password reset successfully!');
                 
+                alert(data.message || 'Password reset successfully!');
+                window.location.href = '/login';
             })
             .catch(error => {
+                // Handle error response and display all errors
                 if (error.errors) {
+                    // Display validation errors
                     const errorMessages = Object.values(error.errors).flat(); // Flatten error messages array
                     alert('Error(s): ' + errorMessages.join('\n'));
                 } else if (error.message) {
+                    // Display a general error message
                     alert('Error: ' + error.message);
                 } else {
+                    // Display a fallback error message
                     alert('An unexpected error occurred while resetting the password.');
                 }
             });
