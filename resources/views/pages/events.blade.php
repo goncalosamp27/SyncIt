@@ -83,6 +83,14 @@
   {{-- Reset Filters Button --}}
   <button id="reset-filters" class="filter-button" type="button">Reset Filters</button>
 </div>
+<div class="events-search-bar">
+  <form method="GET" action="{{ route('events.search') }}" class="search-bar">
+      <button type="submit" class="search-button">🔍</button>
+
+      <input type="text" name="search" placeholder="Search for events, locations or artists..." value="{{ request('search') }}">
+      <button class="search-btn" type="submit">Search</button>
+  </form>
+</div>
 
 {{-- Events Grid --}}
 <div id="events-grid" class="events-grid">

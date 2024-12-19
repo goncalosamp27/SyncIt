@@ -17,7 +17,7 @@
           <div class="artist-rating">
             <div class="rating-display">
                 @php
-                    $averageRating = $artist->averageRating ?? 0;
+                    $averageRating = $artist->rating ?? 0;
                     $roundedRating = round($averageRating, 1);
                 @endphp
                 
@@ -73,7 +73,7 @@
           @endforeach
 
           </div>
-          <a href="{{ route('your-events') }}">
+          <a href="{{ route('events.search', ['search' => $artist->member->username]) }}">
 				    @include('partials.show-more')
 			    </a>             
         </div>
@@ -86,7 +86,7 @@
             @include('partials.event-card', ['event' => $event]) 
           @endforeach
           </div>
-          <a href="{{ route('your-events') }}">
+          <a href="{{ route('events.search', ['search' => $artist->member->username]) }}">
 				    @include('partials.show-more')
 			    </a>        
         </div>

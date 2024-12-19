@@ -17,7 +17,7 @@ class BlockAdmin
     public function handle($request, Closure $next)
     {
         if (Auth::guard('admin')->check()) { 
-            return redirect()->route('admin'); 
+            return redirect()->route('admin', ['status' => 'active']); 
         }
 
         return $next($request);
