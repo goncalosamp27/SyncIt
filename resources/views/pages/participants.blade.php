@@ -61,7 +61,7 @@
                 @endphp
                 <div class="member-card">
                     <div class="member-profile-pic">
-                        <img src="{{ asset('storage/profiles/' . $member->profile_pic_url)}}" alt="{{ $member->display_name }}">
+                        <img src="{{ $member->getProfileImage()}}" alt="{{ $member->display_name }}">
                     </div>
                     <div class="member-details">
                         <h3 class="member-name">{{ $member->display_name }}</h3>
@@ -100,7 +100,7 @@
                     @endphp
                     <div class="member-card">
                         <div class="member-profile-pic">
-                            <img src="{{ asset('storage/profiles/' . $member->profile_pic_url)}}" alt="{{ $member->display_name }}">
+                            <img src="{{ $member->getProfileImage() }}" alt="{{ $member->display_name }}">
                         </div>
                         <div class="member-details">
                             <h3 class="member-name">{{ $member->display_name }}</h3>

@@ -51,7 +51,7 @@ class AdminController extends Controller
         
         
         if ($request->hasFile('profile_pic_url')) {
-            $path = $request->file('profile_pic_url')->store('profiles', 'public');
+            $path = $request->file('profile_pic_url')->store('profile', 'public');
             $member->profile_pic_url = $path;
             $member->save();
         }

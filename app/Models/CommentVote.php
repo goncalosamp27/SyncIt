@@ -10,31 +10,33 @@ class CommentVote extends Model
 {
     use HasFactory;
 
-    protected $table = 'comment_vote';
+    protected $table = 'vote_comment'; 
 
-    protected $primaryKey = 'vote_id';
+    protected $primaryKey = 'vote_comment_id';
 
-    public $timestamps = false;
+    public $timestamps = false; 
+
+    protected $fillable = [
+        'comment_id',
+        'member_id',
+        'vote'
+    ];
 
     public static function validate($data)
     {
-        $validator = Validator::make($data, [
+        return Validator::make($data, [
             'comment_id' => 'required|exists:comment,comment_id',
             'member_id' => 'required|exists:member,member_id',
-            'vote_type' => 'required|in:upvote,downvote',
+            'vote' => 'required|boolean', 
         ]);
-
-        return $validator;
     }
 
     // Relationships
-    // Each vote belongs to one comment
     public function comment()
     {
         return $this->belongsTo(Comment::class, 'comment_id', 'comment_id');
     }
 
-    // Each vote is cast by one member
     public function member()
     {
         return $this->belongsTo(Member::class, 'member_id', 'member_id');

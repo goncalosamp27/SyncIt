@@ -2,7 +2,7 @@
     <script src="{{ asset('js/comment-list.js') }}" defer></script>
     <div class="event-comment-div" style="position: relative;">
         <div class="event-comment">
-            <img src="{{ asset('storage/profiles/' . $comment->member->profile_pic_url) }}" alt="Profile Picture"
+            <img src="{{ comment->member->getProfileImage() }}" alt="Profile Picture"
                 class="profile-pic">
             <div class="event-comment-text">
                 <div class="comment-highlighter">
@@ -33,17 +33,29 @@
             </div>
         </div>
 
-        <div class="up-down-votes">
-            <div class="upvote">
-                <button class="upvote-button" data-comment-id="{{ $comment->id }}" onclick="voteComment('up', this)">
-                    👍<span class="count" id="upvote-count-{{ $comment->id }}">{{ $comment->upvotes ?? 0 }}</span>
-                </button>
+        @if(Auth::check() && Auth::id() != $comment->member_id)
+            <div class="up-down-votes">
+                <div class="upvote">
+                    <button class="upvote-button" data-comment-id="{{ $comment->comment_id }}" onclick="voteComment('upvote', this)">
+                        👍<span class="count" id="upvote-count-{{ $comment->comment_id }}">
+                            @if(!empty($comment->upvotes_count) && $comment->upvotes_count > 0)
+                                {{ $comment->upvotes_count }}
+                            @endif
+                        </span>
+                    </button>
+                </div>
+                <div class="downvote">
+                    <button class="downvote-button" data-comment-id="{{ $comment->comment_id }}" onclick="voteComment('downvote', this)">
+                        👎<span class="count" id="downvote-count-{{ $comment->comment_id }}">
+                            @if(!empty($comment->downvotes_count) && $comment->downvotes_count > 0)
+                                {{ $comment->downvotes_count }}
+                            @endif
+                        </span>
+                    </button>
+                </div>
             </div>
-            <div class="downvote">
-                <button class="downvote-button" data-comment-id="{{ $comment->id }}" onclick="voteComment('down', this)">
-                    👎<span class="count" id="downvote-count-{{ $comment->id }}">{{ $comment->downvotes ?? 0 }}</span>
-                </button>
-            </div>
-        </div>
+        @endif
+
+
     </div>
 @endforeach

@@ -54,22 +54,19 @@ body {
 
 .success,
 .error{
-    color: white;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    padding: 2rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
     border-radius: 2rem;
     font-weight: bold;
     text-align: center;
-    width: 20rem;
     margin-left: auto;
     margin-right: auto;
 }
 .success{
-  background-color: green;
+  color: green;
 }
 .error{
-  background-color: red;
+  color: red;
 }
 
 html, body {

@@ -41,7 +41,7 @@
             @if (Auth::check())
             <!-- User Info -->
 				<div class="user-info">				
-                    <img src="{{ asset('storage/profiles/' . Auth::user()->profile_pic_url) }}" alt="Profile Picture" class="profile-pic">
+                    <img src="{{ Auth::user()->getProfileImage() }}" alt="Profile Picture" class="profile-pic">
 
                    {{-- <img src="{{ Auth::user()->getProfileImage() }}" alt="Profile Picture" class="profile-pic"> --}}
 
@@ -52,7 +52,6 @@
 				</div>
 
 				<!-- Menu Links -->
-                <a href="{{ route('events.create') }}">Create Event</a>
 				<a href="{{ route('profile.edit') }}">Edit Profile</a>
 				@if(Auth::user()->isArtist(Auth::user()->member_id))
 				<a href="{{ route('artist', ['artist_id' => Auth::user()->member_id]) }}">Artist page</a>
@@ -62,7 +61,7 @@
                 <a href="{{ route('attended-events')}}">Attended Events</a>
                 <a href="{{ route('invitations')}}">Invitations</a>
 				<a href="">Reset Password</a>
-                <a href="javascript:void(0)" onclick="openModal()"><span class="delete-account">Delete Account</span></a>
+                <a href="javascript:void(0)" onclick="openModal(3)"><span class="delete-account">Delete Account</span></a>
             @endif
         </div>
     </div>

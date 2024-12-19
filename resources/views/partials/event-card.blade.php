@@ -1,6 +1,6 @@
 <a href="{{ route('event', ['event_id' => $event["event_id"]]) }}" class="event-card">
     <div class="event-image">
-        <img src="{{ asset('storage/events/' . $event["event_media"]) }}" alt="Event Image">
+        <img src="{{ $event->getEventImage() }}" alt="Event Image">
     </div>
     <div class="event-details">
 
