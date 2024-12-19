@@ -16,7 +16,7 @@
                 </div>
                 
 
-                @if(Auth::check() && Auth::id() !== $comment->member_id)
+                @if(Auth::check() && Auth::id() == $comment->member_id)
                     <button class="edit-button" onclick="toggleEdit({{ $comment->member_id }})"
                         style="position: absolute; top: 10px; right: 10px; background-color: transparent; border: none; cursor: pointer; font-size: 16px;">
                         ✏️
