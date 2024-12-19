@@ -14,6 +14,7 @@
                     <textarea id="edit-textarea-{{ $comment->member_id }}"
                         style="display:none;">{{ $comment->text }}</textarea>
                 </div>
+                
 
                 @if(Auth::check() && Auth::id() !== $comment->member_id)
                     <button class="edit-button" onclick="toggleEdit({{ $comment->member_id }})"
