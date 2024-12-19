@@ -65,7 +65,8 @@
 				@include('partials.artist-card', ['artist' => $artist])
 			@endforeach
 		</div>
-		@include('partials.show-more')
+		<a href= "{{ route('artists') }}">
+		@include('partials.show-more') </a>
 	</div>
 	</div>	
 @endsection	

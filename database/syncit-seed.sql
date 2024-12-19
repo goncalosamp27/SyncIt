@@ -621,20 +621,37 @@ CREATE INDEX member_fts_display_name_idx ON member USING GIN (fts_display_name);
 -- FULL TEXT SEARCH -> events
 ALTER TABLE event ADD COLUMN fts_name tsvector;
 ALTER TABLE event ADD COLUMN fts_location tsvector;
+ALTER TABLE event ADD COLUMN fts_artist tsvector;
 
 CREATE OR REPLACE FUNCTION event_fts_trigger() RETURNS trigger AS $$
 BEGIN
+    -- Full-text search vector for event name
     NEW.fts_name := to_tsvector('english', COALESCE(NEW.event_name, ''));
+
+    -- Full-text search vector for event location
     NEW.fts_location := to_tsvector('english', COALESCE(NEW.location, ''));
+
+    -- Full-text search vector for artist name (concatenating display_name and username)
+    NEW.fts_artist := (
+        SELECT to_tsvector('english', 
+            COALESCE(m.display_name, '') || ' ' || COALESCE(m.username, '')
+        ) 
+        FROM artist a 
+        JOIN member m ON a.artist_id = m.member_id 
+        WHERE a.artist_id = NEW.artist_id
+    );
+
     RETURN NEW;
 END
 $$ LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE TRIGGER event_fts_update BEFORE INSERT OR UPDATE ON event
 FOR EACH ROW EXECUTE FUNCTION event_fts_trigger();
 
 CREATE INDEX event_fts_name_idx ON event USING GIN (fts_name);
 CREATE INDEX event_fts_location_idx ON event USING GIN (fts_location);
+CREATE INDEX event_fts_artist_idx ON event USING GIN (fts_artist);
 
 CREATE OR REPLACE FUNCTION notify_event_changes()
 RETURNS TRIGGER AS $$
