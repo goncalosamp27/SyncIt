@@ -8,7 +8,7 @@ use Carbon\Carbon;
 class PasswordReset extends Model
 {
     protected $table = 'password_reset';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'email';
     public $timestamps = false;
 
     protected $fillable = [
