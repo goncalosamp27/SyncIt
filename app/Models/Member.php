@@ -154,6 +154,5 @@ class Member extends Authenticatable
     public function getProfileImage() {
         return FileController::get('profile', $this->member_id);
     }    
-    }
-    //Reset token functions 
 }
+
