@@ -7,11 +7,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\FileController;
+use Illuminate\Notifications\Notifiable;
 
 class Member extends Authenticatable
 {
     use HasFactory;
 
+    use Notifiable;
     protected $table = 'member';
     protected $primaryKey = 'member_id';
     public $timestamps = false;
@@ -24,7 +26,7 @@ class Member extends Authenticatable
         'bio',
         'profile_pic_url',
         'member_status',
-        'remember_token', 
+        'remember_token',
     ];
 
     // Constraints
@@ -152,4 +154,6 @@ class Member extends Authenticatable
     public function getProfileImage() {
         return FileController::get('profile', $this->member_id);
     }    
+    }
+    //Reset token functions 
 }
