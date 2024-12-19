@@ -22,6 +22,7 @@ use App\Http\Controllers\JoinRequestController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\FileController;
 
@@ -96,7 +97,7 @@ Route::post('/comments/{comment_id}/vote', [CommentVoteController::class, 'voteC
 //AJAX
 Route::post('/future-events/filter', [EventController::class, 'filterEvents'])->name('events.filter');
 Route::post('/future-events', function (Request $request) {
-    //Log::info($request->input('tagsMusic'));
+    Log::info($request->input('tagsMusic'));
     $events = $request->input('events');
     $tagsMusic = $request->input('tagsMusic');
     $tagsDance = $request->input('tagsDance');
@@ -149,6 +150,16 @@ Route::controller(LoginController::class)->group(function () {
     Route::post('/login', 'authenticate')->middleware(['visitor']);
     Route::get('/logout', 'logout')->middleware(['userAdmin'])->name('logout');
 });
+//Reset password
+//View to forgot-password page
+Route::get('forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->middleware(['visitor'])->name('password.request');
+//View to Post the email to the server
+Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+//View to Reset password, constructed by Laravel's defaults
+Route::get('reset-password/{token}', [ForgotPasswordController::class, 'showResetPasswordForm'])->name('password.reset'); 
+//update a password in db
+Route::post('reset-password', [ForgotPasswordController::class, 'submitPasswordForm'])->name('password.reset.submit'); 
+
 
 Route::controller(RegisterController::class)->group(function () {
     Route::get('/register', 'showRegistrationForm')->middleware(['visitor'])->name('register');

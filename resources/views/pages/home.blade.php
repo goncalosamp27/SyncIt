@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+<script src="{{ asset('js/success-message.js') }}" defer></script>
 @section('content')
 	@if (session('success'))
 			<div class = "success">
