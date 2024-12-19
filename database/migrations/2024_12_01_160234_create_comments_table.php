@@ -28,6 +28,10 @@ return new class extends Migration
             $table->enum('vote', ['up', 'down']);
             $table->timestamps();
         });
+
+        Schema::table('comments', function (Blueprint $table) {
+            $table->string('file_path')->nullable()->after('text');
+        });
     }
 
     /**
