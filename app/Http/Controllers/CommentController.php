@@ -36,6 +36,8 @@ class CommentController extends Controller
         $request->validate([
             'event_id' => 'required|exists:event,event_id',
             'text' => 'required|string|max:500',
+            'file' => 'nullable|file|mimes:jpg,png,jpeg,gif,pdf|max:2048',
+
         ]);
 
         $comment = new Comment();
@@ -43,6 +45,12 @@ class CommentController extends Controller
         $comment->event_id = $request->input('event_id');
         $comment->comment_date = now();
         $comment->member_id = auth()->id();
+
+        if ($request->hasFile('file')) {
+            $filePath = $request->file('file')->store('comment_files', 'public');
+            $comment->file_path = $filePath; 
+        }
+
         $comment->save();
 
         return response()->json([
@@ -50,6 +58,7 @@ class CommentController extends Controller
             'comment' => $comment,
         ]);
     }
+    
     //update comment
     public function update(Request $request, $commentId)
     {

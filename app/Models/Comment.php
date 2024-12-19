@@ -17,6 +17,7 @@ class Comment extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'file_path',
 
     ];
 

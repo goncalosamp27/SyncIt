@@ -14,7 +14,11 @@
                     <textarea id="edit-textarea-{{ $comment->member_id }}"
                         style="display:none;">{{ $comment->text }}</textarea>
                 </div>
-                
+                @if ($comment->file_path)
+                    <div class="comment-file">
+                        <a href="{{ asset('storage/' . $comment->file_path) }}" target="_blank">View Attachment</a>
+                    </div>
+                @endif
 
                 @if(Auth::check() && Auth::id() == $comment->member_id)
                     <button class="edit-button" onclick="toggleEdit({{ $comment->member_id }})"

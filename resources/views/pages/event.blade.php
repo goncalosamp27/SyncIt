@@ -266,6 +266,7 @@
 				<div class="add-your-own-comment">
 					<img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Profile Picture" class="profile-pic">
 					<input type="text" placeholder="Add your comment..." id="new-comment" class="comment-input">
+					<input type="file" name="file" id="file-upload" class="file-input">
 					<button class="post-button" data-event-id="{{ $event->event_id }}" onclick="postComment(this)">Post</button>
 				</div>
 			@else
