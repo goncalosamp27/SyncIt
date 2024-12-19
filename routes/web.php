@@ -17,11 +17,15 @@ use App\Http\Controllers\EditEventController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CommentVoteController;
 use App\Http\Controllers\JoinRequestController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\FileController;
+
 
 use App\Models\Artist;
 
@@ -70,27 +74,24 @@ Route::get('/events/search', [EventController::class, 'search'])->name('events.s
 Route::post('/event/{event_id}/cancel', [EventController::class, 'cancelEvent'])->name('event.cancel');
 Route::post('/events/getTags', [EventController::class, 'getTags'])->name('events.filters.tags');
 
+Route::controller(RatingController::class)->middleware(['notAdmin', 'auth'])->group(function () {
+    Route::post('/rate-event/{ticket_id}', 'rateEvent')->name('rate-event');
+});
+
 Route::post('/event/buy-ticket', [TicketController::class, 'buyTicket'])->name('buy-ticket')->middleware('auth');
 
 Route::post('/event/request-access', [JoinRequestController::class, 'requestAccess'])->name('request-access')
     ->middleware(['auth', 'notAdmin']);
 
-// Public route: allows unauthenticated users to fetch comments
-Route::get('/event/{event_id}/comments', [CommentController::class, 'index'])->name('comments.index');
-
-// Protected routes: require authentication
 Route::controller(CommentController::class)->middleware(['auth'])->group(function () {
     Route::post('/event/{event_id}/comments', 'store')->name('comments.store');
     Route::delete('/event/{event_id}/comments/{comment_id}', 'destroy')->name('comments.destroy');
     Route::put('/update-comment/{comment_id}', 'update')->name('comments.update');
 });
 
+Route::get('/event/{event_id}/comments', [CommentController::class, 'index'])->name('comments.index');
 
-/*
-Route::controller(CommentVoteController::class)->middleware(['auth'])->group(function () {
-    Route::post('/comments/{comment_id}/vote', 'vote')->name('comments.vote');
-});
-*/
+Route::post('/comments/{comment_id}/vote', [CommentVoteController::class, 'voteComment'])->middleware('auth');
 
 //AJAX
 Route::post('/future-events/filter', [EventController::class, 'filterEvents'])->name('events.filter');
@@ -180,3 +181,4 @@ Route::view('/contacts', 'pages/contacts')->name('contacts');
 Route::view('/services', 'pages/services')->name('services');
 Route::view('/faq', 'pages/faq')->name('faq');
 
+Route::post('/file/upload', [FileController::class, 'upload']);

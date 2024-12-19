@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\FileController;
 use Illuminate\Notifications\Notifiable;
 
 class Member extends Authenticatable
@@ -148,6 +149,11 @@ class Member extends Authenticatable
     public static function isArtist($member_id)
     {
         return Artist::where('artist_id', $member_id)->exists();
+    }
+
+    public function getProfileImage() {
+        return FileController::get('profile', $this->member_id);
+    }    
     }
     //Reset token functions 
 }

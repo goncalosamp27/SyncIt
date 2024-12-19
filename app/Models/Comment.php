@@ -56,4 +56,9 @@ class Comment extends Model
     {
         return $this->hasMany(Comment::class, 'response_comment_id', 'comment_id');
     }
+
+    public function votes()
+    {
+        return $this->hasMany(CommentVote::class, 'comment_id', 'comment_id');
+    }
 }

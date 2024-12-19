@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     fetchComments();
 
-    // Function to format the date
     document.querySelectorAll('.comment-date').forEach(element => {
         const rawDate = element.getAttribute('data-raw-date');
         if (rawDate) {
@@ -13,24 +12,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
-    }
-
-
-    // Voting functionality
-    document.getElementById('comment-list').addEventListener('click', function (e) {
-        if (e.target.classList.contains('upvote-button') || e.target.classList.contains('downvote-button')) {
-            e.preventDefault();
-            console.warn('Voting requires login. Button clicked:', e.target);
-            alert('Please log in to vote on comments.');
-        }
-    });
-
 });
 
 function fetchComments() {
+    
 
     fetch(getCommentsUrl)
         .then(response => {
@@ -62,7 +47,8 @@ function fetchComments() {
             console.error('Error occurred while fetching comments:', error.message);
         });
 }
-//add comment to the page 
+
+
 function postComment(button) {
     const commentText = document.getElementById('new-comment').value;
     const eventId = button.getAttribute('data-event-id'); // Get the event ID from the button
@@ -102,3 +88,57 @@ function postComment(button) {
             console.error('Error occurred:', error);
         });
 }
+
+function voteComment(voteType, button) {
+    console.log('Vote Type:', voteType, 'Button:', button); // Log voteType and button
+    const commentId = button.getAttribute('data-comment-id');
+    const url = `/comments/${commentId}/vote`;
+    
+    const voteValue = voteType === 'upvote' ? true : false;
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ vote: voteValue }) 
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to vote on comment');
+        }
+        return response.json();
+    })
+    
+    .then(data => {
+        if (data.success) {
+            const upvoteButton = document.querySelector(`.upvote-button[data-comment-id="${commentId}"]`);
+            const downvoteButton = document.querySelector(`.downvote-button[data-comment-id="${commentId}"]`);
+
+            // Remove active class from both buttons
+            upvoteButton.classList.remove('active');
+            downvoteButton.classList.remove('active');
+
+            // Add active class to the selected button
+            if (voteType === 'upvote') {
+                upvoteButton.classList.add('active');
+            } else {
+                downvoteButton.classList.add('active');
+            }
+            
+            const upvoteCount = document.querySelector(`#upvote-count-${commentId}`);
+            const downvoteCount = document.querySelector(`#downvote-count-${commentId}`);
+            upvoteCount.textContent = data.upvotes;
+            downvoteCount.textContent = data.downvotes;
+        }
+        else{
+            alert('Failed to register vote');
+        }
+    })
+    .catch(error => {
+        alert(error.message);
+        console.error('Error:', error);
+    });
+}
+
