@@ -1,13 +1,12 @@
 
 document.addEventListener("DOMContentLoaded", function () {
-    const resetButton = document.querySelector('.submit-btn'); // Correct the button selector
+    const resetButton = document.querySelector('.submit-btn'); 
 
     resetButton.addEventListener('click', function (event) {
-        event.preventDefault(); // Prevent the default form submission
+        event.preventDefault(); 
 
         console.log("button was clicked");
 
-        // Get form data
         const token = document.querySelector('input[name="token"]').value;
         const email = document.querySelector('input[name="email"]').value;
         const password = document.querySelector('#new_password').value;
@@ -27,9 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Fetch CSRF token and date stamp
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        // Make the fetch request without using async/await
         fetch(resetPasswordUrl, {
             method: 'POST',
             headers: {

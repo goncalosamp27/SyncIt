@@ -12,7 +12,7 @@
         <input id="email" type="email" name="email" value="{{ old('email') }}" required
             placeholder="e.g: example@example.com">
         @if ($errors->has('email'))
-            <span class="error" id="email-error">
+            <span class="error" id="email-error" style="color: red; transition: opacity 0.5s;">
                 {{ $errors->first('email') }}
             </span>
         @endif
