@@ -57,30 +57,25 @@ class ForgotPasswordController extends Controller
             'token' => 'required|string',
         ]);
 
-        // Check if the token is valid
         $isValid = PasswordResetToken::isValidToken($request->email, $request->token);
 
         if (!$isValid) {
             return response()->json(['message' => 'This token is invalid or has expired.'], 400);
         }
 
-        // Find the member by email
         $member = Member::where('email', $request->email)->first();
 
         if (!$member) {
             return response()->json(['message' => 'No member found with this email address.'], 404);
         }
 
-        // Check if the new password is the same as the old password
         if (Hash::check($request->password, $member->password)) {
             return response()->json(['message' => 'Your new password cannot be the same as your old password. Please choose a new one.'], 400);
         }
 
-        // If the new password is different, hash and save it
         $member->password = Hash::make($request->password);
         $member->save();
 
-        // Clear any existing password reset tokens
         PasswordResetToken::clearTokens($request->email);
 
         return response()->json(['message' => 'Password successfully updated.']);

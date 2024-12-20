@@ -22,7 +22,7 @@
             <label for="password">New Password</label>
             <input id="new_password" type="password" name="password" required placeholder="Enter new password">
             @if ($errors->has('password'))
-                <span class="error-message">
+                <span class="error" style="color: red;">
                     {{ $errors->first('password') }}
                 </span>
             @endif
@@ -34,7 +34,7 @@
             <input id="password_confirmation" type="password" name="password_confirmation" required
                 placeholder="Confirm your new password">
             @if ($errors->has('password_confirmation'))
-                <span class="error-message">
+                <span class="error" style="color: red;">
                     {{ $errors->first('password_confirmation') }}
                 </span>
             @endif
