@@ -35,6 +35,9 @@
 	</div>
 
 	<div class="event-page-content">
+	<div class="event-page-img">
+			<img src="{{ $event->getEventImage()}}" alt="Event Picture">
+		</div>
 		<div class="event-page-info">
 			<div class="title-edit">
 				<h1>
@@ -52,10 +55,6 @@
 						<button type="button" class="event-button2" onclick="openModal(1)">Cancel Event</button>
 					@endcan
 
-					@can('cancel', $event)
-						<button type="button" class="event-button2" onclick="openModal2()">Cancel Event</button>
-					@endcan
-
 					@if(Auth::check())
 						<button onclick="openModal(2)" class="event-button2">
 							Report
@@ -63,37 +62,62 @@
 					@endif
 
 				</div>
-			</div>			
-			<a class="user-event-owner" href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}" style="display: flex; align-items: center; margin-top:1rem;">
-				<img 
-					src="{{ $event->artist->member->getProfileImage() }}" alt="Event Picture"
+			</div>	
+					
+			<a class="user-event-owner" style="display: flex; align-items: center; margin-top:1rem;">
+				<img href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}"
+					src="{{ $event->artist->member->getProfileImage() }}"
 					alt="Profile Picture" 
 					style="width: 5rem; height: 5rem; object-fit: cover; border-radius: 50%; margin-right: 1rem; border: 0.15rem solid white; box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.8);"
 				>
-				<span class ="user-event-owner-by">by: </span><h2 style="margin: 0;"> {{'@' . $event->artist->member->username}}</h2>
-			</a>			
-			<h3>📅 {{ date('d/m/Y - h:i A', strtotime($event->event_date)) }}</h3>
-			<div class="small-line"></div>
-			<h4>📍 {{ $event->location }}</h4>
-			<div class="small-line"></div>
+				<span href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}" class ="user-event-owner">by {{ $event->artist->member->display_name }}</span>
+			</a>	
+			
+			<div class="event-page-details">
+				<h3>📅 {{ date('d/m/Y - h:i A', strtotime($event->event_date)) }}</h3>
+				<div class="small-line"></div>
+				<h4>📍 {{ $event->location }}</h4>
+				<div class="small-line"></div>
 
-			<div class="title-edit">
-				<h5> 👥 {{ $event->ticket_count }} / {{ $event->capacity }} Participants</h5>
-				
-				@can('seeParticipants', $event)
-					@can('edit', $event)
-					<a href="{{ route('participants', ['event_id' => $event->event_id]) }}" class="event-button">
-						Manage Participants
-					</a>
-					@endcan
+				<div class="title-edit">
+					<h5> 👥 {{ $event->ticket_count }} / {{ $event->capacity }} </h5>
+					
+					@can('seeParticipants', $event)
+						@can('edit', $event)
+						<a href="{{ route('participants', ['event_id' => $event->event_id]) }}" class="event-button">
+							Manage Participants
+						</a>
+						@endcan
 
-					@cannot('edit', $event)
-					<a href="{{ route('participants', ['event_id' => $event->event_id]) }}" class="event-button">
-						View Participants
-					</a>
-					@endcannot
-				@endcan	
+						@cannot('edit', $event)
+						<a href="{{ route('participants', ['event_id' => $event->event_id]) }}" class="event-button">
+							View Participants
+						</a>
+						@endcannot
+					@endcan	
+				</div>
+
+				<div class="small-line"></div>
 			</div>
+			<div class="event-page-tags">
+            @foreach ($event->tags as $tag)
+			<a>
+                <span class="tag-button"
+                style="
+                        background: #{{ $tag->color }};
+                        color: #fff;
+                        border-radius: 12px;
+                        padding: 8px 16px;
+                        display: inline-block;
+                        font-weight: bold;
+                        font-size: 14px;
+                        text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+                        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+                        transition: transform 0.2s ease, box-shadow 0.2s ease;
+                        ">
+                {{ $tag->tag_name }}</span></a>
+            @endforeach
+        </div>
 		
 			@php
 				$eventCancelled = $event->event_status === 'Cancelled';
@@ -136,6 +160,8 @@
 				@else            
 					<button type="button" class="buy-tickets-btn" onclick="openPurchaseModal()">Get Tickets - {{ $event->price }}€</button>
 				@endif  
+
+				
 			</div>
 				<!-- Purchase Modal -->
 				<div class = "marg">
@@ -223,36 +249,10 @@
 
 		</div>
 
-		<div class="event-page-img">
-			<img src="{{ $event->getEventImage()}}" alt="Event Picture">
-		</div>
+
 	</div>
 	
 	<div class="description-comments">
-		<div class="purple-line"></div>
-
-		<div class="event-page-tags">
-			<h1>Tags:</h1>
-            @foreach ($event->tags as $tag)
-			<a>
-                <span class="tag-button"
-                style="
-                        background: #{{ $tag->color }};
-                        color: #fff;
-                        border-radius: 12px;
-                        padding: 8px 16px;
-                        display: inline-block;
-                        font-weight: bold;
-                        font-size: 14px;
-                        text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
-                        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-                        transition: transform 0.2s ease, box-shadow 0.2s ease;
-                        ">
-                {{ $tag->tag_name }}</span></a>
-            @endforeach
-        </div>
-
-		<div class="purple-line"></div>
 		
 		<div class="event-page-description">
 			<h1>Description:</h1>
@@ -262,10 +262,13 @@
 		<div class="purple-line"></div>
 		
 		<div class="event-page-comments">
+			
 			@auth
+				<h1>Comments:</h1>
+
 				<div class="add-your-own-comment">
-					<img src="https://c4.wallpaperflare.com/wallpaper/380/24/860/dj-turntable-purple-music-wallpaper-preview.jpg" alt="Profile Picture" class="profile-pic">
-					<input type="text" placeholder="Add your comment..." id="new-comment" class="comment-input">
+					<img src="{{ Auth::user()->getProfileImage() }}" alt="Profile Picture" class="profile-pic">
+					<input type="text" placeholder="Add a comment..." id="new-comment" class="comment-input">
 					<button class="post-button" data-event-id="{{ $event->event_id }}" onclick="postComment(this)">Post</button>
 				</div>
 			@else
@@ -278,4 +281,5 @@
 
 		@include('partials.go-back')
 	</div>	
+				</div>
 @endsection	
