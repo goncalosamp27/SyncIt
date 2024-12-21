@@ -89,7 +89,7 @@
 
 .report-operations{
     height: 150px;
-    max-width: 140px;
+    max-width: 155px;
     display: flex; /* Makes it a flex container */
     flex-direction: column; /* Align children vertically (column) */
     justify-content: center; /* Center children vertically */

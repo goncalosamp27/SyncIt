@@ -3,6 +3,9 @@
 @section('content')
     <div class="admin_page">
         @isset($reports)
+            @php
+                $status = Route::current()->parameter('status')
+            @endphp
             <h1>Reports</h1>
             @foreach($reports as $report)
                 <div class="member-card">
@@ -20,7 +23,11 @@
                         <form action="{{ route('reports.markSolved', ['report' => $report->report_id]) }}" method="POST" style="display: inline;">
                             @csrf
                             @method('PUT')
-                            <button type="submit" class="report-solved-button">Mark as Solved</button>
+                            @if( $status == 'unsolved')
+                                <button type="submit" class="report-solved-button">Mark as solved</button>
+                            @else
+                                <button type="submit" class="report-solved-button">Mark as unsolved</button>
+                            @endif
                         </form>                    
                     </div>
                 </div>
