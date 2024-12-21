@@ -11,7 +11,6 @@ class AdminPolicy
     {
         return auth('admin')->check();
     }
-
     public function isRestricted(?Member $auth, Member $member)
     {
         return in_array($member->member_status, ['Banned', 'Suspended']);
