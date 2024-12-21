@@ -25,6 +25,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\PollController;
 
 
 use App\Models\Artist;
@@ -183,3 +184,7 @@ Route::view('/services', 'pages/services')->name('services');
 Route::view('/faq', 'pages/faq')->name('faq');
 
 Route::post('/file/upload', [FileController::class, 'upload']);
+
+//polls
+Route::get('/create-poll/{event_id}', [PollController::class, 'showCreatePoll'])->name('poll.create');
+Route::post('/create-poll/{event_id}', [PollController::class, 'storePoll'])->name('poll.store');

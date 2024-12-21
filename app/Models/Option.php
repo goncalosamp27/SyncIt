@@ -12,31 +12,49 @@ class Option extends Model
 
     protected $table = 'option';
 
-    protected $primaryKey = 'option_id';
+    protected $primaryKey = 'option_id';  
 
-    public $timestamps = false;
+    public $timestamps = false; 
 
+    protected $fillable = [
+        'poll_id',
+        'name',
+        'votes',
+    ];
+
+    /**
+     * Validate the data for creating or updating an Option.
+     *
+     * @param array $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
     public static function validate($data)
     {
         $validator = Validator::make($data, [
-            'option_name' => 'required|string|max:100',  
+            'name' => 'required|string|max:100',  // Changed from 'option_name' to 'name' to match the column name
             'poll_id' => 'required|exists:poll,poll_id',  
         ]);
 
         return $validator;
     }
-    //Relationships
+
+    // Relationships
+
+    /**
+     * The poll that the option belongs to.
+     */
     public function poll()
     {
         return $this->belongsTo(Poll::class, 'poll_id', 'poll_id');
     }
 
-    
-    // Many Members can vote for an Option (via the Voting table).
+    /**
+     * Many Members can vote for an Option via the Voting table.
+     */
     public function members()
     {
         return $this->belongsToMany(Member::class, 'voting', 'option_id', 'member_id')
-                    ->withPivot('poll_id')  
+                    ->withPivot('poll_id')  // This allows you to access 'poll_id' in the pivot table
                     ->withTimestamps();
     }
 
@@ -45,7 +63,7 @@ class Option extends Model
      */
     public function getVoteCount()
     {
-        return $this->members()->count();
+        return $this->members()->count();  // Returns the number of members who voted for this option
     }
 
     /**
@@ -55,5 +73,4 @@ class Option extends Model
     {
         return $this->members()->where('member_id', $member->member_id)->exists();
     }
-
 }
