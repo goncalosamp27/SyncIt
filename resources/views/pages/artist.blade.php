@@ -14,27 +14,7 @@
                 <img src="{{ $artist->member->getProfileImage() }}" alt="User Profile Picture">
             @endcan
           </div>
-          <div class="artist-rating">
-            <div class="rating-display">
-                @php
-                    $averageRating = $artist->rating ?? 0;
-                    $roundedRating = round($averageRating, 1);
-                @endphp
-                
-                <div class="stars">
-                    @for ($i = 1; $i <= 5; $i++)
-                        @if ($i <= floor($roundedRating))
-                            <span class="star filled">★</span>
-                        @elseif ($i - 0.5 <= $roundedRating)
-                            <span class="star half">½</span>
-                        @else
-                            <span class="star empty">☆</span>
-                        @endif
-                    @endfor
-                </div>
-                <span class="rating-value">({{ $roundedRating }} / 5)</span>
-            </div>
-          </div>
+          
 
           <div class="profile-info">
             @can('isBanned', $artist->member)
@@ -46,6 +26,26 @@
               <p class="username"><span class="username">@</span>{{ $artist->member->username }}</p>
               <p class="bio"> {{ $artist->member->bio }} </p>
             @endcan
+            <div class="artist-rating">
+            <div class="rating-display">
+                @php
+                    $averageRating = $artist->rating ?? 0;
+                    $roundedRating = round($averageRating, 1);
+                @endphp
+                
+                <div class="stars">
+                    @for ($i = 1; $i <= 5; $i++)
+                        @if ($i <= floor($roundedRating))
+                            <span class="star filled">★</span>
+                        @elseif ($i - 0.5 <= $roundedRating)
+                            <span class="star half">★</span>
+                        @else
+                            <span class="star empty">☆</span>
+                        @endif
+                    @endfor
+                </div>
+            </div>
+          </div>
             <div class="profile-tags">
               <div class="profile-music-dance">
                 <span class="tag music">Music</span>

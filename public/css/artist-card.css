@@ -20,20 +20,22 @@
   }
   
   .artist-image {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin-bottom: 15px;
-    border: 4px solid ;
-  }
-  
-  .artist-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
+    border-radius: 50%; /* Makes the image a perfect circle */
+    overflow: hidden; /* Ensures content doesn't spill out */
+    margin-bottom: 15px; 
+    border: 4px solid #fff; /* Set a border color */
+    display: flex; /* Center image using flexbox */
+    justify-content: center;
+    align-items: center;
+}
+
+.artist-image img {
+    max-width: 200px;
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; /* Ensures the image fills the container while maintaining aspect ratio */
+}
+
   .artist-name {
     color: #fff;
     font-size: 18px;
@@ -50,12 +52,20 @@
   display: flex; /* Align the stars in a row */
   flex-direction: row;
   font-size: 18px; /* Adjust the size of the stars */
-  margin-top: 5px; /* Space between rating and the artist name */
+  margin-top: auto; /* Space between rating and the artist name */
 }
 
 .star, .star-half, .star-empty {
   margin-right: 2px; /* Space between the stars */
 }
+
+.star-half{
+  color: linear-gradient(90deg, #FFD700 50%, var(--gray-color) 50%);
+  background: linear-gradient(90deg, #FFD700 50%, var(--gray-color) 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 
 .star {
   color: #ffd700; /* Gold color for the stars */

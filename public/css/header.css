@@ -60,28 +60,11 @@ body {
 .logo {
     display: flex;
     align-items: center;
-    margin-left: 2rem; /* Adjusted for consistency */
-}
-
-.logo-icon {
-    font-size: 1.5rem;
-    color: var(--primary-color);
-}
-
-.logo-text {
-    font-size: 1.5rem;
-    margin-left: 0.25rem;
-    color: #fff;
+    margin-left: 1rem; /* Adjusted for consistency */
 }
 
 .navbar .logo-icon a,
 .navbar .logo-text a {
-    text-decoration: none;
-}
-
-
-.logo-text:hover {
-    color: var(--hover-color);
     text-decoration: none;
 }
 
@@ -94,11 +77,11 @@ body {
     display: flex;
     background-color: var(--gray-color);
     border-radius: 2rem;
-    width: 120%;
+    width: 100%;
     max-width: 32rem;
     padding: 0.5rem 1rem;
     text-align: left;
-    margin: 1rem auto;
+    margin: 20px auto;
 }
 
 .search-bar input {
@@ -420,4 +403,16 @@ body {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+}
+
+@media(max-width: 950px){
+    .explore-btn{
+        display: none;
+    }
+}
+
+@media(max-width: 500px){
+    .register{
+        display: none;
+    }
 }
