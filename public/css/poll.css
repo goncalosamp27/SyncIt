@@ -1,0 +1,132 @@
+/* General page text color */
+body {
+    color: #333; /* Default text color for the entire page */
+}
+
+/* General container styling for both forms */
+.container, .poll-wrapper {
+    max-width: 600px;
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 2rem auto;
+}
+
+/* Form and Poll Title Styling */
+.container h1, .poll-title {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Labels and inputs for the form and poll options */
+.form-label, .poll-option label {
+    font-size: 1rem;
+    color: #333;
+    font-weight: bold;
+}
+
+.form-control {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-size: 1rem;
+    color: #333; /* Ensure the text inside the input is dark */
+    background-color: #fff; /* Ensure background is white for input */
+}
+
+/* Spacing between form elements for better readability */
+.mb-3, .mb-2, .poll-options {
+    margin-bottom: 1rem;
+}
+
+/* Poll options layout */
+.poll-option {
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+}
+
+.poll-options {
+    margin-bottom: 1rem;
+}
+
+/* Poll progress bar styling */
+.poll-results {
+    display: flex;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.poll-bar {
+    height: 10px;
+    background-color: var(--primary-color);
+    border-radius: 5px;
+    margin-right: 0.5rem;
+    flex-grow: 1;
+}
+
+.poll-percentage {
+    font-size: 0.875rem;
+    color: #555;
+}
+
+/* Buttons Styling */
+.btn, .poll-actions button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary, .poll-actions button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover, .poll-actions button:hover {
+    background-color: var(--hover-color);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Success Alert Box */
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Responsive design for mobile devices */
+@media (max-width: 768px) {
+    .container, .poll-wrapper {
+        padding: 1rem;
+    }
+
+    .form-label, .poll-option label {
+        font-size: 0.9rem;
+    }
+
+    .btn, .poll-actions button {
+        font-size: 0.9rem;
+        padding: 8px 15px;
+    }
+}

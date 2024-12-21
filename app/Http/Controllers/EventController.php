@@ -13,7 +13,7 @@ use App\Models\JoinRequest;
 use App\Models\EventTag;
 use App\Models\Member;
 use App\Models\Comment;
-
+use App\Models\Poll;
 
 use Illuminate\Support\Facades\DB;
 use DateTime;
@@ -29,13 +29,15 @@ class EventController extends Controller
         // Get the event card.
         $event = Event::findOrFail($event_id);
         $comments = $event->comments ?: collect();
+        $polls = Poll::getPollsByEventId($event_id);
         return view('pages.event', [
             'event' => $event,
-            'comments' => $comments
+            'comments' => $comments,
+            'polls' => $polls,
         ]);
 
         $comments = Comment::withCount([
-            'votes as upvotes_count' => function ($query) {
+'votes as upvotes_count' => function ($query) {
                 $query->where('vote', true); // Count upvotes
             },
             'votes as downvotes_count' => function ($query) {
@@ -45,7 +47,7 @@ class EventController extends Controller
     
         return view('pages.event', [
             'event' => $event,
-            'comments' => $comments, // Pass comments with vote counts
+            'comments' => $comments,
         ]);
     }
 

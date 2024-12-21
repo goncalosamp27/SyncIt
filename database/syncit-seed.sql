@@ -42,6 +42,8 @@ DROP DOMAIN IF EXISTS restriction_type_domain CASCADE;
 DROP DOMAIN IF EXISTS request_status_domain CASCADE;
 DROP DOMAIN IF EXISTS event_status_domain CASCADE;
 DROP DOMAIN IF EXISTS report_status_domain CASCADE;
+DROP TABLE IF EXISTS password_reset_tokens CASCADE;
+DROP TABLE IF EXISTS password_reset CASCADE;
 
 CREATE DOMAIN event_status_domain AS VARCHAR(9)
 CHECK (VALUE IN ('Active', 'Cancelled'));
@@ -206,24 +208,42 @@ CREATE TABLE ticket (
     FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
-
-
+-- Poll Table
 CREATE TABLE poll (
     poll_id SERIAL PRIMARY KEY,
     event_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,  
     start_date DATE NOT NULL CHECK (start_date >= CURRENT_DATE),
     end_date DATE NOT NULL CHECK (end_date > start_date),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
     FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE option (
-    option_id SERIAL PRIMARY KEY,
-    option_name VARCHAR(100) NOT NULL,
+    option_id SERIAL PRIMARY KEY,    
     poll_id INT NOT NULL,
-
+    name VARCHAR(255) NOT NULL,
+    votes INT DEFAULT 0,             
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (poll_id) REFERENCES poll(poll_id) ON DELETE CASCADE
 );
+
+-- Voting Table
+CREATE TABLE voting (
+    voting_id SERIAL PRIMARY KEY,
+    poll_id INT NOT NULL,
+    option_id INT NOT NULL,
+    member_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
+    FOREIGN KEY (poll_id) REFERENCES poll(poll_id),
+    FOREIGN KEY (option_id) REFERENCES option(option_id),  
+    FOREIGN KEY (member_id) REFERENCES member(member_id),  
+    UNIQUE (poll_id, member_id)  
+);
+
 
 CREATE TABLE invitation (
     invitation_id SERIAL PRIMARY KEY,
@@ -282,17 +302,6 @@ CREATE TABLE poll_notification (
     FOREIGN KEY (poll_id) REFERENCES poll(poll_id)
 );
 
-CREATE TABLE voting (
-    voting_id SERIAL PRIMARY KEY,
-    poll_id INT NOT NULL,
-    option_id INT NOT NULL,
-    member_id INT NOT NULL,
-    FOREIGN KEY (poll_id) REFERENCES poll(poll_id),
-    FOREIGN KEY (option_id) REFERENCES option(option_id),
-    FOREIGN KEY (member_id) REFERENCES member(member_id),
-    UNIQUE (poll_id, member_id) 
-);
-
 CREATE TABLE rating (
 	event_id INT NOT NULL,
 	member_id INT NOT NULL,
@@ -329,16 +338,6 @@ CREATE TABLE password_reset_tokens (
     created_at TIMESTAMP NOT NULL
 );
 
-/*
-CREATE TABLE password_reset (
-    password_reset_id SERIAL PRIMARY KEY,
-    email VARCHAR(255) NOT NULL,
-    token VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-*/
-
-/*CREATE INDEX idx_password_reset_email ON password_reset(email);*/
 
 -- Upon account deletion, shared user data (e.g. comments, reviews, likes) is kept but made anonymous.
 -- Function to handle anonymization logic
@@ -1371,85 +1370,6 @@ VALUES -- Tickets for different events
     (50, NOW(), 65),             -- Member 65 has a ticket for Bollywood Beats
     (50, NOW(), 68);             -- Member 68 has a ticket for Indie Acoustic Evening
 
--- Creating Polls for events
-INSERT INTO poll (event_id, start_date, end_date)
-VALUES 
-    (1, CURRENT_DATE, CURRENT_DATE + INTERVAL '7 days'),  -- Poll for Salsa Night Fever
-    (5, CURRENT_DATE, CURRENT_DATE + INTERVAL '5 days'),  -- Poll for Reggae Beach Party
-    (10, CURRENT_DATE, CURRENT_DATE + INTERVAL '10 days'), -- Poll for Pop Fiesta
-    (21, CURRENT_DATE, CURRENT_DATE + INTERVAL '6 days'),  -- Poll for Afrobeat Summer Jam
-    (22, CURRENT_DATE, CURRENT_DATE + INTERVAL '7 days'),  -- Poll for Folk Fest
-    (40, CURRENT_DATE, CURRENT_DATE + INTERVAL '8 days'),  -- Poll for Hard Rock Havoc
-    (3, CURRENT_DATE, CURRENT_DATE + INTERVAL '5 days'),  -- Poll for Classical Harmony
-    (8, CURRENT_DATE, CURRENT_DATE + INTERVAL '7 days'),  -- Poll for Violin Virtuoso
-    (15, CURRENT_DATE, CURRENT_DATE + INTERVAL '6 days'), -- Poll for Jazz Night
-    (27, CURRENT_DATE, CURRENT_DATE + INTERVAL '10 days'),-- Poll for Disco Fever
-    (38, CURRENT_DATE, CURRENT_DATE + INTERVAL '8 days'); -- Poll for Lo-Fi Chillout
-
--- Options for each Poll
--- Poll 1: Where would you like the next Salsa Night Fever event?
-INSERT INTO option (option_name, poll_id)
-VALUES 
-    ('Beach', 1),
-    ('Rooftop', 1),
-    ('City Center', 1);
--- Poll 2: What time do you prefer for Reggae Beach Party?
-INSERT INTO option (option_name, poll_id)
-VALUES 
-    ('Afternoon', 2),
-    ('Evening', 2),
-    ('Late Night', 2);
--- Poll 3: Which location do you prefer for Pop Fiesta?
-INSERT INTO option (option_name, poll_id)
-VALUES 
-    ('Outdoor Park', 3),
-    ('City Square', 3),
-    ('Indoor Arena', 3);
--- Poll 4: What theme would you like for Afrobeat Summer Jam?
-INSERT INTO option (option_name, poll_id)
-VALUES 
-    ('Tropical', 4),
-    ('Urban Jungle', 4);
--- Poll 5: What should be the primary music style for Folk Fest?
-INSERT INTO option (option_name, poll_id)
-VALUES 
-    ('Traditional Folk', 5),
-    ('Folk Rock', 5),
-    ('Country Folk', 5);
--- Poll 6: Which time works best for Hard Rock Havoc?
-INSERT INTO option (option_name, poll_id)
-VALUES 
-    ('Evening', 6),
-    ('Midnight', 6);
--- Poll 7: What ambiance would you like for Classical Harmony?
-INSERT INTO option (option_name, poll_id)
-VALUES 
-    ('Candlelit', 7),
-    ('Outdoor Garden', 7),
-    ('Concert Hall', 7);
--- Poll 8: Which violinist would you prefer to see perform at Violin Virtuoso?
-INSERT INTO option (option_name, poll_id)
-VALUES 
-    ('Joshua Bell', 8),
-    ('Itzhak Perlman', 8),
-    ('Anne-Sophie Mutter', 8);
--- Poll 9: What jazz style should be featured in Jazz Night?
-INSERT INTO option (option_name, poll_id)
-VALUES 
-    ('Bebop', 9),
-    ('Free Jazz', 9);
--- Poll 10: What dress code should be encouraged for Disco Fever?
-INSERT INTO option (option_name, poll_id)
-VALUES 
-    ('70s Disco', 10),
-    ('Funky Casual', 10),
-    ('Formal Glam', 10);
--- Poll 11: What time of day should Lo-Fi Chillout start?
-INSERT INTO option (option_name, poll_id)
-VALUES 
-    ('Afternoon', 11),
-    ('Evening', 11);
--- Poll 12: What theme would you like for Afro-Cuban Salsa Night?
 
 INSERT INTO invitation (invitation_message, invitation_date, event_id, invitor_id, member_id)
 VALUES 
@@ -1490,51 +1410,6 @@ VALUES
     ('Dance it out at Zumba Fiesta! Get ready for an energetic experience.', NOW(), 45, 75, 2),
     ('You’re invited to Zumba Fiesta! Join us for a fun-filled workout session.', NOW(), 45, 77, 2);
     -- Invitations for Jazz Fusion Nights
-
--- Voting Data for Updated Polls
-INSERT INTO voting (poll_id, option_id, member_id)
-VALUES 
-    -- Voting on Poll 1: Salsa Night Fever
-    (1, 1, 5),    -- Member 5 votes for "Beach"
-    (1, 2, 8),    -- Member 8 votes for "Rooftop"
-    (1, 3, 12),   -- Member 12 votes for "City Center"
-    -- Voting on Poll 2: Reggae Beach Party
-    (2, 1, 15),   -- Member 15 votes for "Afternoon"
-    (2, 2, 20),   -- Member 20 votes for "Evening"
-    (2, 3, 25),   -- Member 25 votes for "Late Night"
-    -- Voting on Poll 3: Pop Fiesta
-    (3, 1, 28),   -- Member 28 votes for "Outdoor Park"
-    (3, 2, 30),   -- Member 30 votes for "City Square"
-    (3, 3, 32),   -- Member 32 votes for "Indoor Arena"
-    -- Voting on Poll 4: Afrobeat Summer Jam
-    (4, 1, 35),   -- Member 35 votes for "Tropical"
-    (4, 2, 37),   -- Member 37 votes for "Urban Jungle"
-    -- Voting on Poll 5: Folk Fest
-    (5, 1, 40),   -- Member 40 votes for "Traditional Folk"
-    (5, 2, 45),   -- Member 45 votes for "Folk Rock"
-    (5, 3, 50),   -- Member 50 votes for "Country Folk"
-    -- Voting on Poll 6: Hard Rock Havoc
-    (6, 1, 55),   -- Member 55 votes for "Evening"
-    (6, 2, 60),   -- Member 60 votes for "Midnight"
-    -- Voting on Poll 7: Classical Harmony
-    (7, 1, 65),   -- Member 65 votes for "Candlelit"
-    (7, 2, 70),   -- Member 70 votes for "Outdoor Garden"
-    (7, 3, 75),   -- Member 75 votes for "Concert Hall"
-    -- Voting on Poll 8: Violin Virtuoso
-    (8, 1, 8),    -- Member 8 votes for "Joshua Bell"
-    (8, 2, 12),   -- Member 12 votes for "Itzhak Perlman"
-    (8, 3, 22),   -- Member 22 votes for "Anne-Sophie Mutter"
-    -- Voting on Poll 9: Jazz Night
-    (9, 1, 25),   -- Member 25 votes for "Bebop"
-    (9, 2, 28),   -- Member 28 votes for "Free Jazz"
-    -- Voting on Poll 10: Disco Fever
-    (10, 1, 30),  -- Member 30 votes for "70s Disco"
-    (10, 2, 35),  -- Member 35 votes for "Funky Casual"
-    (10, 3, 37),  -- Member 37 votes for "Formal Glam"
-    -- Voting on Poll 11: Lo-Fi Chillout
-    (11, 1, 40),  -- Member 40 votes for "Afternoon"
-    (11, 2, 45);  -- Member 45 votes for "Evening"
-
 
 -- Ratings for Events by Different Members with Ratings from 0 to 5
 INSERT INTO rating (event_id, member_id, rating)
@@ -1634,11 +1509,41 @@ VALUES
         (19, 19, true),
         (20, 20, false);
 
-/*
-INSERT INTO password_reset (email, token, created_at)
-VALUES
-    ('sonia.bliznyuk@gmail.com', '75607e98e221a129e707e238650f38f538f469c49ccfdbe0ea1a0634a838a245', '2024-12-18 14:56:38'),
-    ('john.doe@example.com', 'ad73f8be2f1f0c920f8124bb2313a5412156f951d75a9d87d59578c7c0e9bc2a', '2024-12-18 15:02:10'),
-    ('alice.smith@domain.com', 'dfc0bc8e94ed4a7a47bb6cf528d4f9273fc2a69f8e6ecfeee94f02cb9e38c09e', '2024-12-18 15:10:25');
+-- Inserting into the poll table
+-- Insert Poll Records (These must exist before you can insert into the voting table)
+INSERT INTO poll (event_id, title, start_date, end_date)
+VALUES 
+    (1, 'Poll on Event 1', '2024-12-21', '2024-12-28'),
+    (2, 'Poll on Event 2', '2024-12-22', '2024-12-30'),
+    (3, 'Poll on Event 3', '2024-12-23', '2024-12-31');
 
-*/
+-- Insert Options for Poll 1
+INSERT INTO option (poll_id, name) 
+VALUES 
+(1, 'Option 1 for Poll 1'),
+(1, 'Option 2 for Poll 1'),
+(1, 'Option 3 for Poll 1');
+
+-- Insert Options for Poll 2
+INSERT INTO option (poll_id, name) 
+VALUES 
+(2, 'Option 1 for Poll 2'),
+(2, 'Option 2 for Poll 2');
+
+-- Insert Options for Poll 3
+INSERT INTO option (poll_id, name) 
+VALUES 
+(3, 'Option 1 for Poll 3'),
+(3, 'Option 2 for Poll 3'),
+(3, 'Option 3 for Poll 3'),
+(3, 'Option 4 for Poll 3');
+
+
+-- Insert Voting Records (Ensure poll_id exists before inserting here)
+INSERT INTO voting (poll_id, option_id, member_id)
+VALUES 
+    (1, 1, 1),  -- Voter with member_id 101 voted for Option 1 in Poll 1
+    (1, 2, 2),  -- Voter with member_id 102 voted for Option 2 in Poll 1
+    (2, 1, 3),  -- Voter with member_id 103 voted for Option 1 in Poll 2
+    (3, 2, 4);  -- Voter with member_id 104 voted for Option 2 in Poll 3
+
