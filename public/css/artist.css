@@ -67,15 +67,18 @@
 }
 
 .rating-display .star.half {
-    color: linear-gradient(90deg, #FFD700 50%, #9b4dff 50%);
-    background: linear-gradient(90deg, #FFD700 50%, #9b4dff 50%);
+    color: linear-gradient(90deg, #FFD700 50%, var(--gray-color) 50%);
+    background: linear-gradient(90deg, #FFD700 50%, var(--gray-color) 50%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
+.stars{
+    margin-bottom: 15px;
+}
+
 .rating-display .star.empty {
-    color: #9b4dff; /* Purple color for empty stars */
-    opacity: 0.5;
+    color: white; /* Purple color for empty stars */
 }
 
 .rating-value {
@@ -282,3 +285,9 @@
     }
 }
 
+@media (max-width: 768px) {
+    .main-layout {
+        grid-template-columns: 1fr; /* Single column layout */
+        gap: 20px; /* Adjust gap for smaller screens */
+    }
+}

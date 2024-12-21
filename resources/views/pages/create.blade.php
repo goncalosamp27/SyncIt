@@ -126,23 +126,21 @@
         </div>
         <!-- Subgenres -->
         <div class="create-event-input-inline">
-            <div class="create-event-input-inline">
-                <div>
-                    <label for="music-dance" id="music-dance-label" class="form-label">Select the event type</label>
+            <div>
+                    <label for="music-dance" id="music-dance-label" class="form-label">Type</label>
                     <select id="music-dance" name="music-dance" class="form-control" required>
-                        <option value="" disabled selected>Select the event type</option>
+                        <option value="" disabled selected>Select</option>
                         <!-- Options will be dynamically populated via JavaScript -->
                     </select>
                     @error('music-dance')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
-                </div>
             </div>
             <!-- Mood Dropdown -->
             <div>
                 <label for="mood" class="form-label">Mood</label>
                 <select id="mood" name="mood" class="form-control" required>
-                    <option value="" disabled selected>Select a Mood</option>
+                    <option value="" disabled selected>Select</option>
                     @foreach ($moodTags as $tag)
                         <option value="{{ $tag->tag_id }}">{{ $tag->tag_name }}</option>
                     @endforeach
@@ -156,7 +154,7 @@
             <div>
                 <label for="setting" class="form-label">Setting</label>
                 <select id="setting" name="setting" class="form-control" required>
-                    <option value="" disabled selected>Select a Setting</option>
+                    <option value="" disabled selected>Select</option>
                     @foreach ($settingsTags as $tag)
                         <option value="{{ $tag->tag_id }}">{{ $tag->tag_name }}</option>
                     @endforeach
@@ -171,9 +169,6 @@
         <div class="create-event-input">
             <label for="event_files" class="form-label">Upload Media</label>
             <input type="file" id="event_files" name="event_files">
-            <small class="form-text text-muted">
-                You can upload up to 1 image.
-            </small>
             <div id="file-error" class="text-danger" style="display: none;">
                 You can only upload 1 image.
             </div>
