@@ -14,7 +14,7 @@
 		@endif
 
 		<div class="tickets-title">
-			Showing Events you attended.
+			Attended events 
 		</div>
 		<div class ="new-purple-line"></div>
 		<div class="tickets-list">
@@ -25,7 +25,8 @@
 				});
 			@endphp
 			@if ($validTickets->isEmpty())
-				<p class="no-tickets">You did not attend an event yet.</p>
+				@include('partials.empty')
+				<a href="{{ route('events') }}" class="refresh-button">Buy your first ticket!</button>			               
 			@else
 				@foreach ($validTickets as $ticket_)
 					@include('partials.ticket-card', ['ticket' => $ticket_])

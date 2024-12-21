@@ -15,12 +15,13 @@
 		@endif
 
 		<div class="tickets-title">
-			Showing Your Notifications:
+			Notifications
 		</div>
 		<div class ="new-purple-line"></div>
 		<div class="tickets-list">
 			@if ($member->notifications->isEmpty())
-    			<p class="no-tickets">You do not have any notifications.</p>
+    			@include('partials.empty')
+				<a href="{{ route('home') }}" class="refresh-button">Go home</button>
 			@else
 					@foreach ($notifications as $notification)
 						@include('partials.notification-card', ['notifications' => $notification])

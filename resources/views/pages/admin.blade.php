@@ -97,6 +97,9 @@
                     </div>
                 </div>
             @endforeach
+            @if ($members->isEmpty())
+                @include('partials.empty')
+            @endif
             <div class="pagination-container">
                 {{ $members->links('pagination::bootstrap-4') }}
             </div>
