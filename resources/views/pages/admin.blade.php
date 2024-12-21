@@ -2,18 +2,6 @@
 
 @section('content')
     <div class="admin_page">
-        <div class="participants-header">
-
-            <div class="tabs">
-                <a href="{{ route('admin', ['status' => 'active']) }}" > Members</a>
-                <a href="{{ route('admin', ['status' => 'banned']) }}" > Banned</a>
-                <a href="{{ route('admin', ['status' => 'suspended']) }}" > Suspended</a>
-                <a href="{{ route('admin.reports', ['status' => 'unsolved']) }}" > Reports</a>
-                <a href="{{ route('admin.reports', ['status' => 'solved']) }}" > Archive </a> 
-                <a href="{{ route('create.member') }}"> New account</a>
-            </div>
-        </div>
-
         @isset($reports)
             <h1>Reports</h1>
             @foreach($reports as $report)

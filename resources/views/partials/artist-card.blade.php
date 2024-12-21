@@ -18,7 +18,7 @@
   @can('isBanned', $artist->member)  
     <div class="artist-username">Anonymous</div>
   @else
-    <div class="artist-username">{{ $artist->member->username }}</div>
+    <div class="artist-username">{{ '@' . $artist->member->username }}</div>
   @endcan
   
   <!-- Rating in stars -->

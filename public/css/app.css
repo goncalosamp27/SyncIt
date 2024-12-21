@@ -29,6 +29,18 @@
 
 body {
   font-family: 'Inter', sans-serif;
+  margin: 0 auto; /* Center the body */
+}
+
+.content {
+  width: 80%; 
+  max-width: 1200px; /* Prevents the body from getting too wide */
+  min-width: 320px; /* Prevents the body from getting too narrow */
+  margin: auto;
+  margin-top: 7.5rem;
+  flex: 1;
+  display: 1;
+  flex-direction: column;
 }
 
 .go-back-btn {
@@ -75,18 +87,6 @@ html, body {
   display: flex;
   flex-direction: column;
   height: 100%;
-}
-
-.content{
-  margin-top: 7.5rem;
-  flex: 1;
-  display: 1;
-  flex-direction: column;
-}
-
-.tag:hover {
-        transform: scale(1.05);
-        box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .faq-item h3{
