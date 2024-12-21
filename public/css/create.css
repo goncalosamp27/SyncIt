@@ -3,13 +3,12 @@
 /* Container for the Event Form */
 .create-event {
     margin: 0rem auto;
-    max-width: 70rem;
     /* Reduced width */
     text-align: center;
 }
 
 .create-page {
-    width: 50%;
+    width: 80%;
     margin:auto;
     margin-bottom: 2rem;
 }
@@ -41,7 +40,6 @@
     box-shadow: 0 0rem 0.5rem rgba(0, 0, 0, 0.8);
     margin: 1.5rem auto;
     /* Adjusted margin */
-    max-width: 70rem;
     /* Same as the container */
     margin-bottom: 2rem;
 }
@@ -97,7 +95,6 @@
 
 .create-event-input-inline > div {
     flex: 1; /* Ensures equal width for all items */
-    min-width: 12rem; /* Minimum width to prevent shrinking too much */
 }
 
 
@@ -225,7 +222,6 @@ select {
 .create-event-input-inline>div {
     flex: 1;
     /* Ensures equal width for all items */
-    min-width: 12rem;
     /* Slightly smaller minimum width */
 }
 
@@ -245,4 +241,10 @@ select {
     background-color: var(--background-color);
     color: var(--white-color);
     border: 1px solid var(--gray-color);
+}
+
+@media(max-width: 500px){
+    .create-event-input-inline{
+        flex-direction: column;
+    }
 }

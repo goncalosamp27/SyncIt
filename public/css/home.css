@@ -8,7 +8,7 @@
 }
 
 .slogan {
-    width: 60%; /* Set to 60% of the screen width */
+    width: 100%; /* Set to 60% of the screen width */
     margin: 0 auto; /* Center the container horizontally */
 }
 
@@ -29,7 +29,7 @@
     box-shadow: 0em 0em 2em rgb(0, 0, 0, 0.8);
 }
 
-@media (min-width: 768px) { /* Switch to side-by-side layout for larger screens */
+@media (min-width: 900px) { /* Switch to side-by-side layout for larger screens */
     .slogan-container {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -95,13 +95,14 @@
 
  
 .home-page-bottom{
-	margin-left: 13rem;
-	margin-right: 13rem;
+    width: 100%;
+    margin: auto;
 }
 
 .future-events,
 .past-events,
 .artists {
+    width: 100%;
 	margin-top: 2rem;
 	margin-bottom: 2rem;
 	color: var(--white-color);
@@ -112,6 +113,7 @@
     display: flex;
     flex-wrap: wrap; /* Allows wrapping of items */
     gap: 20px; /* Space between items */
+    justify-content: center;
 }
 
 .home-page-bottom .event-card,
@@ -123,7 +125,6 @@
 
 .home-page-bottom .event-card {
     flex: 1 1 calc(33.33% - 20px); /* 3 items per row, subtracting space for the gap */
-    max-width: calc(33.33% - 20px); /* Ensure cards don't exceed this width */
     box-sizing: border-box; /* Include padding and borders within the width */
 }
 

@@ -10,7 +10,7 @@
 <div class="filter-bar">
   {{-- Public/Private Dropdown --}}
   <div class="dropdown">
-    <button class="dropdown-button" type="button">Event Type</button>
+    <button class="dropdown-button" type="button">Type</button>
     <div class="dropdown-menu">
       <div class="dropdown-item">
         <input type="checkbox" id="event-type-public" name="event_type" value="public" class="filter-radio">
@@ -79,9 +79,9 @@
   </div>
 
   {{-- Apply Filters Button --}}
-  <button id="apply-filters" class="filter-button" type="submit">Apply Filters</button>
+  <button id="apply-filters" class="filter-button" type="submit">Apply</button>
   {{-- Reset Filters Button --}}
-  <button id="reset-filters" class="filter-button" type="button">Reset Filters</button>
+  <button id="reset-filters" class="filter-button" type="button">Reset</button>
 </div>
 <div class="events-search-bar">
   <form method="GET" action="{{ route('events.search') }}" class="search-bar">
