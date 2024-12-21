@@ -51,4 +51,24 @@ class ArtistController extends Controller
         // Return the view and pass the events data to the view
         return view('pages.artists', ['artists' => $artists]);
     }
+
+    public function search(Request $request)
+    {
+        $searchTerm = $request->input('search'); // Search term from the user input
+
+        // Handle the search query using PostgreSQL full-text search
+
+        if (empty($searchTerm)) {
+            $artists = Artist::all();
+        } 
+        else{
+            $artists = Artist::select('artist.*')
+            ->whereRaw("fts_artist @@ plainto_tsquery('english', ?)", [$searchTerm])
+            ->get(); 
+        }
+
+        return view('pages.artists', [
+            'artists' => $artists,
+        ]);
+    }
 }
