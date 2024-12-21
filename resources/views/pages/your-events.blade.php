@@ -15,14 +15,14 @@
 		@endif
 
 		<div class="tickets-title">
-			Showing Your Events:
+			Your events
 		</div>
 		<div class ="new-purple-line"></div>
 		<div class="tickets-list">
 
 			@if ($events->isEmpty())
-    			<p class="no-tickets">You do not own any events.</p>
-				<a class="take-me-button-member" href="{{ route('events.create') }}">Create your first Event!</a>
+                @include('partials.empty')
+				<a href="{{ route('events.create') }}" class="refresh-button">Create your first event!</button>
 			@else
 
 			
