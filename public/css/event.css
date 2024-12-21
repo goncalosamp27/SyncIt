@@ -2,12 +2,6 @@
 
 .event-page-content{
 	margin: 3.5rem auto;
-	display: grid;
-	grid-template-columns: 40% 60%;
-	gap:0em;
-	height:30rem;
-	margin-bottom: 5rem;
-	max-width: calc(40rem * 2);
 }
 
 .event-page-info{
@@ -19,8 +13,10 @@
 	justify-content: space-between;
 }
 
+.event-page-details *{
+    margin-top: 20px;
+}
 .event-page-img {
-	padding: 1rem;
 	display: flex; 
 	justify-content: center;
 	align-items: center;
@@ -30,15 +26,9 @@
 	border-radius: 1rem;
 	width: 90%; /* Relative to the container's width */
 	max-width: 46rem;
-	height: 28rem; /* Maintain aspect ratio */
+    height: auto;
 	object-fit: cover;
 	box-shadow: 0em 0em 2em rgba(0, 0, 0, 0.8);
-	transition: transform 0.4s ease, box-shadow 0.4s ease, filter 0.4s ease;
-  }
-  
-  .event-page-img img:hover {
-	transform: scale(1.08); /* Slight zoom and a tiny tilt */
-	filter: brightness(1.2); /* Brightens the image slightly */
   }
 
   .event-page-info h1 {
@@ -55,7 +45,9 @@
 }
 
 .user-event-owner {
+    font-size: 2rem;
 	text-decoration: none;
+    width: 100%;
 }
 
 .user-event-owner:hover{
@@ -71,35 +63,27 @@
 .event-page-info h3{
 	font-size: 1.2rem;
 	color: #FFF;
-	margin-top: 2rem;
 }
 
 .event-page-info h4{
 	font-size: 1.2rem;
 	color: #FFF;
-	margin-top: 2rem;
 }
 
 .event-page-info h5{
+    margin-top:0;
 	font-size: 1.2rem;
 	color: #FFF;
-	margin-top: 2rem;
 }
 
 
 .small-line{
 	height: 0.1rem;
-	margin-top: 1rem;
 	background-color: var(--primary-color);
-}
-
-.ticket-buttons{
-    margin-top: 2rem;
 }
 
 .buy-tickets-btn {
     display: inline-block;
-    margin: 2rem auto; /* 2rem top and bottom, auto left and right */
     padding: 1rem 2rem;
     font-size: 1.2rem;
 	width: 100%;
@@ -136,14 +120,9 @@
     text-decoration: line-through;
 }
 
-.description-comments{
-    width: 80%;
-	margin-left: auto;  
-	margin-right: auto;
-}
-
 .event-page-description,
 .event-page-comments {
+    width: 100%;
 	margin-top: 3rem;
 	margin-bottom: 2rem;
 	color: var(--white-color);
@@ -167,12 +146,11 @@
 
 
 .add-your-own-comment {
+    margin-top: 20px;
     display: flex;
     align-items: center;
     gap: 1rem; /* Space between elements */
-    margin-bottom: 2rem; /* Adjust margin using rem for scalability */
-    margin-left: 1rem;
-    margin-right: 1rem;
+    width:100%;
 }
 
 .profile-pic {
@@ -183,6 +161,7 @@
 }
 
 .comment-input {
+    width: 100%;
     flex: 1; /* Allows the input to expand and fill available space */
     border: none; /* Remove the default box border */
     border-bottom: 1px solid #ccc; /* Add a line at the bottom */
@@ -216,13 +195,12 @@
 }
 
 .event-page-tags {
-    margin-left: 1rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin-top: 20px;
+    margin-bottom: 20px;
     gap: 1rem;
     display: flex;
     flex-wrap: wrap; /* Allow tags to wrap to a new line */
-    justify-content: flex-start;
+    justify-content: center;
     max-width: 100%; /* Ensure the tags stay within the parent container */
 }
 
@@ -230,19 +208,14 @@
     padding: 0.5rem 1rem; /* Adjust padding for tag styling */
     color: white; /* Anchor text color */
     border-radius: 1rem; /* Rounded corners */
-    font-size: 0.875rem; /* Adjust font size */
     white-space: nowrap; /* Prevent text from breaking inside tags */
     text-decoration: none; /* Remove underline for anchor tags */
     display: inline-block; /* Ensures consistent box sizing */
-    transition: background-color 0.3s ease; /* Optional: Add hover effect */
-}
-
-.event-page-tags span:hover {
-    cursor: pointer; /* Indicate interactivity */
 }
 
 .disabled-btn {
     background-color: gray;
+    width: 100%;
     color: lightgray;
     cursor: not-allowed;
     pointer-events: none;
@@ -333,6 +306,7 @@
 
 /* Edit Button */
 .event-button {
+    margin-top: 0;
     display: inline-block;
     padding: 10px 20px;
     font-size: 1rem;
@@ -343,7 +317,6 @@
     text-decoration: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s, transform 0.2s ease;
-    margin-top: 2rem; /* Adds some space at the top */
 }
 
 .event-button:hover {
@@ -362,8 +335,6 @@
     text-decoration: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s, transform 0.2s ease;
-    margin-top: 1rem; /* Adds some space at the top */
-    margin-left: 0.5rem;
 }
 
 .event-button2:hover {
@@ -508,9 +479,9 @@ form.buy-tickets-form {
     background: var(--primary-color);
     margin-left: auto;
     margin-right: auto;
-    width: 50%;
+    max-width: 400px;
     color: var(--text-color);
-    padding: 1rem 6rem; /* 10px 20px equivalent */
+    padding: 1rem 2rem; /* 10px 20px equivalent */
     font-size: 3rem;
     border-radius: 1em;
 	box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.8);
