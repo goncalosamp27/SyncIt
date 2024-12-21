@@ -182,14 +182,23 @@ class EventController extends Controller
 
         if (empty($searchTerm)) {
             $events = Event::all();
-        } 
-        else{
-            $events = Event::select('event.*')
-            ->whereRaw("fts_name @@ plainto_tsquery('english', ?)", [$searchTerm])
-            ->orWhereRaw("fts_location @@ plainto_tsquery('english', ?)", [$searchTerm])
-            ->orWhereRaw("fts_artist @@ plainto_tsquery('english', ?)", [$searchTerm])
-            ->get(); 
+        } else {
+            $events = Event::selectRaw('event.*, ts_rank((
+                setweight(fts_name, \'A\') ||
+                setweight(fts_location, \'B\') ||
+                setweight(fts_artist, \'C\') ||
+                setweight(fts_description, \'D\')
+            ), plainto_tsquery(\'english\', ?)) AS rank', [$searchTerm])
+            ->whereRaw("(
+                setweight(fts_name, 'A') ||
+                setweight(fts_location, 'B') ||
+                setweight(fts_artist, 'C') ||
+                setweight(fts_description, 'D')
+            ) @@ plainto_tsquery('english', ?)", [$searchTerm])
+            ->orderByDesc('rank') // Order by relevance score
+            ->get();            
         }
+        
 
         return view('pages.events', [
             'events' => $events,
