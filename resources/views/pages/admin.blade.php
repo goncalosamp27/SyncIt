@@ -2,11 +2,11 @@
 
 @section('content')
     <div class="admin_page">
-        @isset($reports)
             @php
                 $status = Route::current()->parameter('status')
             @endphp
-            <h1>Reports</h1>
+        @isset($reports)
+            <h1>{{ ucfirst($status) }} reports</h1>
             @foreach($reports as $report)
                 <div class="member-card">
                     <div class="member-profile-pic">
@@ -39,7 +39,7 @@
                 {{ $reports->links('pagination::bootstrap-4') }}
             </div>
         @elseif(isset($members))
-            <h1>Members</h1>
+            <h1>{{ ucfirst($status) }} members</h1>
 
             <form method="GET" action="{{ route('members.search') }}" class="search-bar">
                 <button type="submit" class="search-button">🔍</button>
