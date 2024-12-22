@@ -135,7 +135,6 @@ textarea {
 
 .responsive-media {
     max-width: 200px; /* Set a maximum width */
-    max-height: 200px; /* Set a maximum height */
     width: auto;
     height: auto;
 }
