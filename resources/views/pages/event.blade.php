@@ -280,6 +280,7 @@
 			@else
     			<p>No polls available for this event.</p>
 			@endif
+		</div>
 
 		<div class="purple-line"></div>
 		
