@@ -1170,7 +1170,7 @@ VALUES
 
 INSERT INTO tag (tag_type, tag_name, color)
 VALUES 
-    ('Music', 'Music', 'D32F2F'),       -- Crimson for Music
+    ('Music', 'Jazz', 'D32F2F'),       -- Crimson for Music
     ('Dance', 'Dance', '5A4FCF'),       -- Medium Purple for Dance
     -- Music Genres
     ('Music', 'Jazz', 'CC9900'),        -- Dark Gold for Jazz
@@ -1677,6 +1677,23 @@ VALUES
         (18, 18, false),
         (19, 19, true),
         (20, 20, false);
+
+INSERT INTO report (event_id, member_id, message, status) VALUES
+    (1, 5, 'Report for event 1 by member 5', 'Unsolved'),
+    (2, 10, 'Report for event 2 by member 10', 'Solved'),
+    (3, 15, 'Report for event 3 by member 15', 'Unsolved'),
+    (4, 20, 'Report for event 4 by member 20', 'Solved'),
+    (5, 1, 'Report for event 5 by member 1', 'Unsolved'),
+    (6, 6, 'Report for event 6 by member 6', 'Solved'),
+    (7, 11, 'Report for event 7 by member 11', 'Unsolved'),
+    (8, 16, 'Report for event 8 by member 16', 'Solved'),
+    (9, 3, 'Report for event 9 by member 3', 'Unsolved'),
+    (10, 12, 'Report for event 10 by member 12', 'Solved'),
+    (11, 8, 'Report for event 11 by member 8', 'Unsolved'),
+    (12, 4, 'Report for event 12 by member 4', 'Solved'),
+    (13, 7, 'Report for event 13 by member 7', 'Unsolved'),
+    (14, 2, 'Report for event 14 by member 2', 'Solved'),
+    (15, 14, 'Report for event 15 by member 14', 'Unsolved');
 
 /*
 INSERT INTO password_reset (email, token, created_at)
