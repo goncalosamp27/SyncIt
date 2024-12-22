@@ -13,7 +13,7 @@ use App\Models\JoinRequest;
 use App\Models\EventTag;
 use App\Models\Member;
 use App\Models\Comment;
-
+use App\Models\Poll;
 
 use Illuminate\Support\Facades\DB;
 use DateTime;
@@ -22,31 +22,22 @@ use DateTime;
 class EventController extends Controller
 {
     public function show(string $event_id): View
-{
-    if (!is_numeric($event_id) || $event_id > 2147483647) {
-        abort(404, 'Invalid event identifier');
-    }
-
-    // Get the event
-    $event = Event::findOrFail($event_id);
-
-    // Fetch comments with vote counts
-    $comments = Comment::withCount([
-        'votes as upvotes_count' => function ($query) {
-            $query->where('vote', true); // Count upvotes
-        },
-        'votes as downvotes_count' => function ($query) {
-            $query->where('vote', false); // Count downvotes
+    {
+        if (!is_numeric($event_id) || $event_id > 2147483647) {
+            abort(404, 'Invalid event identifier');
         }
-    ])->where('event_id', $event_id)->orderBy('comment_date', 'desc')->get();
+        // Get the event card.
+        $event = Event::findOrFail($event_id);
+        $comments = $event->comments ?: collect();
+        $polls = Poll::getPollsByEventId($event_id);
+        //function for a ticket count 
+        return view('pages.event', [
+            'event' => $event,
+            'comments' => $comments,
+            'polls' => $polls,
 
-    // Return the view with event and comments
-    return view('pages.event', [
-        'event' => $event,
-        'comments' => $comments, // Pass comments with vote counts
-    ]);
-}
-
+        ]);
+    }
 
     public function refundTicket(string $ticket_id)
     {

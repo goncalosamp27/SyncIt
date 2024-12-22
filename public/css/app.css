@@ -21,6 +21,9 @@
 @import url('404.css');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 @import url('reset-password.css');
+@import url('create-poll.css');
+@import url('poll.css');
+@import url('poll-data.css');
 
 * {
   color: var(--text-color);
