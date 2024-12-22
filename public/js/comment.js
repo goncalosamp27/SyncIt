@@ -49,41 +49,61 @@ function fetchComments() {
 function postComment(button) {
     const commentText = document.getElementById('new-comment').value;
     const eventId = button.getAttribute('data-event-id'); // Get the event ID from the button
+    const fileInput = document.getElementById('file-upload'); // Get the file input element
 
     if (commentText.trim() === '') {
         alert("Please write a comment.");
         return;
     }
 
+    const allowedFileTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/avi', 'video/quicktime'];
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        if (!allowedFileTypes.includes(file.type)) {
+            alert("This file format is not allowed.");
+            return;
+        }
+    }
+
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const requestData = { text: commentText, event_id: eventId };
+    const formData = new FormData();
+    formData.append('text', commentText);
+    formData.append('event_id', eventId);
+
+    if (fileInput.files.length > 0) {
+        formData.append('file', fileInput.files[0]);
+    }
+
+
+    const commentUrl = `/event/${eventId}/comments`;
 
     fetch(commentUrl, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'X-CSRF-TOKEN': csrfToken,
         },
-        body: JSON.stringify(requestData),
+        body: formData,
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                console.log("Comment was saved");
-                document.getElementById('new-comment').value = ''; // Clear input
-                fetchComments(); // Fetch comments dynamically
-            } else {
-                alert('Failed to post comment');
-            }
-        })
-        .catch(error => {
-            console.error('Error occurred:', error);
-        });
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            console.log("Comment was saved");
+            document.getElementById('new-comment').value = ''; // Clear input
+            document.getElementById('file-upload').value = ''; // Clear file input
+            document.getElementById('comment-list').innerHTML = data.comments_html; // Update comments list
+            fetchComments(); // Fetch comments dynamically
+        } else {
+            alert('Failed to post comment');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 
 function voteComment(voteType, button) {
