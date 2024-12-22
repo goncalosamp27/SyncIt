@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Poll;
 use App\Models\Event;
-
+use App\Models\Voting;
+use App\Models\Option;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 class PollController extends Controller
 {
     public function showCreatePoll(string $event_id)
@@ -28,7 +31,7 @@ class PollController extends Controller
         ]);
 
         $poll = Poll::create([
-            'event_id' => $event_id, 
+            'event_id' => $event_id,
             'title' => $request->title,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
@@ -46,4 +49,108 @@ class PollController extends Controller
 
         ]);
     }
+
+    public function storeVote(Request $request)
+    {
+        // Validate the incoming request
+        $validator = Validator::make($request->all(), [
+            'poll_id' => 'required|exists:poll,poll_id',
+            'option_id' => 'required|exists:option,option_id',
+            'member_id' => 'required|exists:member,member_id',
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $validatedData = $request->all();
+
+        Log::info('Vote request received:', $validatedData);
+
+        try {
+            $existingVote = Voting::where('poll_id', $validatedData['poll_id'])
+                ->where('member_id', $validatedData['member_id'])
+                ->where('option_id', $validatedData['option_id'])  // Check if the member already voted for this option
+                ->first();
+
+            if ($existingVote) {
+                Log::info('User has already voted for this poll. Member ID: ' . $validatedData['member_id']);
+                $updatedVotes = Voting::where('option_id', $validatedData['option_id'])->count();
+                Log::info('Number of votes' . $updatedVotes);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You have already voted for this option.',
+                    'votes' => $updatedVotes,
+                ]);
+            } else {
+                Log::info('No existing vote. Storing new vote for Member ID: ' . $validatedData['member_id']);
+                $voting = Voting::create([
+                    'poll_id' => $validatedData['poll_id'],
+                    'option_id' => $validatedData['option_id'],
+                    'member_id' => $validatedData['member_id'],
+                ]);
+                Log::info('New vote stored successfully.');
+                $updatedVotes = Voting::where('option_id', $validatedData['option_id'])->count();
+                Log::info('Number of votes' . $updatedVotes);
+            }
+
+            $updatedVotes = Voting::where('option_id', $validatedData['option_id'])->count();
+            Log::info('Number of votes' . $updatedVotes);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Vote recorded successfully.',
+                'voting' => $voting,
+                'votes' => $updatedVotes,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error while processing the vote. Message: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while processing the vote.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    //function to fetch the poll data 
+    public function fetchPollData(Request $request)
+    {
+        try {
+            // Validate the request
+            $request->validate([
+                'poll_id' => 'required|integer|exists:poll,poll_id',
+            ]);
+
+            $pollId = $request->input('poll_id');
+            Log::info('Poll ID: ' . $pollId);
+
+            // Fetch vote counts
+            $voteCounts = Option::getOptionVoteCountsByPoll($pollId);
+            Log::info('Poll Array: ' . json_encode($voteCounts));
+
+            // Return success response with vote counts
+            return response()->json([
+                'success' => true,
+                'votes' => $voteCounts,
+            ], 200);
+        } catch (\Exception $e) {
+            // Handle any exception that occurs in the try block
+            Log::error('Error fetching poll data: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+
+
 }

@@ -12,9 +12,9 @@ class Option extends Model
 
     protected $table = 'option';
 
-    protected $primaryKey = 'option_id';  
+    protected $primaryKey = 'option_id';
 
-    public $timestamps = false; 
+    public $timestamps = false;
 
     protected $fillable = [
         'poll_id',
@@ -22,55 +22,44 @@ class Option extends Model
         'votes',
     ];
 
-    /**
-     * Validate the data for creating or updating an Option.
-     *
-     * @param array $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
     public static function validate($data)
     {
         $validator = Validator::make($data, [
-            'name' => 'required|string|max:100',  // Changed from 'option_name' to 'name' to match the column name
-            'poll_id' => 'required|exists:poll,poll_id',  
+            'name' => 'required|string|max:100',
+            'poll_id' => 'required|exists:poll,poll_id',
         ]);
 
         return $validator;
     }
 
-    // Relationships
-
-    /**
-     * The poll that the option belongs to.
-     */
     public function poll()
     {
         return $this->belongsTo(Poll::class, 'poll_id', 'poll_id');
     }
 
-    /**
-     * Many Members can vote for an Option via the Voting table.
-     */
     public function members()
     {
         return $this->belongsToMany(Member::class, 'voting', 'option_id', 'member_id')
-                    ->withPivot('poll_id')  // This allows you to access 'poll_id' in the pivot table
-                    ->withTimestamps();
+            ->withPivot('poll_id')  
+            ->withTimestamps();
     }
 
-    /**
-     * Get the number of votes for this option.
-     */
-    public function getVoteCount()
+    public function countVotes()
     {
-        return $this->members()->count();  // Returns the number of members who voted for this option
+        return $this->members()->count();  // Counts how many members are associated with this option (i.e., votes)
     }
 
-    /**
-     * Check if a member has voted for this option.
-     */
     public function hasVoted(Member $member)
     {
         return $this->members()->where('member_id', $member->member_id)->exists();
+    }
+    public static function getOptionVoteCountsByPoll($pollId)
+    {
+        return self::where('option.poll_id', $pollId) // Explicitly specify the table for poll_id
+            ->leftJoin('voting', 'option.option_id', '=', 'voting.option_id')
+            ->select('option.option_id', \DB::raw('COUNT(voting.voting_id) as vote_count'))
+            ->groupBy('option.option_id')
+            ->pluck('vote_count', 'option.option_id')
+            ->toArray();
     }
 }

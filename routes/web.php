@@ -188,3 +188,5 @@ Route::post('/file/upload', [FileController::class, 'upload']);
 //polls
 Route::get('/create-poll/{event_id}', [PollController::class, 'showCreatePoll'])->name('poll.create');
 Route::post('/create-poll/{event_id}', [PollController::class, 'storePoll'])->name('poll.store');
+Route::post('/poll-vote', [PollController::class, 'storeVote'])->name('poll.vote');
+Route::post('/poll-data/{poll_id}', [PollController::class, 'fetchPollData'])->name('poll.data');
