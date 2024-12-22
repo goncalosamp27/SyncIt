@@ -38,7 +38,7 @@ class EventController extends Controller
         'votes as downvotes_count' => function ($query) {
             $query->where('vote', false); // Count downvotes
         }
-    ])->where('event_id', $event_id)->get();
+    ])->where('event_id', $event_id)->orderBy('comment_date', 'desc')->get();
 
     // Return the view with event and comments
     return view('pages.event', [
