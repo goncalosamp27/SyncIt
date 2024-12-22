@@ -23,7 +23,7 @@
 
 		</div>
 		<div class="slogan-container-image">
-			<img src="{{ asset('storage/home_dj.jpg') }}" alt="Placeholder">
+			<img src="{{ asset('home_dj.jpg') }}" alt="Placeholder">
 		</div>
 	</div> 
 	</div>
