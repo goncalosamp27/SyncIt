@@ -4,11 +4,12 @@ namespace App\Policies;
 
 use App\Models\Member;
 use App\Models\Event;
+use Illuminate\Support\Facades\Auth;
 
 class EventPolicy {
     public function __construct() {}
     public function edit(Member $member, Event $event) {
-        return $event->event_status === 'Active' && $event->artist->member->member_id === $member->member_id && $event->event_date > now();
+        return $event->event_status === 'Active' && ($event->artist->member->member_id === $member->member_id || Auth::guard('admin')->check()) && $event->event_date > now() ;
     }
     public function delete(Member $member, Event $event) {
         return $event->event_status === 'Cancelled' && $event->artist->member->member_id === $member->member_id;

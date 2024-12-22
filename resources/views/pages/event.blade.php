@@ -55,22 +55,28 @@
 						<button type="button" class="event-button2" onclick="openModal(1)">Cancel Event</button>
 					@endcan
 
+					@if(Auth::guard('admin')->check() && $event->event_status != 'Cancelled' && $event->event_date > now())
+						<button type="button" class="event-button2" onclick="openModal(1)">Cancel Event</button>
+					@endcan
+
 					@if(Auth::check())
-						<button onclick="openModal(2)" class="event-button2">
-							Report
-						</button>
+						@cannot('edit', $event)
+							<button onclick="openModal(2)" class="event-button2">
+								Report
+							</button>
+						@endcannot
 					@endif
 
 				</div>
 			</div>	
 					
-			<a class="user-event-owner" style="display: flex; align-items: center; margin-top:1rem;">
-				<img href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}"
+			<a href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}" class="user-event-owner" style="display: flex; align-items: center; margin-top:1rem;">
+				<img
 					src="{{ $event->artist->member->getProfileImage() }}"
 					alt="Profile Picture" 
 					style="width: 5rem; height: 5rem; object-fit: cover; border-radius: 50%; margin-right: 1rem; border: 0.15rem solid white; box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.8);"
 				>
-				<span href="{{ route('artist', ['artist_id' => $event->artist->artist_id]) }}" class ="user-event-owner">by {{ $event->artist->member->display_name }}</span>
+				<span class ="user-event-owner">by {{ $event->artist->member->display_name }}</span>
 			</a>	
 			
 			<div class="event-page-details">
@@ -273,7 +279,9 @@
 					<button class="post-button" data-event-id="{{ $event->event_id }}" onclick="postComment(this)">Post</button>
 				</div>
 			@else
-			<p><a href="{{ route('login') }}" style="color: #9b4dff;">Login</a> to add a comment.</p>    
+				@if(!Auth::guard('admin')->check())
+					<p><a href="{{ route('login') }}" style="color: #9b4dff;">Login</a> to add a comment.</p>    
+				@endif
 			@endauth
 			<div id="comment-list">
 				@include('partials.comment-list', ['comments' => $comments])

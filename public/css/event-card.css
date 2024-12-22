@@ -110,7 +110,7 @@
 }
 
 @media (max-width: 768px) {
-  .home-page-bottom .event-card {
+  .home-page-bottom .event-card{
       flex-direction: row; /* Stack image and details vertically on smaller screens */
       max-height: 200px;
   }

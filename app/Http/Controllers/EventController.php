@@ -22,32 +22,31 @@ use DateTime;
 class EventController extends Controller
 {
     public function show(string $event_id): View
-    {
-        if (!is_numeric($event_id) || $event_id > 2147483647) {
-            abort(404, 'Invalid event identifier');
-        }
-        // Get the event card.
-        $event = Event::findOrFail($event_id);
-        $comments = $event->comments ?: collect();
-        return view('pages.event', [
-            'event' => $event,
-            'comments' => $comments
-        ]);
-
-        $comments = Comment::withCount([
-            'votes as upvotes_count' => function ($query) {
-                $query->where('vote', true); // Count upvotes
-            },
-            'votes as downvotes_count' => function ($query) {
-                $query->where('vote', false); // Count downvotes
-            }
-        ])->where('event_id', $event_id)->get();
-    
-        return view('pages.event', [
-            'event' => $event,
-            'comments' => $comments, // Pass comments with vote counts
-        ]);
+{
+    if (!is_numeric($event_id) || $event_id > 2147483647) {
+        abort(404, 'Invalid event identifier');
     }
+
+    // Get the event
+    $event = Event::findOrFail($event_id);
+
+    // Fetch comments with vote counts
+    $comments = Comment::withCount([
+        'votes as upvotes_count' => function ($query) {
+            $query->where('vote', true); // Count upvotes
+        },
+        'votes as downvotes_count' => function ($query) {
+            $query->where('vote', false); // Count downvotes
+        }
+    ])->where('event_id', $event_id)->get();
+
+    // Return the view with event and comments
+    return view('pages.event', [
+        'event' => $event,
+        'comments' => $comments, // Pass comments with vote counts
+    ]);
+}
+
 
     public function refundTicket(string $ticket_id)
     {
@@ -182,14 +181,23 @@ class EventController extends Controller
 
         if (empty($searchTerm)) {
             $events = Event::all();
-        } 
-        else{
-            $events = Event::select('event.*')
-            ->whereRaw("fts_name @@ plainto_tsquery('english', ?)", [$searchTerm])
-            ->orWhereRaw("fts_location @@ plainto_tsquery('english', ?)", [$searchTerm])
-            ->orWhereRaw("fts_artist @@ plainto_tsquery('english', ?)", [$searchTerm])
-            ->get(); 
+        } else {
+            $events = Event::selectRaw('event.*, ts_rank((
+                setweight(fts_name, \'A\') ||
+                setweight(fts_location, \'B\') ||
+                setweight(fts_artist, \'C\') ||
+                setweight(fts_description, \'D\')
+            ), plainto_tsquery(\'english\', ?)) AS rank', [$searchTerm])
+            ->whereRaw("(
+                setweight(fts_name, 'A') ||
+                setweight(fts_location, 'B') ||
+                setweight(fts_artist, 'C') ||
+                setweight(fts_description, 'D')
+            ) @@ plainto_tsquery('english', ?)", [$searchTerm])
+            ->orderByDesc('rank') // Order by relevance score
+            ->get();            
         }
+        
 
         return view('pages.events', [
             'events' => $events,
@@ -219,7 +227,7 @@ class EventController extends Controller
         $tagsDance = Tag::type(['Dance'])->get();
         $tagsMood = Tag::type(['Mood'])->get();
         $tagsSettings = Tag::type(['Settings'])->get();
-        $events = Event::all();
+        $events = Event::paginate(9);
         return view('pages.events', [
             'events' => $events,
             'tagsMusic' => $tagsMusic,
@@ -228,6 +236,23 @@ class EventController extends Controller
             'tagsSettings' => $tagsSettings,
         ]);
     }
+
+    public function loadMoreEvents(Request $request)
+    {
+        $events = Event::paginate(9);
+    
+        // Render each event using the Blade partial
+        $renderedCards = $events->map(function ($event) {
+            return view('partials.event-card', ['event' => $event])->render();
+        });
+    
+        return response()->json([
+            'html' => $renderedCards->implode(''), // Combine all rendered cards into one string
+            'next_page' => $events->nextPageUrl(),
+        ]);
+    }
+    
+
     public function showTagsPerTypePast()
     {
         // Fetch tags where tag_name is 'Music' or 'Dance' (Genres)

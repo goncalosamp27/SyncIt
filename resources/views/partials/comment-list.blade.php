@@ -38,23 +38,29 @@
             </div>
         </div>
 
+        @php
+            $vote = null; // Default value, in case neither upvote nor downvote is found
+
+            if ($comment->upvotes->contains('member_id', Auth::id())) {
+                $vote = true; // Upvoted
+            } elseif ($comment->downvotes->contains('member_id', Auth::id())) {
+                $vote = false; // Downvoted
+            }
+        @endphp
+
         @if(Auth::check() && Auth::id() != $comment->member_id)
             <div class="up-down-votes">
                 <div class="upvote">
-                    <button class="upvote-button" data-comment-id="{{ $comment->comment_id }}" onclick="voteComment('upvote', this)">
+                    <button style="background-color: {{ $vote ? 'rgb(81, 154, 250)' : '#AB58FE' }}" class="upvote-button" data-comment-id="{{ $comment->comment_id }}" onclick="voteComment('upvote', this)">
                         👍<span class="count" id="upvote-count-{{ $comment->comment_id }}">
-                            @if(!empty($comment->upvotes_count) && $comment->upvotes_count > 0)
                                 {{ $comment->upvotes_count }}
-                            @endif
                         </span>
                     </button>
                 </div>
                 <div class="downvote">
-                    <button class="downvote-button" data-comment-id="{{ $comment->comment_id }}" onclick="voteComment('downvote', this)">
+                    <button style="background-color: {{ ($vote === false) ? 'rgb(134, 58, 58)' : '#AB58FE' }}" class="downvote-button" data-comment-id="{{ $comment->comment_id }}" onclick="voteComment('downvote', this)">
                         👎<span class="count" id="downvote-count-{{ $comment->comment_id }}">
-                            @if(!empty($comment->downvotes_count) && $comment->downvotes_count > 0)
                                 {{ $comment->downvotes_count }}
-                            @endif
                         </span>
                     </button>
                 </div>

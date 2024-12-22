@@ -28,6 +28,7 @@ DROP TABLE IF EXISTS join_request_notification CASCADE;
 DROP TABLE IF EXISTS vote_comment CASCADE;
 DROP TABLE IF EXISTS event_notification CASCADE;
 DROP TABLE IF EXISTS report CASCADE;
+DROP TABLE IF EXISTS password_reset_tokens CASCADE;
 
 DROP DOMAIN IF EXISTS email_domain CASCADE;
 DROP DOMAIN IF EXISTS price_domain CASCADE;
@@ -93,9 +94,9 @@ CREATE TABLE member (
     email email_domain UNIQUE NOT NULL,
     password password_domain NOT NULL,
     bio VARCHAR(200),
-    profile_pic_url VARCHAR(200),
-    member_status member_status_domain NOT NULL
+    profile_pic_url VARCHAR(200)
 );
+
 CREATE INDEX member_username_idx ON member (username);
 CREATE INDEX member_display_name_idx ON member (display_name);
 
@@ -398,53 +399,6 @@ CREATE OR REPLACE TRIGGER create_artist_after_event_insert
     FOR EACH ROW
     EXECUTE FUNCTION create_artist_trigger_function();
 
-CREATE OR REPLACE FUNCTION check_member_status() RETURNS TRIGGER AS
-$BODY$
-BEGIN
-    IF EXISTS (
-        SELECT 1 
-        FROM member
-        WHERE member_id = NEW.member_id 
-        AND member_status IN ('Suspended', 'Banned')  
-    ) THEN
-        RAISE EXCEPTION 'Suspended or banned accounts cannot interact with the website.';
-    END IF;
-
-    RETURN NEW;
-END;
-$BODY$
-LANGUAGE plpgsql;
-
-CREATE OR REPLACE TRIGGER before_comment
-    BEFORE INSERT ON comment
-    FOR EACH ROW
-    EXECUTE FUNCTION check_member_status();
-
-CREATE OR REPLACE TRIGGER before_ticket_purchase
-    BEFORE INSERT ON ticket
-    FOR EACH ROW
-    EXECUTE FUNCTION check_member_status();
-
-CREATE OR REPLACE TRIGGER before_invitation
-    BEFORE INSERT ON invitation
-    FOR EACH ROW
-    EXECUTE FUNCTION check_member_status();
-
-CREATE OR REPLACE TRIGGER before_following
-    BEFORE INSERT ON following
-    FOR EACH ROW
-    EXECUTE FUNCTION check_member_status();
-
-CREATE OR REPLACE TRIGGER before_rating
-    BEFORE INSERT ON following
-    FOR EACH ROW
-    EXECUTE FUNCTION check_member_status();
-
-CREATE OR REPLACE TRIGGER before_voting
-    BEFORE INSERT ON following
-    FOR EACH ROW
-    EXECUTE FUNCTION check_member_status();
-
 CREATE OR REPLACE FUNCTION update_artist_rating() 
 RETURNS TRIGGER AS $$
 BEGIN
@@ -600,6 +554,36 @@ AFTER INSERT ON invitation
 FOR EACH ROW
 EXECUTE FUNCTION invitation_handler();
 
+-- FULL TEXT SEARCH -> artists
+-- Add FTS column to artist table
+ALTER TABLE artist ADD COLUMN fts_artist tsvector;
+
+-- Create FTS trigger function
+CREATE OR REPLACE FUNCTION artist_fts_trigger() RETURNS trigger AS $$
+BEGIN
+    -- Compute the FTS vector directly using NEW values
+    NEW.fts_artist := (
+        SELECT to_tsvector(
+            'english', 
+            COALESCE(m.display_name, '') || ' ' || COALESCE(m.username, '')
+        )
+        FROM member m
+        WHERE m.member_id = NEW.artist_id
+    );
+
+    RETURN NEW;
+END
+$$ LANGUAGE plpgsql;
+
+-- Create trigger on artist table
+CREATE OR REPLACE TRIGGER artist_fts_update
+BEFORE INSERT OR UPDATE ON artist
+FOR EACH ROW
+EXECUTE FUNCTION artist_fts_trigger();
+
+-- Create GIN index on fts_artist column
+CREATE INDEX artist_fts_artist_idx ON artist USING GIN (fts_artist);
+
 -- FULL TEXT SEARCH -> members
 ALTER TABLE member ADD COLUMN fts_username tsvector;
 ALTER TABLE member ADD COLUMN fts_display_name tsvector;
@@ -622,29 +606,40 @@ CREATE INDEX member_fts_display_name_idx ON member USING GIN (fts_display_name);
 ALTER TABLE event ADD COLUMN fts_name tsvector;
 ALTER TABLE event ADD COLUMN fts_location tsvector;
 ALTER TABLE event ADD COLUMN fts_artist tsvector;
+ALTER TABLE event ADD COLUMN fts_description tsvector;
 
 CREATE OR REPLACE FUNCTION event_fts_trigger() RETURNS trigger AS $$
 BEGIN
-    -- Full-text search vector for event name
-    NEW.fts_name := to_tsvector('english', COALESCE(NEW.event_name, ''));
+    -- Full-text search vector for event name (highest weight: A)
+    NEW.fts_name := setweight(to_tsvector('english', COALESCE(NEW.event_name, '')), 'A');
 
-    -- Full-text search vector for event location
-    NEW.fts_location := to_tsvector('english', COALESCE(NEW.location, ''));
+    -- Full-text search vector for event location (medium weight: B)
+    NEW.fts_location := setweight(to_tsvector('english', COALESCE(NEW.location, '')), 'B');
 
-    -- Full-text search vector for artist name (concatenating display_name and username)
+    -- Full-text search vector for artist name (low weight: C)
     NEW.fts_artist := (
-        SELECT to_tsvector('english', 
-            COALESCE(m.display_name, '') || ' ' || COALESCE(m.username, '')
-        ) 
+        SELECT setweight(
+            to_tsvector('english', COALESCE(m.display_name, '') || ' ' || COALESCE(m.username, '')),
+            'C'
+        )
         FROM artist a 
         JOIN member m ON a.artist_id = m.member_id 
         WHERE a.artist_id = NEW.artist_id
     );
 
+    NEW.fts_description := setweight(to_tsvector('english', COALESCE(NEW.description, '')), 'D');
+
     RETURN NEW;
 END
 $$ LANGUAGE plpgsql;
 
+ALTER TABLE event ADD COLUMN fts_combined tsvector;
+
+UPDATE event SET fts_combined = 
+    setweight(fts_name, 'A') ||
+    setweight(fts_location, 'B') ||
+    setweight(fts_artist, 'C') || 
+    setweight(fts_description, 'D');
 
 CREATE OR REPLACE TRIGGER event_fts_update BEFORE INSERT OR UPDATE ON event
 FOR EACH ROW EXECUTE FUNCTION event_fts_trigger();
@@ -652,7 +647,9 @@ FOR EACH ROW EXECUTE FUNCTION event_fts_trigger();
 CREATE INDEX event_fts_name_idx ON event USING GIN (fts_name);
 CREATE INDEX event_fts_location_idx ON event USING GIN (fts_location);
 CREATE INDEX event_fts_artist_idx ON event USING GIN (fts_artist);
+CREATE INDEX event_fts_description_idx ON event USING GIN (fts_description);
 
+-------------
 CREATE OR REPLACE FUNCTION notify_event_changes()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -848,91 +845,92 @@ EXECUTE FUNCTION notify_ticket_refund();
 
 
 
-INSERT INTO member (username, display_name, email, password, bio, profile_pic_url, member_status)
+INSERT INTO member (username, display_name, email, password, bio, profile_pic_url)
 VALUES 
-    ('anonymous', 'Anonymous', 'anonymous@syncit.com','$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'anonymous', 'default_user.png', 'Active'),
-    ('edgar', 'LBAW Teacher', 'lbaw@example.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
-    ('goncalo', 'goncalo', 'goncalo@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
-    ('xavi', 'xavi', 'xavi@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
-    ('dawen', 'dawen', 'dawen@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
-    ('sofia', 'sofia', 'sofia@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png', 'Active'),
-    ('dud', 'DJ Dud', 'dud@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'DJ Dud no beat','default_user.png', 'Active'),
-    ('salsadancer', 'Salsa Dance Lover', 'salsadancer@example.com', 'salsadancer123', 'Salsa moves are life!', 'default_user.png', 'Active'),
-    ('techbeat', 'Tech Beat DJ', 'techbeat@example.com', 'technosecure99', 'Living for the beats', 'default_user.png', 'Active'),
-    ('folksinger', 'Folk Music Singer', 'folksinger@example.com', 'folkpass1234', 'Folk music and stories', 'default_user.png', 'Active'),
-    ('classycat', 'Classy Cat Lover', 'classycat@example.com', 'classicalmusic', 'Classical music enthusiast', 'default_user.png', 'Active'),
-    ('punkrocker', 'Punk Rock Musician', 'punkrocker@example.com', 'punkrockerpass', 'Punk rock till I die', 'default_user.png','Active'),
-    ('djnight', 'DJ Night Vibes', 'djnight@example.com', 'djnight1234', 'Nightlife DJ and mixer', 'default_user.png', 'Active'),
-    ('reggae_vibes', 'Reggae Music Vibes', 'reggaevibes@example.com', 'reggaepass2023', 'Feeling those reggae vibes', 'default_user.png', 'Active'),
-    ('swingstar', 'Swing Dance Star', 'swingstar@example.com', 'swingpass2023', 'Swing dance for life', 'default_user.png', 'Active'),
-    ('drumfiend', 'Drum Music Fiend', 'drumfiend@example.com', 'drumfiend2023', 'Percussion and rhythm addict', 'default_user.png', 'Active'),
-    ('violin_virtuoso', 'Violin Virtuoso Master', 'violin@example.com', 'violinpass2023', 'Classical violinist', 'default_user.png', 'Active'),
-    ('bassplayer', 'Bass Guitar Player', 'bassplayer@example.com', 'basssecure2023', 'Grooving on the bass', 'default_user.png', 'Active'),
-    ('hiphop_dancer', 'Hip Hop Dance Artist', 'hiphopdancer@example.com', 'hiphoppass2023', 'Dance battles and moves', 'default_user.png', 'Active'),
-    ('metalhead', 'Heavy Metal Head', 'metalhead@example.com', 'metalhead1234', 'Heavy metal all the way', 'default_user.png', 'Active'),
-    ('jazzcat', 'Jazz Music Cat', 'jazzcat@example.com', 'jazzsecure2023', 'Smooth jazz, all day', 'default_user.png', 'Active'),
-    ('popqueen', 'Pop Music Queen', 'popqueen@example.com', 'popdivapass2023', 'Pop music enthusiast', 'default_user.png', 'Active'),
-    ('raveking', 'Rave Music King', 'raveking@example.com', 'raveking2023', 'Lover of electronic music', 'default_user.png', 'Active'),
-    ('bluesfan', 'Blues Music Fan', 'bluesfan@example.com', 'bluesfan2023', 'Appreciating the blues', 'default_user.png', 'Active'),
-    ('latinlover', 'Latin Dance Lover', 'latinlover@example.com', 'latinloverpass', 'Latin music and dance', 'default_user.png', 'Active'),
-    ('countrygal', 'Country Music Gal', 'countrygal@example.com', 'countrygal2023', 'Country music is my soul', 'default_user.png', 'Active'),
-    ('funkfiend', 'Funk Music Fiend', 'funkfiend@example.com', 'funkfiend2023', 'Funk and groove lover', 'default_user.png', 'Active'),
-    ('jazzman', 'Jazz Music Man', 'jazzman@example.com', 'jazzman2023', 'Living for jazz sounds', 'default_user.png', 'Active'),
-    ('rocknroller', 'Rock and Roll Player', 'rocknroller@example.com', 'rocknroller2023', 'Rock and roll fanatic', 'default_user.png', 'Active'),
-    ('dancerpro', 'Professional Dancer', 'dancerpro@example.com', 'dancepro2023', 'Professional dancer', 'default_user.png', 'Active'),
-    ('synthwave', 'Synth Wave Music', 'synthwave@example.com', 'synthwave2023', 'Synthwave music lover', 'default_user.png', 'Active'),
-    ('guitarhero', 'Guitar Hero Player', 'guitarhero@example.com', 'guitarhero2023', 'Guitar is life!', 'default_user.png', 'Active'),
-    ('soulbrother', 'Soul Brother Music', 'soulbrother@example.com', 'soulbrother2023', 'Smooth soul sounds', 'default_user.png', 'Active'),
-    ('classicrocker', 'Classic Rock Musician', 'classicrocker@example.com', 'classicrocker2023', 'Classic rock fan', 'default_user.png', 'Active'),
-    ('rnbvibes', 'RnB Music Vibes', 'rnbvibes@example.com', 'rnbvibes2023', 'RnB enthusiast', 'default_user.png', 'Active'),
-    ('saxplayer', 'Saxophone Player', 'saxplayer@example.com', 'saxplayer2023', 'Jazz and blues saxophonist', 'default_user.png', 'Active'),
-    ('bollywoodstar', 'Bollywood Dance Star', 'bollywoodstar@example.com', 'bollywoodstar2023', 'Bollywood dance lover', 'default_user.png', 'Active'),
-    ('flamenco_queen', 'Flamenco Dance Queen', 'flamencoqueen@example.com', 'flamencoqueen2023', 'Passionate about Flamenco', 'default_user.png', 'Active'),
-    ('edmlover', 'EDM Music Lover', 'edmlover@example.com', 'edmlover2023', 'EDM events enthusiast', 'default_user.png', 'Active'),
-    ('thecomposer', 'The Music Composer', 'composer@example.com', 'thecomposer2023', 'Classical and orchestral music', 'default_user.png', 'Active'),
-    ('urbanvibes', 'Urban Dance Vibes', 'urbanvibes@example.com', 'urbanvibes2023', 'Love for urban dance styles', 'default_user.png', 'Active'),
-    ('tapdancepro', 'Tap Dance Professional', 'tapdancepro@example.com', 'tapdancepro2023', 'Tap dance artist', 'default_user.png', 'Active'),
-    ('mambo_king', 'Mambo Dance King', 'mamboking@example.com', 'mambo_king2023', 'Mambo and Latin music fan', 'default_user.png', 'Active'),
-    ('brassblues', 'Brass Blues Music', 'brassblues@example.com', 'brassblues2023', 'Brass instrument lover', 'default_user.png', 'Active'),
-    ('loungecat', 'Lounge Music Cat', 'loungecat@example.com', 'loungecat2023', 'Lounge and chill music', 'default_user.png', 'Active'),
-    ('folkdancer', 'Folk Dance Artist', 'folkdancer@example.com', 'folkdancer2023', 'Traditional folk dance', 'default_user.png', 'Active'),
-    ('countryboy', 'Country Music Boy', 'countryboy@example.com', 'countryboy2023', 'Country music fan', 'default_user.png', 'Active'),
-    ('balletlover', 'Ballet Dance Lover', 'balletlover@example.com', 'balletlover2023', 'Ballet enthusiast', 'default_user.png', 'Active'),
-    ('drumbeats', 'Drum Beats Artist', 'drumbeats@example.com', 'drumbeats2023', 'Drumming and rhythm', 'default_user.png', 'Active'),
-    ('gospelgal', 'Gospel Music Gal', 'gospelgal@example.com', 'gospelgal2023', 'Gospel music lover', 'default_user.png', 'Active'),
-    ('discofever', 'Disco Music Fever', 'discofever@example.com', 'discofever2023', 'Disco music is life', 'default_user.png', 'Active'),
-    ('pianistpro', 'Professional Pianist', 'pianistpro@example.com', 'pianistpro2023', 'Professional pianist', 'default_user.png', 'Active'),
-    ('soulqueen', 'Soul Music Queen', 'soulqueen@example.com', 'soulqueen2023', 'Soul music lover', 'default_user.png', 'Active'),
-    ('salsaqueen', 'Salsa Dance Queen', 'salsaqueen@example.com', 'salsaqueen2023', 'Queen of Salsa', 'default_user.png', 'Active'),
-    ('rockgod', 'Rock God Musician', 'rockgod@example.com', 'rockgod2023', 'Rock music is in my veins', 'default_user.png', 'Active'),
-    ('reggaemaster', 'Reggae Music Master', 'reggaemaster@example.com', 'reggaemaster2023', 'Roots and reggae', 'default_user.png', 'Active'),
-    ('danceboss', 'Dance Choreography Boss', 'danceboss@example.com', 'danceboss2023', 'Professional choreographer', 'default_user.png', 'Active'),
-    ('jazzsoul', 'Jazz and Soul Music', 'jazzsoul@example.com', 'jazzsoul2023', 'Smooth jazz and soul', 'default_user.png', 'Active'),
-    ('trumpetstar', 'Trumpet Music Star', 'trumpetstar@example.com', 'trumpetstar2023', 'Trumpet player', 'default_user.png', 'Active'),
-    ('alternativefan', 'Alternative Music Fan', 'alternativefan@example.com', 'alternativefan2023', 'Lover of alternative genres', 'default_user.png', 'Active'),
-    ('indiefolk', 'Indie Folk Musician', 'indiefolk@example.com', 'indiefolk2023', 'Indie folk artist', 'default_user.png', 'Active'),
-    ('tangodancer', 'Tango Dance Lover', 'tangodancer@example.com', 'tangodancer2023', 'Passionate about Tango', 'default_user.png', 'Active'),
-    ('edmstar', 'EDM Star Artist', 'edmstar@example.com', 'edmstar2023', 'EDM superstar', 'default_user.png', 'Active'),
-    ('acousticfan', 'Acoustic Music Fan', 'acousticfan@example.com', 'acousticfan2023', 'Acoustic music only', 'default_user.png', 'Active'),
-    ('latindiva', 'Latin Diva Singer', 'latindiva@example.com', 'latindiva2023', 'Latin music is life', 'default_user.png', 'Active'),
-    ('swingmaster', 'Swing Master Dancer', 'swingmaster@example.com', 'swingmaster2023', 'Swing dance enthusiast', 'default_user.png', 'Active'),
-    ('classicpiano', 'Classical Piano Artist', 'classicpiano@example.com', 'classicpiano2023', 'Classical piano lover', 'default_user.png', 'Active'),
-    ('dubstepking', 'Dubstep King Artist', 'dubstepking@example.com', 'dubstepking2023', 'Dubstep and drops', 'default_user.png', 'Active'),
-    ('bluesmaster', 'Blues Music Master', 'bluesmaster@example.com', 'bluesmaster2023', 'Blues all the way', 'default_user.png', 'Active'),
-    ('latinbeats', 'Latin Beats Music', 'latinbeats@example.com', 'latinbeats2023', 'Dancing to Latin beats', 'default_user.png', 'Active'),
-    ('moondancer', 'Moon Dance Artist', 'moondancer@example.com', 'moondancer2023', 'Dancing under the stars', 'default_user.png', 'Active'),
-    ('trapmaster', 'Trap Music Master', 'trapmaster@example.com', 'trapmaster2023', 'Trap music and vibes', 'default_user.png', 'Active'),
-    ('folkmagic', 'Folk Music Magic', 'folkmagic@example.com', 'folkmagic2023', 'Folk traditions', 'default_user.png', 'Active'),
-    ('electricblues', 'Electric Blues Music', 'electricblues@example.com', 'electricblues2023', 'Electric blues lover', 'default_user.png', 'Active'),
-    ('afrobeatking', 'Afrobeat King Music', 'afrobeatking@example.com', 'afrobeatking2023', 'Afrobeat vibes', 'default_user.png', 'Active'),
-    ('bassqueen', 'Bass Queen Music', 'bassqueen@example.com', 'bassqueen2023', 'Bass guitar and groove', 'default_user.png', 'Active'),
-    ('electrovibe', 'Electro Vibe Music', 'electrovibe@example.com', 'electrovibe2023', 'Electro sounds', 'default_user.png', 'Active'),
-    ('raggagirl', 'Ragga Girl Artist', 'raggagirl@example.com', 'raggagirl2023', 'Ragga and reggae vibes', 'default_user.png', 'Active'),
-    ('discoqueen', 'Disco Queen Dancer', 'discoqueen@example.com', 'discoqueen2023', 'Disco diva', 'default_user.png', 'Active'),
-    ('latinoheat', 'Latino Heat Music', 'latinoheat@example.com', 'latinoheat2023', 'Latin music and dance', 'default_user.png', 'Active'),
-    ('afrojazz', 'Afro Jazz Music', 'afrojazz@example.com', 'afrojazz2023', 'Afro Jazz fusion', 'default_user.png', 'Active'),
-    ('kpopfan', 'KPop Music Fan', 'kpopfan@example.com', 'kpopfan2023', 'K-Pop for life', 'default_user.png', 'Active'),
-    ('bollydance', 'Bolly Dance Artist', 'bollydance@example.com', 'bollydance2023', 'Bollywood dance styles', 'default_user.png', 'Active');
+    ('anonymous', 'Anonymous', 'anonymous@syncit.com','$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'anonymous', 'default_user.png'),
+    ('edgar', 'LBAW Teacher', 'lbaw@example.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png'),
+    ('goncalo', 'goncalo', 'goncalo@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png'),
+    ('xavi', 'xavi', 'xavi@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png'),
+    ('dawen', 'dawen', 'dawen@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png'),
+    ('sofia', 'sofia', 'sofia@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'lbawlbawlbawlbaw', 'default_user.png'),
+    ('dud', 'DJ Dud', 'dud@gmail.com', '$2y$10$7ElnVwCiQCKHFcNLOShAs.FAFykX1cMLBx8xRI.RJirEWngGSWfmq', 'DJ Dud no beat','default_user.png'),
+    ('salsadancer', 'Salsa Dance Lover', 'salsadancer@example.com', 'salsadancer123', 'Salsa moves are life!', 'default_user.png'),
+    ('techbeat', 'Tech Beat DJ', 'techbeat@example.com', 'technosecure99', 'Living for the beats', 'default_user.png'),
+    ('folksinger', 'Folk Music Singer', 'folksinger@example.com', 'folkpass1234', 'Folk music and stories', 'default_user.png'),
+    ('classycat', 'Classy Cat Lover', 'classycat@example.com', 'classicalmusic', 'Classical music enthusiast', 'default_user.png'),
+    ('punkrocker', 'Punk Rock Musician', 'punkrocker@example.com', 'punkrockerpass', 'Punk rock till I die', 'default_user.png'),
+    ('djnight', 'DJ Night Vibes', 'djnight@example.com', 'djnight1234', 'Nightlife DJ and mixer', 'default_user.png'),
+    ('reggae_vibes', 'Reggae Music Vibes', 'reggaevibes@example.com', 'reggaepass2023', 'Feeling those reggae vibes', 'default_user.png'),
+    ('swingstar', 'Swing Dance Star', 'swingstar@example.com', 'swingpass2023', 'Swing dance for life', 'default_user.png'),
+    ('drumfiend', 'Drum Music Fiend', 'drumfiend@example.com', 'drumfiend2023', 'Percussion and rhythm addict', 'default_user.png'),
+    ('violin_virtuoso', 'Violin Virtuoso Master', 'violin@example.com', 'violinpass2023', 'Classical violinist', 'default_user.png'),
+    ('bassplayer', 'Bass Guitar Player', 'bassplayer@example.com', 'basssecure2023', 'Grooving on the bass', 'default_user.png'),
+    ('hiphop_dancer', 'Hip Hop Dance Artist', 'hiphopdancer@example.com', 'hiphoppass2023', 'Dance battles and moves', 'default_user.png'),
+    ('metalhead', 'Heavy Metal Head', 'metalhead@example.com', 'metalhead1234', 'Heavy metal all the way', 'default_user.png'),
+    ('jazzcat', 'Jazz Music Cat', 'jazzcat@example.com', 'jazzsecure2023', 'Smooth jazz, all day', 'default_user.png'),
+    ('popqueen', 'Pop Music Queen', 'popqueen@example.com', 'popdivapass2023', 'Pop music enthusiast', 'default_user.png'),
+    ('raveking', 'Rave Music King', 'raveking@example.com', 'raveking2023', 'Lover of electronic music', 'default_user.png'),
+    ('bluesfan', 'Blues Music Fan', 'bluesfan@example.com', 'bluesfan2023', 'Appreciating the blues', 'default_user.png'),
+    ('latinlover', 'Latin Dance Lover', 'latinlover@example.com', 'latinloverpass', 'Latin music and dance', 'default_user.png'),
+    ('countrygal', 'Country Music Gal', 'countrygal@example.com', 'countrygal2023', 'Country music is my soul', 'default_user.png'),
+    ('funkfiend', 'Funk Music Fiend', 'funkfiend@example.com', 'funkfiend2023', 'Funk and groove lover', 'default_user.png'),
+    ('jazzman', 'Jazz Music Man', 'jazzman@example.com', 'jazzman2023', 'Living for jazz sounds', 'default_user.png'),
+    ('rocknroller', 'Rock and Roll Player', 'rocknroller@example.com', 'rocknroller2023', 'Rock and roll fanatic', 'default_user.png'),
+    ('dancerpro', 'Professional Dancer', 'dancerpro@example.com', 'dancepro2023', 'Professional dancer', 'default_user.png'),
+    ('synthwave', 'Synth Wave Music', 'synthwave@example.com', 'synthwave2023', 'Synthwave music lover', 'default_user.png'),
+    ('guitarhero', 'Guitar Hero Player', 'guitarhero@example.com', 'guitarhero2023', 'Guitar is life!', 'default_user.png'),
+    ('soulbrother', 'Soul Brother Music', 'soulbrother@example.com', 'soulbrother2023', 'Smooth soul sounds', 'default_user.png'),
+    ('classicrocker', 'Classic Rock Musician', 'classicrocker@example.com', 'classicrocker2023', 'Classic rock fan', 'default_user.png'),
+    ('rnbvibes', 'RnB Music Vibes', 'rnbvibes@example.com', 'rnbvibes2023', 'RnB enthusiast', 'default_user.png'),
+    ('saxplayer', 'Saxophone Player', 'saxplayer@example.com', 'saxplayer2023', 'Jazz and blues saxophonist', 'default_user.png'),
+    ('bollywoodstar', 'Bollywood Dance Star', 'bollywoodstar@example.com', 'bollywoodstar2023', 'Bollywood dance lover', 'default_user.png'),
+    ('flamenco_queen', 'Flamenco Dance Queen', 'flamencoqueen@example.com', 'flamencoqueen2023', 'Passionate about Flamenco', 'default_user.png'),
+    ('edmlover', 'EDM Music Lover', 'edmlover@example.com', 'edmlover2023', 'EDM events enthusiast', 'default_user.png'),
+    ('thecomposer', 'The Music Composer', 'composer@example.com', 'thecomposer2023', 'Classical and orchestral music', 'default_user.png'),
+    ('urbanvibes', 'Urban Dance Vibes', 'urbanvibes@example.com', 'urbanvibes2023', 'Love for urban dance styles', 'default_user.png'),
+    ('tapdancepro', 'Tap Dance Professional', 'tapdancepro@example.com', 'tapdancepro2023', 'Tap dance artist', 'default_user.png'),
+    ('mambo_king', 'Mambo Dance King', 'mamboking@example.com', 'mambo_king2023', 'Mambo and Latin music fan', 'default_user.png'),
+    ('brassblues', 'Brass Blues Music', 'brassblues@example.com', 'brassblues2023', 'Brass instrument lover', 'default_user.png'),
+    ('loungecat', 'Lounge Music Cat', 'loungecat@example.com', 'loungecat2023', 'Lounge and chill music', 'default_user.png'),
+    ('folkdancer', 'Folk Dance Artist', 'folkdancer@example.com', 'folkdancer2023', 'Traditional folk dance', 'default_user.png'),
+    ('countryboy', 'Country Music Boy', 'countryboy@example.com', 'countryboy2023', 'Country music fan', 'default_user.png'),
+    ('balletlover', 'Ballet Dance Lover', 'balletlover@example.com', 'balletlover2023', 'Ballet enthusiast', 'default_user.png'),
+    ('drumbeats', 'Drum Beats Artist', 'drumbeats@example.com', 'drumbeats2023', 'Drumming and rhythm', 'default_user.png'),
+    ('gospelgal', 'Gospel Music Gal', 'gospelgal@example.com', 'gospelgal2023', 'Gospel music lover', 'default_user.png'),
+    ('discofever', 'Disco Music Fever', 'discofever@example.com', 'discofever2023', 'Disco music is life', 'default_user.png'),
+    ('pianistpro', 'Professional Pianist', 'pianistpro@example.com', 'pianistpro2023', 'Professional pianist', 'default_user.png'),
+    ('soulqueen', 'Soul Music Queen', 'soulqueen@example.com', 'soulqueen2023', 'Soul music lover', 'default_user.png'),
+    ('salsaqueen', 'Salsa Dance Queen', 'salsaqueen@example.com', 'salsaqueen2023', 'Queen of Salsa', 'default_user.png'),
+    ('rockgod', 'Rock God Musician', 'rockgod@example.com', 'rockgod2023', 'Rock music is in my veins', 'default_user.png'),
+    ('reggaemaster', 'Reggae Music Master', 'reggaemaster@example.com', 'reggaemaster2023', 'Roots and reggae', 'default_user.png'),
+    ('danceboss', 'Dance Choreography Boss', 'danceboss@example.com', 'danceboss2023', 'Professional choreographer', 'default_user.png'),
+    ('jazzsoul', 'Jazz and Soul Music', 'jazzsoul@example.com', 'jazzsoul2023', 'Smooth jazz and soul', 'default_user.png'),
+    ('trumpetstar', 'Trumpet Music Star', 'trumpetstar@example.com', 'trumpetstar2023', 'Trumpet player', 'default_user.png'),
+    ('alternativefan', 'Alternative Music Fan', 'alternativefan@example.com', 'alternativefan2023', 'Lover of alternative genres', 'default_user.png'),
+    ('indiefolk', 'Indie Folk Musician', 'indiefolk@example.com', 'indiefolk2023', 'Indie folk artist', 'default_user.png'),
+    ('tangodancer', 'Tango Dance Lover', 'tangodancer@example.com', 'tangodancer2023', 'Passionate about Tango', 'default_user.png'),
+    ('edmstar', 'EDM Star Artist', 'edmstar@example.com', 'edmstar2023', 'EDM superstar', 'default_user.png'),
+    ('acousticfan', 'Acoustic Music Fan', 'acousticfan@example.com', 'acousticfan2023', 'Acoustic music only', 'default_user.png'),
+    ('latindiva', 'Latin Diva Singer', 'latindiva@example.com', 'latindiva2023', 'Latin music is life', 'default_user.png'),
+    ('swingmaster', 'Swing Master Dancer', 'swingmaster@example.com', 'swingmaster2023', 'Swing dance enthusiast', 'default_user.png'),
+    ('classicpiano', 'Classical Piano Artist', 'classicpiano@example.com', 'classicpiano2023', 'Classical piano lover', 'default_user.png'),
+    ('dubstepking', 'Dubstep King Artist', 'dubstepking@example.com', 'dubstepking2023', 'Dubstep and drops', 'default_user.png'),
+    ('bluesmaster', 'Blues Music Master', 'bluesmaster@example.com', 'bluesmaster2023', 'Blues all the way', 'default_user.png'),
+    ('latinbeats', 'Latin Beats Music', 'latinbeats@example.com', 'latinbeats2023', 'Dancing to Latin beats', 'default_user.png'),
+    ('moondancer', 'Moon Dance Artist', 'moondancer@example.com', 'moondancer2023', 'Dancing under the stars', 'default_user.png'),
+    ('trapmaster', 'Trap Music Master', 'trapmaster@example.com', 'trapmaster2023', 'Trap music and vibes', 'default_user.png'),
+    ('folkmagic', 'Folk Music Magic', 'folkmagic@example.com', 'folkmagic2023', 'Folk traditions', 'default_user.png'),
+    ('electricblues', 'Electric Blues Music', 'electricblues@example.com', 'electricblues2023', 'Electric blues lover', 'default_user.png'),
+    ('afrobeatking', 'Afrobeat King Music', 'afrobeatking@example.com', 'afrobeatking2023', 'Afrobeat vibes', 'default_user.png'),
+    ('bassqueen', 'Bass Queen Music', 'bassqueen@example.com', 'bassqueen2023', 'Bass guitar and groove', 'default_user.png'),
+    ('electrovibe', 'Electro Vibe Music', 'electrovibe@example.com', 'electrovibe2023', 'Electro sounds', 'default_user.png'),
+    ('raggagirl', 'Ragga Girl Artist', 'raggagirl@example.com', 'raggagirl2023', 'Ragga and reggae vibes', 'default_user.png'),
+    ('discoqueen', 'Disco Queen Dancer', 'discoqueen@example.com', 'discoqueen2023', 'Disco diva', 'default_user.png'),
+    ('latinoheat', 'Latino Heat Music', 'latinoheat@example.com', 'latinoheat2023', 'Latin music and dance', 'default_user.png'),
+    ('afrojazz', 'Afro Jazz Music', 'afrojazz@example.com', 'afrojazz2023', 'Afro Jazz fusion', 'default_user.png'),
+    ('kpopfan', 'KPop Music Fan', 'kpopfan@example.com', 'kpopfan2023', 'K-Pop for life', 'default_user.png'),
+    ('bollydance', 'Bolly Dance Artist', 'bollydance@example.com', 'bollydance2023', 'Bollywood dance styles', 'default_user.png');
+
 
 INSERT INTO artist (artist_id, rating)
 VALUES 
@@ -1126,7 +1124,7 @@ VALUES
 
 INSERT INTO tag (tag_type, tag_name, color)
 VALUES 
-    ('Music', 'Music', 'D32F2F'),       -- Crimson for Music
+    ('Music', 'Jazz', 'D32F2F'),       -- Crimson for Music
     ('Dance', 'Dance', '5A4FCF'),       -- Medium Purple for Dance
     -- Music Genres
     ('Music', 'Jazz', 'CC9900'),        -- Dark Gold for Jazz
@@ -1633,6 +1631,23 @@ VALUES
         (18, 18, false),
         (19, 19, true),
         (20, 20, false);
+
+INSERT INTO report (event_id, member_id, message, status) VALUES
+    (1, 5, 'Report for event 1 by member 5', 'Unsolved'),
+    (2, 10, 'Report for event 2 by member 10', 'Solved'),
+    (3, 15, 'Report for event 3 by member 15', 'Unsolved'),
+    (4, 20, 'Report for event 4 by member 20', 'Solved'),
+    (5, 1, 'Report for event 5 by member 1', 'Unsolved'),
+    (6, 6, 'Report for event 6 by member 6', 'Solved'),
+    (7, 11, 'Report for event 7 by member 11', 'Unsolved'),
+    (8, 16, 'Report for event 8 by member 16', 'Solved'),
+    (9, 3, 'Report for event 9 by member 3', 'Unsolved'),
+    (10, 12, 'Report for event 10 by member 12', 'Solved'),
+    (11, 8, 'Report for event 11 by member 8', 'Unsolved'),
+    (12, 4, 'Report for event 12 by member 4', 'Solved'),
+    (13, 7, 'Report for event 13 by member 7', 'Unsolved'),
+    (14, 2, 'Report for event 14 by member 2', 'Solved'),
+    (15, 14, 'Report for event 15 by member 14', 'Unsolved');
 
 /*
 INSERT INTO password_reset (email, token, created_at)

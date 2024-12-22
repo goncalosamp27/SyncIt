@@ -14,12 +14,13 @@
         @endif
 
         <div class="tickets-title">
-            Showing Tickets for upcoming shows:
+            Tickets
         </div>
         <div class="new-purple-line"></div>
         <div class="tickets-list">
             @if ($tickets->isEmpty())
-                <p class="no-tickets">You do not own any tickets for upcoming events.</p>
+                @include('partials.empty')
+                <a href="{{ route('home') }}" class="refresh-button">Go home</button>
             @else
                 @foreach ($tickets as $ticket_)
                     @include('partials.ticket-card', ['ticket' => $ticket_])

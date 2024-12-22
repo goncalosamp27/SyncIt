@@ -35,6 +35,7 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::get('/artist/{artist_id}', [ArtistController::class, 'show'])->name('artist');
 Route::get('/artists', [ArtistController::class, 'display_artists'])->name('artists');
+Route::get('/artists/search', [ArtistController::class, 'search'])->name('artists.search');
 
 Route::controller(AdminController::class)->middleware('admin')->group(function () {
     Route::get('admin/members/{status}', 'getMembersByStatus')->name('admin');
@@ -89,6 +90,9 @@ Route::controller(CommentController::class)->middleware(['auth'])->group(functio
     Route::delete('/event/{event_id}/comments/{comment_id}', 'destroy')->name('comments.destroy');
     Route::put('/update-comment/{comment_id}', 'update')->name('comments.update');
 });
+
+Route::get('/load-more-events', [EventController::class, 'loadMoreEvents']);
+Route::get('/load-more-artists', [ArtistController::class, 'loadMoreArtists']);
 
 Route::get('/event/{event_id}/comments', [CommentController::class, 'index'])->name('comments.index');
 
