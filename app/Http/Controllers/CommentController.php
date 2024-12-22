@@ -39,8 +39,16 @@ class CommentController extends Controller
         $comment->member_id = Auth::id();
 
         if ($request->hasFile('file')) {
-            $path = $request->file('file')->store('comments', 'public');
-            $comment->file_path = $path;
+            $file = $request->file('file');
+    
+            // Generate a unique file name
+            $fileName = $file->hashName();
+            
+            // Store the file in the public/event folder
+            $path = $file->storeAs('comment_images', $fileName, 'Tutorial02');
+            
+            // Save the file name in your database (or any other operation you want)
+            $comment->file_path = $fileName;
         }
 
         $comment->save();

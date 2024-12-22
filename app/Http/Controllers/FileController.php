@@ -48,7 +48,7 @@ class FileController extends Controller
         // Validation: file exists
         $fileName = self::getFileName($type, $userId);
         if ($fileName) {
-            return asset($type . '/' . $fileName);
+            return asset($type . '_images/' . $fileName);
         }
         // Not found: returns default asset
         return self::defaultAsset($type);

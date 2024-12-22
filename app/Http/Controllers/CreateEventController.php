@@ -78,8 +78,16 @@ class CreateEventController extends Controller
                 // Create and save the event
                 $event = new Event($eventData);
                 if ($request->hasFile('event_files')) {
-                    $path = $request->file('event_files')->store('event', 'public');
-                    $event->event_media = basename($path);
+                    $file = $request->file('event_files');
+    
+                    // Generate a unique file name
+                    $fileName = $file->hashName();
+                    
+                    // Store the file in the public/event folder
+                    $path = $file->storeAs('event_images', $fileName, 'Tutorial02');
+                    
+                    // Save the file name in your database (or any other operation you want)
+                    $event->event_media = $fileName;
                 }
                 else{
                     $event->event_media = $defaultImage;
@@ -109,7 +117,7 @@ class CreateEventController extends Controller
                 return response()->json(['error' => 'Failed to create event: ' . $e->getMessage()], 500);
             }
         }
-
+        
         $artistResponse = Artist::createArtist([
             'member_id' => $member->member_id,
             'rating' => 0
@@ -123,15 +131,22 @@ class CreateEventController extends Controller
 
         try {
             // Create and save the event
-            $event = new Event($eventData);
             $event = new Event($eventData); 
-                if ($request->hasFile('event_files')) {
-                    $path = $request->file('event_files')->store('event', 'public');
-                    $event->event_media = basename($path);
-                }
-                else{
-                    $event->event_media = $defaultImage;
-                }
+            if ($request->hasFile('event_files')) {
+                $file = $request->file('event_files');
+
+                // Generate a unique file name
+                $fileName = $file->hashName();
+                
+                // Store the file in the public/event folder
+                $path = $file->storeAs('event_images', $fileName, 'Tutorial02');
+                
+                // Save the file name in your database (or any other operation you want)
+                $event->event_media = $fileName;
+            }
+            else{
+                $event->event_media = $defaultImage;
+            }
             $event->event_date = $eventDateTime;
             $event->rating = 0;
             $event->artist_id = $artist->artist_id;

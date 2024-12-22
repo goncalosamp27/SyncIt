@@ -21,7 +21,7 @@
                     @endphp
 
                     @if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif']))
-                        <img src="{{ asset('storage/' . $comment->file_path) }}" alt="Attachment" class="responsive-media">
+                        <img src="{{ asset('comment_images/' . $comment->file_path) }}" alt="Attachment" style="max-width: 200px; height: auto;">
                     @elseif (in_array($fileExtension, ['mp4', 'avi', 'mov']))
                         <video controls class="responsive-media">
                             <source src="{{ asset('storage/' . $comment->file_path) }}" type="video/{{ $fileExtension }}">
