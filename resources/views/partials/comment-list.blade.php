@@ -54,7 +54,7 @@
                     </button>
                 </div>
                 <div class="downvote">
-                    <button style="background-color: {{ !$vote ? 'rgb(134, 58, 58)' : '#AB58FE' }}" class="downvote-button" data-comment-id="{{ $comment->comment_id }}" onclick="voteComment('downvote', this)">
+                    <button style="background-color: {{ ($vote === false) ? 'rgb(134, 58, 58)' : '#AB58FE' }}" class="downvote-button" data-comment-id="{{ $comment->comment_id }}" onclick="voteComment('downvote', this)">
                         👎<span class="count" id="downvote-count-{{ $comment->comment_id }}">
                                 {{ $comment->downvotes_count }}
                         </span>
