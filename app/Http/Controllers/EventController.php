@@ -227,7 +227,7 @@ class EventController extends Controller
         $tagsDance = Tag::type(['Dance'])->get();
         $tagsMood = Tag::type(['Mood'])->get();
         $tagsSettings = Tag::type(['Settings'])->get();
-        $events = Event::all();
+        $events = Event::paginate(9);
         return view('pages.events', [
             'events' => $events,
             'tagsMusic' => $tagsMusic,
@@ -236,6 +236,23 @@ class EventController extends Controller
             'tagsSettings' => $tagsSettings,
         ]);
     }
+
+    public function loadMoreEvents(Request $request)
+    {
+        $events = Event::paginate(9);
+    
+        // Render each event using the Blade partial
+        $renderedCards = $events->map(function ($event) {
+            return view('partials.event-card', ['event' => $event])->render();
+        });
+    
+        return response()->json([
+            'html' => $renderedCards->implode(''), // Combine all rendered cards into one string
+            'next_page' => $events->nextPageUrl(),
+        ]);
+    }
+    
+
     public function showTagsPerTypePast()
     {
         // Fetch tags where tag_name is 'Music' or 'Dance' (Genres)

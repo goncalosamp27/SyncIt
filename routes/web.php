@@ -91,6 +91,9 @@ Route::controller(CommentController::class)->middleware(['auth'])->group(functio
     Route::put('/update-comment/{comment_id}', 'update')->name('comments.update');
 });
 
+Route::get('/load-more-events', [EventController::class, 'loadMoreEvents']);
+Route::get('/load-more-artists', [ArtistController::class, 'loadMoreArtists']);
+
 Route::get('/event/{event_id}/comments', [CommentController::class, 'index'])->name('comments.index');
 
 Route::post('/comments/{comment_id}/vote', [CommentVoteController::class, 'voteComment'])->middleware('auth');
