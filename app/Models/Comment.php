@@ -61,4 +61,17 @@ class Comment extends Model
     {
         return $this->hasMany(CommentVote::class, 'comment_id', 'comment_id');
     }
+
+    public function upvotes()
+    {
+        return $this->hasMany(CommentVote::class, 'comment_id', 'comment_id')
+                    ->where('vote', true); // Only upvotes
+    }
+
+    // Fetch all downvotes (votes where vote is 2)
+    public function downvotes()
+    {
+        return $this->hasMany(CommentVote::class, 'comment_id', 'comment_id')
+                    ->where('vote', false); // Only downvotes
+    }
 }
