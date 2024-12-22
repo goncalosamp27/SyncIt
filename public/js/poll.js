@@ -110,11 +110,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             hideError(errorContainer);
                             fetchPollData(pollId, pollWrapper);  // Refresh the poll data after vote
                         } else {
-                            // Handle the case where the user already voted for this option
                             if (data.message === "You have already voted for this option.") {
                                 showError(errorContainer, 'You have already voted for this poll!');
                             } else {
-                                // Handle any other failure message returned by the server
                                 showError(errorContainer, data.message || 'You cannot vote again.');
                             }
                         }
@@ -127,19 +125,15 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Ensure the click event handler is attached only once for each poll
         if (!submitVoteButton.hasAttribute('data-listener-attached')) {
-            // Bind the submit button to the function
             submitVoteButton.addEventListener('click', function () {
                 console.log("button was clicked");
                 handleVoteButtonClick(pollId, voteUrl, selectedOptionId, memberId, errorContainer);
             });
 
-            // Mark the listener as attached
             submitVoteButton.setAttribute('data-listener-attached', 'true');
         }
 
-        // Function to show error messages
         function showError(container, message) {
             container.style.display = 'block';
             container.textContent = message;
@@ -149,12 +143,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 3000);
         }
 
-        // Function to hide error messages
         function hideError(container) {
             container.style.display = 'none';
         }
 
-        // Refresh poll data every 5 seconds for the specific poll
         setInterval(() => fetchPollData(pollId, pollWrapper), 5000);
     });
 });

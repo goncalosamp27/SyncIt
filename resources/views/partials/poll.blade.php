@@ -1,7 +1,4 @@
 <script src="{{ asset('js/poll.js') }}"></script>
-<head>
-@routes
-</head>
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="poll-wrapper" data-votes="{{ json_encode($poll->options->pluck('votes')->toArray()) }}">
     <div class="poll">
