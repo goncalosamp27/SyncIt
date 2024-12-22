@@ -1,110 +1,91 @@
-/* General page text color */
 body {
     color: #333; /* Default text color for the entire page */
 }
 
-/* General container styling for both forms */
-.container, .poll-wrapper {
-    max-width: 600px;
+/* General container styling */
+.poll-wrapper {
+    margin: 2rem auto;
     padding: 1.5rem;
+    width: 100%;
+    max-width: 600px;
     background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    margin: 2rem auto;
 }
 
-/* Form and Poll Title Styling */
-.container h1, .poll-title {
+/* Poll title styling */
+.poll-title {
+    font-size: 1.5rem;
+    font-weight: bold;
     text-align: center;
     color: var(--primary-color);
     margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-    font-weight: bold;
 }
 
-/* Labels and inputs for the form and poll options */
-.form-label, .poll-option label {
+/* Poll options */
+.poll-options {
+    margin-bottom: 1.5rem;
+}
+
+/* Poll option label styling */
+.poll-option {
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.poll-option label {
     font-size: 1rem;
     color: #333;
     font-weight: bold;
+    cursor: pointer;
 }
 
-.form-control {
+/* Poll bar wrapper */
+.poll-bar-wrapper {
+    flex-grow: 1;
+    margin-left: 1rem;
+    background-color: #f1f1f1;
     border-radius: 5px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    font-size: 1rem;
-    color: #333; /* Ensure the text inside the input is dark */
-    background-color: #fff; /* Ensure background is white for input */
-}
-
-/* Spacing between form elements for better readability */
-.mb-3, .mb-2, .poll-options {
-    margin-bottom: 1rem;
-}
-
-/* Poll options layout */
-.poll-option {
-    margin: 0.5rem 0;
-    display: flex;
-    align-items: center;
-}
-
-.poll-options {
-    margin-bottom: 1rem;
-}
-
-/* Poll progress bar styling */
-.poll-results {
-    display: flex;
-    align-items: center;
-    margin-top: 0.5rem;
+    height: 20px;
 }
 
 .poll-bar {
-    height: 10px;
-    background-color: var(--primary-color);
+    height: 100%;
+    background-color: var(--primary-color); /* Initial bar color */
     border-radius: 5px;
-    margin-right: 0.5rem;
-    flex-grow: 1;
 }
 
 .poll-percentage {
-    font-size: 0.875rem;
-    color: #555;
+    font-size: 1rem;
+    color: #333;
+    margin-left: 1rem;
 }
 
-/* Buttons Styling */
-.btn, .poll-actions button {
+/* Poll actions */
+.poll-actions {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+/* Vote button styling */
+.poll-actions button {
     padding: 10px 20px;
     font-size: 1rem;
     border-radius: 5px;
     text-align: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.btn-primary, .poll-actions button {
     background-color: var(--primary-color);
     color: white;
     border: none;
 }
 
-.btn-primary:hover, .poll-actions button:hover {
+.poll-actions button:hover {
     background-color: var(--hover-color);
+    transition: background-color 0.3s ease;
 }
 
-.btn-secondary {
-    background-color: #6c757d;
-    color: white;
-    border: none;
-}
-
-.btn-secondary:hover {
-    background-color: #5a6268;
-}
-
-/* Success Alert Box */
+/* Success alert box */
 .alert-success {
     color: #155724;
     background-color: #d4edda;
@@ -115,18 +96,35 @@ body {
     text-align: center;
 }
 
-/* Responsive design for mobile devices */
+/* Responsive design for smaller screens */
 @media (max-width: 768px) {
-    .container, .poll-wrapper {
+    .poll-wrapper {
         padding: 1rem;
     }
 
-    .form-label, .poll-option label {
+    .poll-title {
+        font-size: 1.25rem;
+    }
+
+    .poll-option label {
         font-size: 0.9rem;
     }
 
-    .btn, .poll-actions button {
+    .poll-actions button {
         font-size: 0.9rem;
         padding: 8px 15px;
     }
+}
+
+/* Style for error messages */
+.poll-errors {
+    background-color: #f8d7da;  /* Light red background */
+    color: #721c24;             /* Dark red text color */
+    border: 1px solid #f5c6cb;  /* Border with a lighter red shade */
+    padding: 10px;              /* Padding for spacing */
+    margin-bottom: 20px;        /* Space below the error message */
+    border-radius: 5px;         /* Rounded corners */
+    font-size: 16px;            /* Font size for readability */
+    font-weight: bold;          /* Make the error message bold */
+    display: none;              /* Initially hidden */
 }

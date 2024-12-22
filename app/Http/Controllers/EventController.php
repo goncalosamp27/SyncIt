@@ -30,10 +30,12 @@ class EventController extends Controller
         $event = Event::findOrFail($event_id);
         $comments = $event->comments ?: collect();
         $polls = Poll::getPollsByEventId($event_id);
+        //function for a ticket count 
         return view('pages.event', [
             'event' => $event,
             'comments' => $comments,
             'polls' => $polls,
+
         ]);
 
         $comments = Comment::withCount([
