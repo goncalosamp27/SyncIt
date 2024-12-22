@@ -55,7 +55,7 @@
 
         <div class="logo">
             <a href="{{ route('home') }}">
-                <img src="{{ asset('storage/syncit.svg') }}" alt="Logo" />
+                <img src="{{ asset('syncit.svg') }}" alt="Logo" />
             </a>
             <div style="margin-left: 15px;">
                 <a href="{{ route('events') }}" class="explore-btn">Explore Events</a>

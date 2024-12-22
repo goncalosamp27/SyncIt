@@ -12,7 +12,7 @@
         </p>
         <a href="{{ route('home') }}">
         <div class="footer-logo">
-            <img src="{{ asset('storage/syncit.svg') }}" alt=Logo></img>
+            <img src="{{ asset('syncit.svg') }}" alt=Logo></img>
         </div>
         </a>
     </div>
