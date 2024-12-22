@@ -1,17 +1,25 @@
 <script src="{{ asset('js/poll.js') }}"></script>
-<script>
-    const voteUrl = @json(route('poll.vote'));
-    const pollData = @json(route('poll.data', ['poll_id' => $poll->poll_id]));
-</script>
+<head>
+@routes
+</head>
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="poll-wrapper" data-votes="{{ json_encode($poll->options->pluck('votes')->toArray()) }}">
     <div class="poll">
         @csrf
-        <!-- Poll Title -->
-        <h2 class="poll-title">{{ $poll->title }}</h2>
-
         <input type="hidden" id="poll-id" value="{{ $poll->poll_id }}">
         <input type="hidden" id="member-id" value="{{ auth()->id() }}">
+
+        <p class="poll-dates">
+            <span class="poll-date">
+                <strong>Start Date:</strong> {{ $poll->start_date->format('Y-m-d H:i') }}
+            </span>
+            <span class="poll-date">
+                <strong>End Date:</strong> {{ $poll->end_date->format('Y-m-d H:i') }}
+            </span>
+        </p>
+
+        <!-- Poll Title -->
+        <h2 class="poll-title">{{ $poll->title }}</h2>
 
         <!-- Poll Options -->
         <div class="poll-options">
@@ -42,5 +50,9 @@
                 Vote
             </button>
         </div>
+        <div class="success-message" style="display: none; color: green; font-weight: bold; margin-top: 10px;">
+            Thank you for your vote!
+        </div>
     </div>
 </div>
+

@@ -213,12 +213,13 @@ CREATE TABLE poll (
     poll_id SERIAL PRIMARY KEY,
     event_id INT NOT NULL,
     title VARCHAR(255) NOT NULL,  
-    start_date DATE NOT NULL CHECK (start_date >= CURRENT_DATE),
-    end_date DATE NOT NULL CHECK (end_date > start_date),
+    start_date TIMESTAMP NOT NULL,  -- Removed the CHECK constraint for past dates
+    end_date TIMESTAMP NOT NULL CHECK (end_date > start_date),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
     FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE option (
     option_id SERIAL PRIMARY KEY,    
