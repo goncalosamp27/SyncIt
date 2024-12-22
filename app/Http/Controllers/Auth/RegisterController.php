@@ -50,7 +50,6 @@ class RegisterController extends Controller
 
         // Add the hashed password and default values
         $validatedData['password'] = Hash::make($validatedData['password']);
-        $validatedData['member_status'] = 'Active';
         $validatedData['profile_pic_url'] = 'default_user.png';
 
         try {

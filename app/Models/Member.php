@@ -25,7 +25,6 @@ class Member extends Authenticatable
         'password',
         'bio',
         'profile_pic_url',
-        'member_status',
         'remember_token',
     ];
 
@@ -37,7 +36,6 @@ class Member extends Authenticatable
             'display_name' => 'required|regex:/^[A-Za-z0-9_. ]+$/|min:3|max:50',
             'email' => 'required|email|unique:member,email',
             'password' => 'required|min:8|max:100',
-            'member_status' => 'required|in:Active,Suspended,Banned',
             'bio' => 'nullable|regex:/^[A-Za-z0-9_.,?!\s]*$/|max:200',
             'profile_pic_url' => 'required|string|max:100',
         ]);
@@ -154,5 +152,26 @@ class Member extends Authenticatable
     public function getProfileImage() {
         return FileController::get('profile', $this->member_id);
     }    
+
+    public function getMemberStatusAttribute()
+    {
+        // Find the relevant restriction
+        $restriction = $this->restrictions->last(); // You can adjust the logic if needed
+        
+        // If a restriction exists, determine the status
+        if ($restriction) {
+            switch ($restriction->type) {
+                case 'Suspension':
+                    return 'Suspended';
+                case 'Ban':
+                    return 'Banned';
+                default:
+                    return 'Active';
+            }
+        }
+
+        return 'Active';
+    }
+
 }
 
