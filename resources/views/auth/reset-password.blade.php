@@ -6,7 +6,7 @@
 </script>
 <script src="{{ asset('js/reset-password.js') }}" defer></script>
 
-<div class="form-container">
+<div class="form-container reset-password">
     <div class="form-header">
         <h2>Reset Password</h2>
     </div>

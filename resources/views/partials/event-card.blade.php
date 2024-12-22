@@ -15,7 +15,7 @@
         <p>📍 {{ $event["location"] }} </p>
         <p>📅 {{ date('d/m/Y - h:i A', strtotime($event["event_date"])) }}</p>
         <p class="event-price-cap">
-            <span class="event-capacity"> {0}/{{ $event["capacity"] }} </span>
+            <span class="event-capacity"> 👥 {{ $event["capacity"] }} </span>
             <span class="event-price">
                 @if ($event["price"] == 0)
                     <span class="event-free">FREE</span>

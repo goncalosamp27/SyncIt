@@ -3,7 +3,8 @@ body {
 }
 
 /* General container styling */
-.container {
+.container-poll {
+    margin: 10px auto;
     max-width: 600px;
     padding: 1.5rem;
     background-color: #f9f9f9;
@@ -12,7 +13,7 @@ body {
 }
 
 /* Form title styling */
-.container h1 {
+.container-poll h1 {
     text-align: center;
     color: var(--primary-color);
     margin-bottom: 1.5rem;

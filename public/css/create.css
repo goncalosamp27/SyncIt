@@ -48,6 +48,7 @@
 .create-event-input,
 .create-event-input-inline {
     margin-bottom: 1.5rem; /* Reduced spacing */
+    width: 100%;
 }
 
 .create-event-input label,

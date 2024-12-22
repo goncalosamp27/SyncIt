@@ -21,6 +21,22 @@
     font-weight: bold;
 }
 
+.reset-password .form-group {
+    width: 100%;
+}
+
+.reset-password #new_password {
+    width: 100%;
+}
+
+.reset-password #password_confirmation {
+    width: 100%;
+}
+
+.reset-password .form-body {
+    width: 100%;
+}
+
 .edit-page input,
 .edit-page textarea,
 .edit-page select {
