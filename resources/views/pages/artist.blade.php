@@ -9,7 +9,7 @@
         <div class="profile-section">
           <div class="profile-picture">
             @can('isBanned', $artist->member)
-              <img src="{{ asset('storage/profiles/default_user.png') }}" alt="Default Profile Picture">
+              <img src="{{ asset('profile/default_user.png') }}" alt="Default Profile Picture">
             @else
                 <img src="{{ $artist->member->getProfileImage() }}" alt="User Profile Picture">
             @endcan

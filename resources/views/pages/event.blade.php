@@ -67,6 +67,14 @@
 						@endcannot
 					@endif
 
+					@can('edit', $event)
+						<!-- Use an anchor for Create Poll -->
+						<a href="{{ route('poll.create', ['event_id' => $event->event_id]) }}" class="event-button2">
+        				Create Poll
+    				</a>
+					@endcan
+					
+
 				</div>
 			</div>	
 					
@@ -262,9 +270,17 @@
 		
 		<div class="event-page-description">
 			<h1>Description:</h1>
-				<div class="event-page-text">
-					{{ $event->description }}
-				</div>
+			@if($polls && $polls->count() > 0)
+    			@foreach ($polls as $poll)
+        			@if ($poll->end_date > \Carbon\Carbon::now())
+            			@include('partials.poll', ['poll' => $poll])
+        			@elseif ($poll->end_date < \Carbon\Carbon::now())
+            			@include('partials.poll-data', ['poll' => $poll])	
+        			@endif
+    			@endforeach
+			@else
+    			<p>No polls available for this event.</p>
+			@endif
 		<div class="purple-line"></div>
 		
 		<div class="event-page-comments">

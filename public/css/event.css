@@ -32,7 +32,7 @@
   }
 
   .event-page-info h1 {
-    -webkit-line-clamp: 2; /* Show only 2 lines */
+    /*-webkit-line-clamp: 2;*/ /* Show only 2 lines */
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;

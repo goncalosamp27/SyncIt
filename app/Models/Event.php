@@ -147,5 +147,14 @@ class Event extends Model
     public function getEventImage() {
         return FileController::get('event', $this->event_id);
     }
+
+    public static function getTicketCountByEventId($eventId)
+{
+    $event = self::find($eventId);
+    if ($event) {
+        return $event->tickets()->count();
+    }
+    return 0; 
+}
     
 }
