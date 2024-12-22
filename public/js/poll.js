@@ -4,14 +4,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const pollWrapper = document.querySelector('.poll-wrapper');
     const pollId = document.getElementById('poll-id').value;
     const memberId = document.getElementById('member-id').value;
-    const errorContainer = document.getElementById('poll-errors'); 
+    const errorContainer = document.getElementById('poll-errors'); // Error container
 
     fetchPollData();
 
     let votes = JSON.parse(pollWrapper.dataset.votes);
     let totalVotes = Object.values(votes).reduce((total, count) => total + count, 0);
 
+    // Check if user is authenticated
     if (!memberId) {
+        // Disable the vote button and show a message
         submitVoteButton.disabled = true;
         submitVoteButton.textContent = 'Login to Vote';
         return;
@@ -21,18 +23,18 @@ document.addEventListener('DOMContentLoaded', function () {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         try {
             const response = await fetch(pollData, {
-                method: 'POST',
+                method: 'POST', 
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json', 
                 },
-                body: JSON.stringify({ poll_id: pollId }),
+                body: JSON.stringify({ poll_id: pollId }), 
             });
-
+    
             if (response.ok) {
                 const data = await response.json();
                 votes = data.votes;
-                totalVotes = Object.values(votes).reduce((total, count) => total + count, 0);
+                totalVotes = Object.values(votes).reduce((total, count) => total + count, 0); 
                 updatePollBars();
             } else {
                 showError('Failed to fetch poll data. Please try again later.');
@@ -51,30 +53,32 @@ document.addEventListener('DOMContentLoaded', function () {
         const allPercentages = document.querySelectorAll('.poll-percentage');
 
         pollOptions.forEach((option, index) => {
-            const optionId = option.value;
-            const voteCount = votes[optionId] || 0;
+            const optionId = option.value; 
+            const voteCount = votes[optionId] || 0; 
             const percentage = calculatePercentage(voteCount, totalVotes);
 
             allBars[index].style.width = percentage + '%';
             allPercentages[index].textContent = Math.round(percentage) + '%';
 
             allBars[index].style.backgroundColor = selectedOptionId !== null && optionId == selectedOptionId
-                ? '#2ecc71'  /
-                : '#e74c3c';  
+                ? '#2ecc71'  // Green for selected option
+                : '#e74c3c';  // Red for others
         });
     }
 
     updatePollBars();
 
     let selectedOptionId = null;
+    // Add event listener for radio button selection
     pollOptions.forEach(option => {
         option.addEventListener('change', function () {
-            selectedOptionId = this.value;
+            selectedOptionId = this.value; 
             console.log('User selected option ID:', selectedOptionId);
             updatePollBars(selectedOptionId);
         });
     });
 
+    // Handle the "Vote" button click
     submitVoteButton.addEventListener('click', function () {
         if (selectedOptionId) {
             console.log(selectedOptionId);
@@ -98,8 +102,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(data => {
                     if (data.success) {
                         console.log("Poll was updated");
-                        hideError();
-                        fetchPollData();
+                        //submitVoteButton.style.display = 'none';
+                        hideError();  
+                        fetchPollData();  
                     } else {
                         showError('You have already voted for this poll!');
                     }
@@ -113,20 +118,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    
+    // Function to show error messages
     function showError(message) {
-        errorContainer.style.display = 'block'; 
-        errorContainer.textContent = message; 
-        setTimeout(function () {
-            hideError(); 
-        }, 3000); 
+        errorContainer.style.display = 'block'; // Show the error container
+        errorContainer.textContent = message; // Set the error message
     }
 
-
-    // Function to  error messages
+    // Function to hide error messages
     function hideError() {
-        errorContainer.style.display = 'none'; 
+        errorContainer.style.display = 'none'; // Hide the error container
     }
 
-    setInterval(fetchPollData, 5000);  
+    setInterval(fetchPollData, 5000);  // Refresh the poll data periodically
 });
