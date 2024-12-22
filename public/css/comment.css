@@ -132,3 +132,9 @@ textarea {
     color: var(--hover-color); /* Subtle placeholder color to match site design */
     opacity: 0.8; /* Slightly faded */
 }
+
+.responsive-media {
+    max-width: 200px; /* Set a maximum width */
+    width: auto;
+    height: auto;
+}
