@@ -714,3 +714,17 @@ form.buy-tickets-form {
     font-weight: 600;
     margin-bottom: 1.5rem;
 }
+
+.comment-form label {
+    display: block;
+    font-size: 0.9rem; /* Slightly smaller labels */
+    margin-bottom: 0.4rem; /* Reduced margin */
+    color: var(--white-color);
+    font-weight: bold;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 0.4rem;
+}
