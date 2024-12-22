@@ -95,7 +95,6 @@ function postComment(button) {
             console.log("Comment was saved");
             document.getElementById('new-comment').value = '';
             document.getElementById('file-upload').value = '';
-            document.getElementById('comment-list').innerHTML = data.comments_html;
             fetchComments();
         } else {
             alert('Failed to post comment');
