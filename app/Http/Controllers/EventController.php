@@ -26,16 +26,24 @@ class EventController extends Controller
         if (!is_numeric($event_id) || $event_id > 2147483647) {
             abort(404, 'Invalid event identifier');
         }
-        // Get the event card.
+
         $event = Event::findOrFail($event_id);
-        $comments = $event->comments ?: collect();
+
         $polls = Poll::getPollsByEventId($event_id);
-        //function for a ticket count 
+
+        $comments = Comment::withCount([
+            'votes as upvotes_count' => function ($query) {
+                $query->where('vote', true); 
+            },
+            'votes as downvotes_count' => function ($query) {
+                $query->where('vote', false); 
+            }
+        ])->get(); 
+
         return view('pages.event', [
             'event' => $event,
-            'comments' => $comments,
             'polls' => $polls,
-
+            'comments' => $comments, 
         ]);
     }
 
