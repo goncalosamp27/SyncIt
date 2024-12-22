@@ -46,5 +46,9 @@ class Voting extends Model
     {
         return $this->belongsTo(Member::class, 'member_id');
     }
+    public static function countTotalVotes($pollId)
+    {
+        return self::where('poll_id', $pollId)->count();
+    }
     
 }

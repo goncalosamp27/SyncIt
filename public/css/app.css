@@ -23,6 +23,7 @@
 @import url('reset-password.css');
 @import url('create-poll.css');
 @import url('poll.css');
+@import url('poll-data.css');
 
 * {
   color: var(--text-color);

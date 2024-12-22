@@ -96,7 +96,8 @@ CREATE TABLE member (
     password password_domain NOT NULL,
     bio VARCHAR(200),
     profile_pic_url VARCHAR(200),
-    member_status member_status_domain NOT NULL
+    member_status member_status_domain NOT NULL,
+    remember_token VARCHAR(100)
 );
 CREATE INDEX member_username_idx ON member (username);
 CREATE INDEX member_display_name_idx ON member (display_name);

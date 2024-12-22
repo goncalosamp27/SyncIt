@@ -26,6 +26,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\PollController;
+use App\Http\Controllers\PollDataController;
 
 
 use App\Models\Artist;
@@ -190,3 +191,4 @@ Route::get('/create-poll/{event_id}', [PollController::class, 'showCreatePoll'])
 Route::post('/create-poll/{event_id}', [PollController::class, 'storePoll'])->name('poll.store');
 Route::post('/poll-vote', [PollController::class, 'storeVote'])->name('poll.vote');
 Route::post('/poll-data/{poll_id}', [PollController::class, 'fetchPollData'])->name('poll.data');
+Route::get('/data-poll/{poll_id}', [PollDataController::class, 'showDataPoll'])->name('poll-data.show');
