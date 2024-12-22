@@ -15,15 +15,33 @@ class AdminController extends Controller
     public function getMembersByStatus($type = 'active')
     {
         if ($type == 'active') {
-            $members = Member::where('member_status', 'Active')->paginate(5);
+            // Members who do not have active restrictions (not banned or suspended)
+            $members = Member::whereDoesntHave('restrictions', function ($query) {
+                $query->where(function ($q) {
+                    $q->where('type', 'Suspension')
+                      ->orWhere('type', 'Ban');
+                })
+                ->where(function ($q) {
+                    $q->whereRaw('NOW() <= (start + interval \'1 day\' * duration)')
+                      ->orWhere('type', 'Ban'); // Bans have no end date
+                });
+            })->paginate(5);
         } elseif ($type == 'banned') {
-            $members = Member::where('member_status', 'Banned')->paginate(5);
+            // Members with active bans
+            $members = Member::whereHas('restrictions', function ($query) {
+                $query->where('type', 'Ban');
+            })->paginate(5);
         } elseif ($type == 'suspended') {
-            $members = Member::where('member_status', 'Suspended')->paginate(5);
-        } 
-
+            // Members with active suspensions
+            $members = Member::whereHas('restrictions', function ($query) {
+                $query->where('type', 'Suspension')
+                      ->whereRaw('NOW() <= (start + interval \'1 day\' * duration)');
+            })->paginate(5);
+        }
+    
         return view('pages.admin', compact('members'));
     }
+    
 
     public function getMember(string $member_id) 
 	{
@@ -98,14 +116,9 @@ class AdminController extends Controller
         try {
 
             $member = Member::findOrFail($data['member_id']);
-
-            if ($data['type'] === 'Ban') {
-                $member->update(['member_status' => 'Banned',]);
-                $data['duration'] = 0; // Ban is permanent
-            } else {
-                $member->update(['member_status' => 'Suspended']);
-            }
             
+            $data['duration'] = $data['duration'] ?? 0;
+
             Restriction::create([
                 'member_id' => $data['member_id'],
                 'admin_id' => $data['admin_id'],
@@ -116,23 +129,24 @@ class AdminController extends Controller
 
             return redirect()->route('admin', ['status' => 'active'])->with('success', 'Restriction successfully applied.');
         } catch (\Exception $e) {
-            \Log::error("Failed to apply restriction: {$e->getMessage()}");
+            dd($e);
             return redirect()->route('admin', ['status' => 'active'])->with('error', 'An error occurred while applying the restriction.');
         }        
     }
 
     public function removeRestriction(Request $request, $memberId)
     {
+        // Find the member by ID
         $member = Member::find($memberId);
+    
         if ($member) {
-            $member->update([
-                'member_status' => 'Active'
-            ]);
-            $member->save();
-
-            return redirect()->back()->with('status', 'Restriction removed');
+            // Remove all restrictions for the member
+            $member->restrictions()->delete();
+    
+            return redirect()->back()->with('status', 'Restriction removed for the member.');
         }
-
-        return redirect()->back()->with('error', 'Member not found');
+    
+        return redirect()->back()->with('error', 'Member not found.');
     }
+    
 }

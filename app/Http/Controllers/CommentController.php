@@ -14,20 +14,13 @@ class CommentController extends Controller
     //render comments
     public function index($event_id)
     {
-        try {
             $comments = Comment::where('event_id', $event_id)
                 ->with('member') // Load related member data
                 ->orderBy('comment_date', 'desc') // Explicitly order by comment_date
                 ->get();
 
             return view('partials.comment-list', compact('comments'))->render();
-        } catch (Exception $e) {
-            Log::error('Failed to retrieve comments: ' . $e->getMessage());
-            return response()->json([
-                'error' => 'Failed to load comments.',
-                'details' => $e->getMessage(),
-            ], 500);
-        }
+        
     }
     //save somment in db
     public function store(Request $request)
@@ -36,20 +29,30 @@ class CommentController extends Controller
         $request->validate([
             'event_id' => 'required|exists:event,event_id',
             'text' => 'required|string|max:500',
+            'file' => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,avi,mov'
         ]);
 
         $comment = new Comment();
-        $comment->text = $request->input('text');
-        $comment->event_id = $request->input('event_id');
+        $comment->text = $request->text;
+        $comment->event_id = $request->event_id;
         $comment->comment_date = now();
-        $comment->member_id = auth()->id();
+        $comment->member_id = Auth::id();
+
+        if ($request->hasFile('file')) {
+            $path = $request->file('file')->store('comments', 'public');
+            $comment->file_path = $path;
+        }
+
         $comment->save();
+        $comments = Comment::where('event_id', $request->event_id)->with('member')->get();
+        $comments_html = view('partials.comment-list', compact('comments'))->render();
 
         return response()->json([
             'success' => true,
             'comment' => $comment,
         ]);
     }
+    
     //update comment
     public function update(Request $request, $commentId)
     {
