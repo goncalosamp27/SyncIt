@@ -51,8 +51,15 @@ function postComment(button) {
     const eventId = button.getAttribute('data-event-id'); // Get the event ID from the button
     const fileInput = document.getElementById('file-upload'); // Get the file input element
 
+    document.getElementById('error-new-comment').textContent = '';
+    document.getElementById('error-file-upload').textContent = '';
+
+    let hasError = false;
+
+
     if (commentText.trim() === '') {
-        alert("Please write a comment.");
+        document.getElementById('error-new-comment').textContent = 'Please write a comment.';
+
         return;
     }
 
@@ -60,9 +67,13 @@ function postComment(button) {
     if (fileInput.files.length > 0) {
         const file = fileInput.files[0];
         if (!allowedFileTypes.includes(file.type)) {
-            alert("This file format is not allowed.");
-            return;
+            document.getElementById('error-file-upload').textContent = 'Invalid file format.';
+            hasError = true;
         }
+    }
+
+    if (hasError) {
+        return;
     }
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -86,6 +97,12 @@ function postComment(button) {
     })
     .then(response => {
         if (!response.ok) {
+            if (data.errors.text) {
+                document.getElementById('error-new-comment').textContent = data.errors.text[0];
+            }
+            if (data.errors.file) {
+                document.getElementById('error-file-upload').textContent = data.errors.file[0];
+            }
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         return response.json();

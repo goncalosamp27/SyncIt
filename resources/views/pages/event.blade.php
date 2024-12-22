@@ -272,10 +272,16 @@
 			@auth
 				<h1>Comments:</h1>
 
-				<div class="add-your-own-comment">
+				<div class="add-your-own-comment comment-form">
 					<img src="{{ Auth::user()->getProfileImage() }}" alt="Profile Picture" class="profile-pic">
-					<input type="text" placeholder="Add a comment..." id="new-comment" class="comment-input">
+					<label for="new-comment">Add a comment:</label>
+					<input type="text" id="new-comment" class="comment-input">
+					<span class="error-message" id="error-new-comment"></span>
+
+					<label for="file-upload">Upload a file:</label>
 					<input type="file" name="file" id="file-upload" class="file-input">
+                    <span class="error-message" id="error-file-upload"></span>
+
 					<button class="post-button" data-event-id="{{ $event->event_id }}" onclick="postComment(this)">Post</button>
 				</div>
 			@else
