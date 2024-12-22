@@ -106,13 +106,14 @@ function openPurchaseModal() {document.getElementById('purchaseModal').style.dis
 document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById('purchaseModal');
     const modalContent = document.querySelector('.new-modal-content');
-
+    /*
     modal.addEventListener('click', function (event) {
         // Close modal only if the click is outside the modal content
         if (event.target === modal) {
             closePurchaseModal(); // Call the function to close the modal
         }
     });
+    */
 });
 
 function closePurchaseModal() {

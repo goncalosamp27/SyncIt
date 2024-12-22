@@ -50,27 +50,17 @@ class RegisterController extends Controller
 
         // Add the hashed password and default values
         $validatedData['password'] = Hash::make($validatedData['password']);
+        $validatedData['profile_pic_url'] = 'default_user.png';
 
         try {
             
             if ($request->hasFile('profile_pic_url')) {
                 $path = $request->file('profile_pic_url')->store('profile', 'public');
                 $validatedData['profile_pic_url'] = basename($path);
-
-                $file = $request->file('profile_pic_url');
-    
-                // Generate a unique file name
-                $fileName = $file->hashName();
-                
-                // Store the file in the public/event folder
-                $path = $file->storeAs('profile_images', $fileName, 'Tutorial02');
-                
-                // Save the file name in your database (or any other operation you want)
-                $validatedData['profile_pic_url'] = $fileName;
-            
             }
+
             $result = Member::createMember($validatedData);
-            
+
             if ($result instanceof \Illuminate\Support\MessageBag) {
                 return back()->withErrors($result)->withInput();
             }
