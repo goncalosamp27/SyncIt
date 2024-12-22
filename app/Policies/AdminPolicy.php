@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Member;
 use App\Models\Artist;
+use App\Models\Restriction;
 
 class AdminPolicy
 {
@@ -11,10 +12,10 @@ class AdminPolicy
     {
         return auth('admin')->check();
     }
-
-    public function isRestricted(?Member $auth, Member $member)
+    public function isRestricted(?Member $auth, Member $member): bool
     {
-        return in_array($member->member_status, ['Banned', 'Suspended']);
+        return( Restriction::where('member_id', $member->member_id)
+            ->exists());
     }
 
     public function viewProfile(?Member $auth, Member $member){

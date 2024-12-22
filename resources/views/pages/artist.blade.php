@@ -71,11 +71,15 @@
               @include('partials.event-card', ['event' => $event])
             @endif     
           @endforeach
-
-          </div>
+          @if($artist->events->where('event_date', '>', now())->isEmpty())
+              @include('partials.empty')
+          </div>       
+          @else
+          </div>       
           <a href="{{ route('events.search', ['search' => $artist->member->username]) }}">
 				    @include('partials.show-more')
-			    </a>             
+			    </a>  
+          @endif           
         </div>
 
         <!-- Past Events -->
@@ -85,10 +89,15 @@
           @foreach ($artist->events->where('event_date', '<', now())->take(2) as $event)
             @include('partials.event-card', ['event' => $event]) 
           @endforeach
-          </div>
-          <a href="{{ route('events.search', ['search' => $artist->member->username]) }}">
-				    @include('partials.show-more')
-			    </a>        
+          @if($artist->events->where('event_date', '<', now())->isEmpty())
+              @include('partials.empty')
+              </div>       
+          @else
+            </div>
+            <a href="{{ route('events.search', ['search' => $artist->member->username]) }}">
+              @include('partials.show-more')
+            </a>  
+          @endif
         </div>
       </div>
     </div>

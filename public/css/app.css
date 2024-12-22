@@ -96,7 +96,6 @@ html, body {
 
 .nothing-to-see {
   text-align: center;
-  padding: 50px 20px;
   border-radius: 12px;
   margin: 20px auto;
   width: 80%;
@@ -133,7 +132,7 @@ html, body {
   margin-bottom: 20px;
 }
 
-.nothing-to-see .refresh-button {
+.tickets-list .refresh-button {
   display: inline-block;
   background-color: var(--primary-color);
   color: white;
@@ -145,6 +144,6 @@ html, body {
   transition: background-color 0.3s;
 }
 
-.nothing-to-see .refresh-button:hover {
+.tickets-list .refresh-button:hover {
   background-color: var(--hover-color);
 }

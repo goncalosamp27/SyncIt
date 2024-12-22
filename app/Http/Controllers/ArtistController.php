@@ -46,9 +46,44 @@ class ArtistController extends Controller
     public function display_artists()
     {
         // Retrieve all events
-        $artists = Artist::paginate(20); 
+        $artists = Artist::paginate(9); 
 
         // Return the view and pass the events data to the view
         return view('pages.artists', ['artists' => $artists]);
+    }
+
+    public function loadMoreArtists(Request $request)
+    {
+        $artists = Artist::paginate(9);
+
+        // Render each artist using the Blade partial
+        $renderedCards = $artists->map(function ($artist) {
+            return view('partials.artist-card', ['artist' => $artist])->render();
+        });
+
+        return response()->json([
+            'html' => $renderedCards->implode(''), // Combine all rendered cards into one string
+            'next_page' => $artists->nextPageUrl(),
+        ]);
+    }
+
+    public function search(Request $request)
+    {
+        $searchTerm = $request->input('search'); // Search term from the user input
+
+        // Handle the search query using PostgreSQL full-text search
+
+        if (empty($searchTerm)) {
+            $artists = Artist::all();
+        } 
+        else{
+            $artists = Artist::select('artist.*')
+            ->whereRaw("fts_artist @@ plainto_tsquery('english', ?)", [$searchTerm])
+            ->get(); 
+        }
+
+        return view('pages.artists', [
+            'artists' => $artists,
+        ]);
     }
 }
