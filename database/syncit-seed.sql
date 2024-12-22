@@ -94,9 +94,9 @@ CREATE TABLE member (
     email email_domain UNIQUE NOT NULL,
     password password_domain NOT NULL,
     bio VARCHAR(200),
-    profile_pic_url VARCHAR(200),
-    member_status member_status_domain NOT NULL
+    profile_pic_url VARCHAR(200)
 );
+
 CREATE INDEX member_username_idx ON member (username);
 CREATE INDEX member_display_name_idx ON member (display_name);
 
