@@ -5,7 +5,7 @@
 <script>
     const pollUrl = @json(route('poll.store', ['event_id' => $event->event_id]));
 </script>
-<div class="container">
+<div class="container-poll">
     <h1>Create a Poll</h1>
 
     @if(session('success'))
