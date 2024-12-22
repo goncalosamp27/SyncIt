@@ -263,10 +263,21 @@
 		</div>
 
 	</div>
+	
+
+	<div class="event-page-description">
+		<h1>Description:</h1>
+			<div class="event-page-text">
+				{{ $event->description }}
+			</div>
+		<div class="purple-line">
+	
+	</div>
+
 	<div class="description-comments">
 		
 		<div class="event-page-description">
-			<h1>Description:</h1>
+			<h1>Polls:</h1>
 			@if($polls && $polls->count() > 0)
     			@foreach ($polls as $poll)
         			@if ($poll->end_date > \Carbon\Carbon::now())
@@ -278,7 +289,7 @@
         			@endif
     			@endforeach
 			@else
-    			<p>No polls available for this event.</p>
+    			@include('partials.empty')
 			@endif
 		</div>
 

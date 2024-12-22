@@ -1,10 +1,10 @@
 .poll-analytics-wrapper {
-    max-width: 800px;
+    width: 70%;
     margin: 0 auto;
     font-family: Arial, sans-serif;
-    background: #3C6075; /* Gradient background */
-    padding: 20px;
-    border-radius: 10px;
+    background-color: var(--black-color); /* Light background for the entire wrapper */
+    padding: 20px; /* Add padding inside the wrapper */
+    border-radius: 10px; /* Rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 1rem;
 }
