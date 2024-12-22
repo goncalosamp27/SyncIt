@@ -87,7 +87,7 @@ class LoginController extends Controller
                     }
 
                     else{
-                        $member->update(['member_status' => 'Active']);
+                        $member->restrictions()->delete();
                     }
 
                 case 'Active':

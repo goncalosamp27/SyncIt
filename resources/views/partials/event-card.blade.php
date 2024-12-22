@@ -1,6 +1,7 @@
+
 <a href="{{ route('event', ['event_id' => $event["event_id"]]) }}" class="event-card">
     <div class="event-image">
-        <img src="{{ asset('storage/event/' . $event["event_media"]) }}" alt="Event Image">
+        <img src="{{ $event->getEventImage() }}" alt="Event Image">
     </div>
     <div class="event-details">
 
@@ -14,7 +15,7 @@
         <p>📍 {{ $event["location"] }} </p>
         <p>📅 {{ date('d/m/Y - h:i A', strtotime($event["event_date"])) }}</p>
         <p class="event-price-cap">
-            <span class="event-capacity"> {{ $event->ticket_count }}/{{ $event["capacity"] }} </span>
+            <span class="event-capacity"> {0}/{{ $event["capacity"] }} </span>
             <span class="event-price">
                 @if ($event["price"] == 0)
                     <span class="event-free">FREE</span>

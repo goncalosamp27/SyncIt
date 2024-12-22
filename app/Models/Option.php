@@ -16,44 +16,62 @@ class Option extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'poll_id',
+        'name',
+        'votes',
+    ];
+
     public static function validate($data)
     {
         $validator = Validator::make($data, [
-            'option_name' => 'required|string|max:100',  
-            'poll_id' => 'required|exists:poll,poll_id',  
+            'name' => 'required|string|max:100',
+            'poll_id' => 'required|exists:poll,poll_id',
         ]);
 
         return $validator;
     }
-    //Relationships
+
     public function poll()
     {
         return $this->belongsTo(Poll::class, 'poll_id', 'poll_id');
     }
 
-    
-    // Many Members can vote for an Option (via the Voting table).
     public function members()
     {
         return $this->belongsToMany(Member::class, 'voting', 'option_id', 'member_id')
-                    ->withPivot('poll_id')  
-                    ->withTimestamps();
+            ->withPivot('poll_id')
+            ->withTimestamps();
     }
 
-    /**
-     * Get the number of votes for this option.
-     */
-    public function getVoteCount()
+    public function votes()
     {
-        return $this->members()->count();
+        return $this->votes; // Return the 'votes' attribute for this option
     }
 
-    /**
-     * Check if a member has voted for this option.
-     */
-    public function hasVoted(Member $member)
+    public function countVotes()
     {
-        return $this->members()->where('member_id', $member->member_id)->exists();
+        // Count the number of votes (entries in the 'voting' table) for this option
+        return \DB::table('voting')->where('option_id', $this->option_id)->count();
+    }
+    public static function getOptionVoteCountsByPoll($pollId)
+    {
+        return self::where('option.poll_id', $pollId) // Explicitly specify the table for poll_id
+            ->leftJoin('voting', 'option.option_id', '=', 'voting.option_id')
+            ->select('option.option_id', \DB::raw('COUNT(voting.voting_id) as vote_count'))
+            ->groupBy('option.option_id')
+            ->pluck('vote_count', 'option.option_id')
+            ->toArray();
+    }
+    public function calculatePercentage()
+    {
+        $poll_id = $this->poll->poll_id;
+
+        $totalVotes = $this->poll->calculateTotalVotes($poll_id);
+
+        $optionVotes = $this->countVotes();
+
+        return $totalVotes > 0 ? ($optionVotes / $totalVotes) * 100 : 0;
     }
 
 }
