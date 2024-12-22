@@ -7,6 +7,7 @@ function addOption() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    let pollDataUrl = pollWrapper.querySelector('.poll-data-url').value;
     const form = document.querySelector('form');
     form.addEventListener('click', function () {
         console.log("button was clicked");

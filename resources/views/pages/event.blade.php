@@ -266,7 +266,11 @@
 			<h1>Description:</h1>
 			@if($polls && $polls->count() > 0)
             	@foreach ($polls as $poll)
-                	@include('partials.poll', ['poll' => $poll])
+				@if ($poll->end_date > \Carbon\Carbon::now())
+            		@include('partials.poll', ['poll' => $poll])
+					<!-- Hidden variables for vote URL and poll data URL -->
+                	<input type="hidden" class="poll-data-url" value="{{ route('poll.data', ['poll_id' => $poll->poll_id]) }}">
+       	 		@endif
             	@endforeach
         	@else
             	<p>No polls available for this event.</p>

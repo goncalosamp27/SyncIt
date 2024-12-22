@@ -15,9 +15,7 @@ class PollController extends Controller
         $event = Event::findOrFail($event_id);
         return view(
             'pages.create-poll',
-            [
-                'event' => $event
-            ]
+            ['event' => $event]
         );
     }
     public function storePoll(Request $request, string $event_id)
@@ -42,12 +40,16 @@ class PollController extends Controller
             $poll->options()->create(['name' => $option]);
         }
 
-        $event = Event::findOrFail($event_id);
-        return view('event', [
-            'event' => $event,
-            'poll' => $poll,
+        $polls = Poll::getPollsByEventId($event_id);
 
-        ]);
+        $event = Event::findOrFail($event_id);
+        $comments = $event->comments ?: collect();
+        return redirect()->route('event', ['event_id' => $event_id])
+            ->with([
+                'event' => $event,
+                'polls' => $polls,
+                'comments' => $comments
+            ]);
     }
 
     public function storeVote(Request $request)
@@ -75,8 +77,9 @@ class PollController extends Controller
         try {
             $existingVote = Voting::where('poll_id', $validatedData['poll_id'])
                 ->where('member_id', $validatedData['member_id'])
-                ->where('option_id', $validatedData['option_id'])  // Check if the member already voted for this option
                 ->first();
+                Log::info("Existing Vote" . $existingVote);
+
 
             if ($existingVote) {
                 Log::info('User has already voted for this poll. Member ID: ' . $validatedData['member_id']);
@@ -96,11 +99,9 @@ class PollController extends Controller
                 ]);
                 Log::info('New vote stored successfully.');
                 $updatedVotes = Voting::where('option_id', $validatedData['option_id'])->count();
-                Log::info('Number of votes' . $updatedVotes);
             }
 
             $updatedVotes = Voting::where('option_id', $validatedData['option_id'])->count();
-            Log::info('Number of votes' . $updatedVotes);
 
             return response()->json([
                 'success' => true,
@@ -119,6 +120,9 @@ class PollController extends Controller
             ], 500);
         }
     }
+
+
+
     //function to fetch the poll data 
     public function fetchPollData(Request $request)
     {
@@ -129,11 +133,14 @@ class PollController extends Controller
             ]);
 
             $pollId = $request->input('poll_id');
-            Log::info('Poll ID: ' . $pollId);
 
             // Fetch vote counts
             $voteCounts = Option::getOptionVoteCountsByPoll($pollId);
-            Log::info('Poll Array: ' . json_encode($voteCounts));
+
+            if (empty($voteCounts)) {
+                $voteCounts = [];
+            }
+            
 
             // Return success response with vote counts
             return response()->json([

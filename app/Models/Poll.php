@@ -22,6 +22,10 @@ class Poll extends Model
         'start_date',
         'end_date',
     ];
+    protected $casts = [
+        'start_date' => 'datetime', // Automatically cast start_date to Carbon instance
+        'end_date' => 'datetime',   // Automatically cast end_date to Carbon instance
+    ];
 
 
     public static function validate($data)
