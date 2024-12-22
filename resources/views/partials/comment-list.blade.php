@@ -14,11 +14,22 @@
                     <textarea id="edit-textarea-{{ $comment->member_id }}"
                         style="display:none;">{{ $comment->text }}</textarea>
                 </div>
+
                 @if ($comment->file_path)
-                    <div class="comment-file">
-                        <a href="{{ asset('storage/' . $comment->file_path) }}" target="_blank">View Attachment</a>
-                    </div>
+                    @php
+                        $fileExtension = pathinfo($comment->file_path, PATHINFO_EXTENSION);
+                    @endphp
+
+                    @if (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif']))
+                        <img src="{{ asset('storage/' . $comment->file_path) }}" alt="Attachment" style="max-width: 200px; height: auto;">
+                    @elseif (in_array($fileExtension, ['mp4', 'avi', 'mov']))
+                        <video controls style="max-width: 200px; height: auto;">
+                            <source src="{{ asset('storage/' . $comment->file_path) }}" type="video/{{ $fileExtension }}">
+                            Your browser does not support the video tag.
+                        </video>
+                    @endif
                 @endif
+
 
                 @if(Auth::check() && Auth::id() == $comment->member_id)
                     <button class="edit-button" onclick="toggleEdit({{ $comment->member_id }})"
