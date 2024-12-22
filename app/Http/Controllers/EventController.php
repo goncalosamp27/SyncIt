@@ -22,32 +22,31 @@ use DateTime;
 class EventController extends Controller
 {
     public function show(string $event_id): View
-    {
-        if (!is_numeric($event_id) || $event_id > 2147483647) {
-            abort(404, 'Invalid event identifier');
-        }
-        // Get the event card.
-        $event = Event::findOrFail($event_id);
-        $comments = $event->comments ?: collect();
-        return view('pages.event', [
-            'event' => $event,
-            'comments' => $comments
-        ]);
-
-        $comments = Comment::withCount([
-            'votes as upvotes_count' => function ($query) {
-                $query->where('vote', true); // Count upvotes
-            },
-            'votes as downvotes_count' => function ($query) {
-                $query->where('vote', false); // Count downvotes
-            }
-        ])->where('event_id', $event_id)->get();
-    
-        return view('pages.event', [
-            'event' => $event,
-            'comments' => $comments, // Pass comments with vote counts
-        ]);
+{
+    if (!is_numeric($event_id) || $event_id > 2147483647) {
+        abort(404, 'Invalid event identifier');
     }
+
+    // Get the event
+    $event = Event::findOrFail($event_id);
+
+    // Fetch comments with vote counts
+    $comments = Comment::withCount([
+        'votes as upvotes_count' => function ($query) {
+            $query->where('vote', true); // Count upvotes
+        },
+        'votes as downvotes_count' => function ($query) {
+            $query->where('vote', false); // Count downvotes
+        }
+    ])->where('event_id', $event_id)->get();
+
+    // Return the view with event and comments
+    return view('pages.event', [
+        'event' => $event,
+        'comments' => $comments, // Pass comments with vote counts
+    ]);
+}
+
 
     public function refundTicket(string $ticket_id)
     {
