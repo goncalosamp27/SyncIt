@@ -96,8 +96,12 @@ CREATE TABLE member (
     email VARCHAR(200) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     bio VARCHAR(200),
+<<<<<<< HEAD
     profile_pic_url VARCHAR(200),
     member_status VARCHAR(20) NOT NULL
+=======
+    profile_pic_url VARCHAR(200)
+>>>>>>> f43be14e5567827f5e8b36f85e4679736d612628
 );
 
 
