@@ -2,8 +2,11 @@
 
 @section('content')
     <div class="admin_page">
+            @php
+                $status = Route::current()->parameter('status')
+            @endphp
         @isset($reports)
-            <h1>Reports</h1>
+            <h1>{{ ucfirst($status) }} reports</h1>
             @foreach($reports as $report)
                 <div class="member-card">
                     <div class="member-profile-pic">
@@ -20,7 +23,11 @@
                         <form action="{{ route('reports.markSolved', ['report' => $report->report_id]) }}" method="POST" style="display: inline;">
                             @csrf
                             @method('PUT')
-                            <button type="submit" class="report-solved-button">Mark as Solved</button>
+                            @if( $status == 'unsolved')
+                                <button type="submit" class="report-solved-button">Mark as solved</button>
+                            @else
+                                <button type="submit" class="report-solved-button">Mark as unsolved</button>
+                            @endif
                         </form>                    
                     </div>
                 </div>
@@ -32,7 +39,7 @@
                 {{ $reports->links('pagination::bootstrap-4') }}
             </div>
         @elseif(isset($members))
-            <h1>Members</h1>
+            <h1>{{ ucfirst($status) }} members</h1>
 
             <form method="GET" action="{{ route('members.search') }}" class="search-bar">
                 <button type="submit" class="search-button">🔍</button>
@@ -97,6 +104,9 @@
                     </div>
                 </div>
             @endforeach
+            @if ($members->isEmpty())
+                @include('partials.empty')
+            @endif
             <div class="pagination-container">
                 {{ $members->links('pagination::bootstrap-4') }}
             </div>

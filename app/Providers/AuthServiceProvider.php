@@ -18,7 +18,6 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Admin::class => AdminPolicy::class, 
         Event::class => EventPolicy::class,
-        Member::class => RestrictionPolicy::class,
         Member::class => AdminPolicy::class,
     ];
 

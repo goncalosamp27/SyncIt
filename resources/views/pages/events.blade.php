@@ -98,4 +98,63 @@
     @include('partials.event-card', ['event' => $event])
   @endforeach
 </div>
+
+<script>
+    let isLoading = false; // Prevent multiple requests
+    let currentPage = 1; // Start at page 1
+
+    const addEvents = (html) => {
+    const loader = document.getElementById("events-grid");
+    loader.insertAdjacentHTML('beforeend', html); // Append HTML directly
+};
+
+const fetchEvents = async (pageIndex) => {
+    try {
+        isLoading = true;
+
+        const response = await fetch(`/load-more-events?page=${pageIndex}`);
+        const data = await response.json();
+
+        if (data.html) {
+            addEvents(data.html); // Insert rendered HTML into the grid
+            currentPage = pageIndex;
+        }
+
+        if (!data.next_page) {
+            window.removeEventListener("scroll", debouncedHandleInfiniteScroll);
+        }
+    } catch (error) {
+        console.error('Error fetching events:', error);
+    } finally {
+        isLoading = false;
+    }
+};
+    const handleInfiniteScroll = () => {
+        const threshold = 200; // Trigger 200px before reaching the bottom
+        const endOfPage = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - threshold;
+
+        if (endOfPage && !isLoading) {
+            fetchEvents(currentPage + 1);
+        }
+    };
+
+    // Debounce to limit how often scroll handler runs
+    const debounce = (func, delay = 200) => {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func(...args), delay);
+        };
+    };
+
+    const debouncedHandleInfiniteScroll = debounce(handleInfiniteScroll, 200);
+
+    // Attach debounced handler to the scroll event
+    window.addEventListener("scroll", debouncedHandleInfiniteScroll);
+
+    // Initial fetch
+    fetchEvents(currentPage);
+
+</script>
+
 @endsection

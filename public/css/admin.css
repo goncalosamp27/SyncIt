@@ -89,7 +89,7 @@
 
 .report-operations{
     height: 150px;
-    max-width: 140px;
+    max-width: 155px;
     display: flex; /* Makes it a flex container */
     flex-direction: column; /* Align children vertically (column) */
     justify-content: center; /* Center children vertically */
@@ -215,6 +215,9 @@
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.admin_page .member-operations button{
     margin-left: 5px;
 }
 
