@@ -16,7 +16,7 @@
 }
 .poll-summary p {
     font-size: 1.2em;
-    color: #333; /* Light grey for paragraph text */
+    color: #f9f9f9; /* Light grey for paragraph text */
     margin-top: 10px; /* Add some spacing above the paragraph */
 }
 .poll-summary h3{
