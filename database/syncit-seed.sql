@@ -161,6 +161,7 @@ CREATE TABLE join_request (
 CREATE TABLE comment (
     comment_id SERIAL PRIMARY KEY,
     text TEXT NOT NULL,
+    file_path VARCHAR(255),
     comment_date TIMESTAMP NOT NULL CHECK (comment_date >= CURRENT_DATE),
     event_id INT NOT NULL,
     member_id INT NOT NULL,
