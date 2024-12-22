@@ -93,10 +93,10 @@ function postComment(button) {
     .then(data => {
         if (data.success) {
             console.log("Comment was saved");
-            document.getElementById('new-comment').value = ''; // Clear input
-            document.getElementById('file-upload').value = ''; // Clear file input
-            document.getElementById('comment-list').innerHTML = data.comments_html; // Update comments list
-            fetchComments(); // Fetch comments dynamically
+            document.getElementById('new-comment').value = '';
+            document.getElementById('file-upload').value = '';
+            document.getElementById('comment-list').innerHTML = data.comments_html;
+            fetchComments();
         } else {
             alert('Failed to post comment');
         }
