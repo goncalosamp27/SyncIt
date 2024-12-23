@@ -260,9 +260,7 @@
 				</script>
 			</div>
 		@endcannot
-
 		</div>
-
 
 	</div>
 	
@@ -285,12 +283,16 @@
         			@if ($poll->end_date > \Carbon\Carbon::now())
             			@include('partials.poll', ['poll' => $poll])
         			@elseif ($poll->end_date < \Carbon\Carbon::now())
-            			@include('partials.poll-data', ['poll' => $poll])	
+            			@can('edit', $event) 
+                			@include('partials.poll-data', ['poll' => $poll])	
+            			@endcan
         			@endif
     			@endforeach
 			@else
     			@include('partials.empty')
 			@endif
+		</div>
+
 		<div class="purple-line"></div>
 		
 		<div class="event-page-comments">

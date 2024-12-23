@@ -91,13 +91,15 @@ CHECK (VALUE IN ('Ban', 'Suspension'));
 
 CREATE TABLE member (
     member_id SERIAL PRIMARY KEY,
-    username username_domain UNIQUE NOT NULL,
-    display_name name_domain NOT NULL,
-    email email_domain UNIQUE NOT NULL,
-    password password_domain NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    display_name VARCHAR(100) NOT NULL,
+    email VARCHAR(200) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
     bio VARCHAR(200),
-    profile_pic_url VARCHAR(200)
+    profile_pic_url VARCHAR(255),
+    member_status VARCHAR(20)
 );
+
 
 CREATE INDEX member_username_idx ON member (username);
 CREATE INDEX member_display_name_idx ON member (display_name);

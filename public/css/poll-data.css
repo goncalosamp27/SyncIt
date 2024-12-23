@@ -6,20 +6,21 @@
     padding: 20px; /* Add padding inside the wrapper */
     border-radius: 10px; /* Rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom:1rem; /* Optional: Add subtle shadow for depth */
+    margin-bottom: 1rem;
 }
+
 
 .poll-summary {
     text-align: center;
     margin-bottom: 20px;
 }
 .poll-summary p {
-    font-size: 1em;
-    color: #777; /* Light grey for paragraph text */
+    font-size: 1.2em;
+    color: #f9f9f9; /* Light grey for paragraph text */
     margin-top: 10px; /* Add some spacing above the paragraph */
 }
 .poll-summary h3{
-    color: var(--primary-color);
+    color: #FFFFFF;;
     font-size: 1.8rem;
     font-weight: bold;
 }
