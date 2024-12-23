@@ -17,8 +17,11 @@
             <h2>Discover Events</h2>
             <p>Users can explore and attend events across various categories like Music or Dance, or refine their search by using specific tags such as Ballet or Hip-Hop. By following their favorite artists, they receive notifications about upcoming events, ensuring they stay updated.</p>
 
-            <h2>Security and User Management</h2>
-            <p>Account verification is a simple process during sign-up where users confirm their email. Administrators are tasked with maintaining the platform's integrity, with the authority to suspend or ban users and moderate content as needed.</p>
+            <h2>Create Events</h2>
+            <p> Anyone can create an event! Regular users automatically become artists whenever they create their first event.
+
+            <h2>Profile</h2>
+            <p> Only artists have a profile. There, you can see their rating, as well as their past and future events. </p>
         </section>
     </main>
 </div>

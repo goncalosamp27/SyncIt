@@ -57,7 +57,7 @@
 
         <div class="faq-item">
             <h3>9. How do I create an account on SyncIt!?</h3>
-            <p>To create an account, click the "Sign Up" button and fill in your details, such as your name, email, and password. You will need to verify your email to complete the registration process.</p>
+            <p>To create an account, click the "Register" button and fill in your details, such as your name, email, and password.</p>
         </div>
 
         <div class="faq-item">
