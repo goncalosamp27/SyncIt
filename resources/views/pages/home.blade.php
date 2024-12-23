@@ -61,7 +61,7 @@
 		<div class="artists">
 		<h1>Artists: </h1>
 		<div class="artist-row">
-			@foreach ($artists->take(5) as $artist)
+			@foreach ($artists->skip(1)->take(5) as $artist)
 				@include('partials.artist-card', ['artist' => $artist])
 			@endforeach
 		</div>
