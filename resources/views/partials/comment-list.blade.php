@@ -40,6 +40,10 @@
                         style="position: absolute; top: 10px; right: 10px; background-color: transparent; border: none; cursor: pointer; font-size: 16px; display: none;">
                         💾
                     </button>
+                    <button class="delete-button" onclick="deleteComment({{ $comment->comment_id }})"
+                        style="position: absolute; top: 10px; right: 40px; background-color: transparent; border: none; cursor: pointer; font-size: 16px;">
+                        🗑️
+                    </button>
                 @endif
 
                 <div class="comment-date" style="font-size: smaller;">

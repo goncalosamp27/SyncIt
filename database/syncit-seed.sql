@@ -162,6 +162,8 @@ CREATE TABLE join_request (
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS comment CASCADE;
+
 CREATE TABLE comment (
     comment_id SERIAL PRIMARY KEY,
     text TEXT NOT NULL,
@@ -169,10 +171,8 @@ CREATE TABLE comment (
     comment_date TIMESTAMP NOT NULL CHECK (comment_date >= CURRENT_DATE),
     event_id INT NOT NULL,
     member_id INT NOT NULL,
-    response_comment_id INT,
     FOREIGN KEY (member_id) REFERENCES member(member_id),
     FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
-    FOREIGN KEY (response_comment_id) REFERENCES comment(comment_id)
 );
 CREATE INDEX comment_event_id_idx ON comment (event_id);
 CREATE INDEX comment_member_id_idx ON comment (member_id);

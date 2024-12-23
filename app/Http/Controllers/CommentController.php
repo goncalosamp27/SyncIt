@@ -90,4 +90,25 @@ class CommentController extends Controller
             ], 500);
         }
     }
+
+    //Delete comment
+    public function destroy($comment_id)
+{
+    try {
+        $comment = Comment::findOrFail($comment_id);
+
+        // Check if the authenticated user is the owner of the comment
+        if (Auth::id() !== $comment->member_id) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        // Delete the comment
+        $comment->delete();
+
+        return response()->json(['success' => true, 'message' => 'Comment deleted successfully']);
+    } catch (\Exception $e) {
+        \Log::error('Error deleting comment: ' . $e->getMessage());
+        return response()->json(['success' => false, 'message' => 'Failed to delete comment'], 500);
+    }
+}
 }

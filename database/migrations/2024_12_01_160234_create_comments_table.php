@@ -17,10 +17,8 @@ return new class extends Migration
             $table->timestamp('comment_date')->default(DB::raw('CURRENT_TIMESTAMP'))->check('comment_date >= CURRENT_DATE');
             $table->unsignedBigInteger('event_id');
             $table->unsignedBigInteger('member_id');
-            $table->unsignedBigInteger('response_comment_id')->nullable();
             $table->foreign('member_id')->references('member_id')->on('member')->onDelete('cascade');
             $table->foreign('event_id')->references('event_id')->on('event')->onDelete('cascade');
-            $table->foreign('response_comment_id')->references('comment_id')->on('comment');
             $table->timestamps();
         });
 
