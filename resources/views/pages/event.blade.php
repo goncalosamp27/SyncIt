@@ -69,7 +69,7 @@
 
 					@can('edit', $event)
 						<!-- Use an anchor for Create Poll -->
-						<a href="{{ route('poll.create', ['event_id' => $event->event_id]) }}" class="event-button2">
+						<a href="{{ route('poll.create', ['event_id' => $event->event_id]) }}" class="event-button">
         				Create Poll
     				</a>
 					@endcan
@@ -302,8 +302,7 @@
 
 				<div class="add-your-own-comment comment-form">
 					<img src="{{ Auth::user()->getProfileImage() }}" alt="Profile Picture" class="profile-pic">
-					<label for="new-comment">Add a comment:</label>
-					<input type="text" id="new-comment" class="comment-input">
+					<input type="text" id="new-comment" placeholder="Add a comment..." class="comment-input">
 					<span class="error-message" id="error-new-comment"></span>
 
 					<label for="file-upload">Upload a file:</label>

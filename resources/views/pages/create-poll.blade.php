@@ -46,7 +46,7 @@
         <!-- Poll Options -->
         <div id="poll-options">
             <label for="options" class="form-label">Poll Options</label>
-            <div class="mb-2">
+            <div id="first-option" class="mb-2">
                 <input type="text" name="options[]" class="form-control" placeholder="Option 1" required>
             </div>
             <div class="mb-2">
@@ -55,7 +55,7 @@
         </div>
 
         <!-- Add Another Option Button -->
-        <button type="button" class="btn btn-secondary" onclick="addOption()">Add Another Option</button>
+        <button type="button" class="btn btn-secondary" onclick="addOption()">Add Option</button>
 
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary mt-3">Create Poll</button>

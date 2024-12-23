@@ -1,13 +1,9 @@
-body {
-    color: #333; /* Default text color for the entire page */
-}
-
 /* General container styling */
 .container-poll {
     margin: 10px auto;
     max-width: 600px;
     padding: 1.5rem;
-    background-color: #f9f9f9;
+    background-color: var(--black-color);
     border-radius: 8px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
@@ -22,8 +18,9 @@ body {
 /* Labels and inputs */
 .form-label {
     font-size: 1rem;
-    color: #333;
+    color: white;
     font-weight: bold;
+    margin-bottom: 10px;
 }
 
 .form-control {
@@ -31,8 +28,9 @@ body {
     border: 1px solid #ccc;
     padding: 10px;
     font-size: 1rem;
-    color: #333; /* Ensure the text inside the input is dark */
-    background-color: #fff; /* Ensure background is white for input */
+    color: white; /* Ensure the text inside the input is dark */
+    background-color: #242424; /* Ensure background is white for input */
+    width: 100%;
 }
 
 /* Spacing between form elements */
@@ -81,6 +79,14 @@ body {
     text-align: center;
 }
 
+.mb-3{
+    display: flex;
+    flex-direction: column;
+}
+
+#first-option{
+    margin-top: 10px;
+}
 /* Responsive design */
 @media (max-width: 768px) {
     .container {
