@@ -89,7 +89,7 @@ Route::post('/event/request-access', [JoinRequestController::class, 'requestAcce
 
 Route::controller(CommentController::class)->middleware(['auth'])->group(function () {
     Route::post('/event/{event_id}/comments', 'store')->name('comments.store');
-    Route::delete('/event/{event_id}/comments/{comment_id}', 'destroy')->name('comments.destroy');
+    Route::delete('/comments/{comment_id}', 'destroy')->name('comments.destroy');
     Route::put('/update-comment/{comment_id}', 'update')->name('comments.update');
 });
 
