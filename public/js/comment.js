@@ -180,3 +180,39 @@ function voteComment(voteType, button) {
     });
 }
 
+function deleteComment(commentId) {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const url = `/comments/${commentId}`;
+
+    fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            const commentElement = document.getElementById(`comment-${commentId}`);
+            if (commentElement) {
+                commentElement.remove(); // Remove the comment element from the DOM
+            } else {
+                console.error(`Comment element with ID comment-${commentId} not found.`);
+            }
+        } else {
+            alert('Failed to delete comment. Please try again.');
+        }
+    })
+    .catch(error => {
+        alert(`An error occurred: ${error.message}`);
+        console.error('Error:', error);
+    });
+}
+
