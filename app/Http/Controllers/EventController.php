@@ -47,6 +47,7 @@ class EventController extends Controller
         ]);
     }
 
+
     public function refundTicket(string $ticket_id)
     {
         try {
@@ -187,16 +188,16 @@ class EventController extends Controller
                 setweight(fts_artist, \'C\') ||
                 setweight(fts_description, \'D\')
             ), plainto_tsquery(\'english\', ?)) AS rank', [$searchTerm])
-            ->whereRaw("(
+                ->whereRaw("(
                 setweight(fts_name, 'A') ||
                 setweight(fts_location, 'B') ||
                 setweight(fts_artist, 'C') ||
                 setweight(fts_description, 'D')
             ) @@ plainto_tsquery('english', ?)", [$searchTerm])
-            ->orderByDesc('rank') // Order by relevance score
-            ->get();            
+                ->orderByDesc('rank') // Order by relevance score
+                ->get();
         }
-        
+
 
         return view('pages.events', [
             'events' => $events,
@@ -239,18 +240,18 @@ class EventController extends Controller
     public function loadMoreEvents(Request $request)
     {
         $events = Event::paginate(9);
-    
+
         // Render each event using the Blade partial
         $renderedCards = $events->map(function ($event) {
             return view('partials.event-card', ['event' => $event])->render();
         });
-    
+
         return response()->json([
             'html' => $renderedCards->implode(''), // Combine all rendered cards into one string
             'next_page' => $events->nextPageUrl(),
         ]);
     }
-    
+
 
     public function showTagsPerTypePast()
     {
@@ -317,11 +318,11 @@ class EventController extends Controller
         $eventType = $request->input('event_type', []);
 
         //filter events by tags
-        $events = Event::getEventsByTagsAndType($tagIds,$eventType);
-      
+        $events = Event::getEventsByTagsAndType($tagIds, $eventType);
+
         return response()->json(
             [
-                'events' => $events ,
+                'events' => $events,
                 'tagsMusic' => $tagsMusic,
                 'tagsDance' => $tagsDance,
                 'tagsMood' => $tagsMood,

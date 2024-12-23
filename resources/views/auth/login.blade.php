@@ -22,10 +22,6 @@
             </span>
         @endif
 
-        <label>
-            <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Remember Me
-        </label>
-
         <button type="submit">Login</button>
         <a class="button button-outline" href="{{ route('register') }}">Register</a>
         @if (session('success'))

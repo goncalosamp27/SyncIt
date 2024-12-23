@@ -36,7 +36,7 @@ body {
 
 .poll-option label {
     font-size: 1rem;
-    color: #333;
+    color:white;
     font-weight: bold;
     cursor: pointer;
 }
@@ -58,7 +58,7 @@ body {
 
 .poll-percentage {
     font-size: 1rem;
-    color: #333;
+    color: white;
     margin-left: 1rem;
 }
 
