@@ -201,6 +201,7 @@ function deleteComment(commentId) {
     .then(data => {
         if (data.success) {
             const commentElement = document.getElementById(`comment-${commentId}`);
+            fetchComments();
             if (commentElement) {
                 commentElement.remove(); // Remove the comment element from the DOM
             } else {
