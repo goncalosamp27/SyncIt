@@ -19,60 +19,68 @@
 </div>
 
 <script>
-    let isLoading = false; // Prevent multiple requests
-    let currentPage = 1; // Start at page 1
+    // Get the search parameter from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchTerm = urlParams.get('search'); // If search exists, it'll be assigned to searchTerm, otherwise null
 
-    const addArtists = (html) => {
-        const loader = document.getElementById("events-grid");
-        loader.insertAdjacentHTML('beforeend', html); // Append rendered HTML to the grid
-    };
+    // Check if there is no search parameter in the URL
+    if (!searchTerm) {
+        let isLoading = false; // Prevent multiple requests
+        let currentPage = 1; // Start at page 1
 
-    const fetchArtists = async (pageIndex) => {
-        try {
-            isLoading = true;
-
-            const response = await fetch(`/load-more-artists?page=${pageIndex}`);
-            const data = await response.json();
-
-            if (data.html) {
-                addArtists(data.html); // Insert rendered HTML into the grid
-                currentPage = pageIndex;
-            }
-
-            if (!data.next_page) {
-                window.removeEventListener("scroll", debouncedHandleInfiniteScroll);
-            }
-        } catch (error) {
-            console.error('Error fetching artists:', error);
-        } finally {
-            isLoading = false;
-        }
-    };
-
-    const handleInfiniteScroll = () => {
-        const threshold = 200; // Trigger 200px before reaching the bottom
-        const endOfPage = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - threshold;
-
-        if (endOfPage && !isLoading) {
-            fetchArtists(currentPage + 1);
-        }
-    };
-
-    const debounce = (func, delay = 200) => {
-        let timeout;
-        return (...args) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func(...args), delay);
+        const addArtists = (html) => {
+            const loader = document.getElementById("events-grid");
+            loader.insertAdjacentHTML('beforeend', html); // Append rendered HTML to the grid
         };
-    };
 
-    const debouncedHandleInfiniteScroll = debounce(handleInfiniteScroll, 200);
+        const fetchArtists = async (pageIndex) => {
+            try {
+                isLoading = true;
 
-    // Attach debounced handler to the scroll event
-    window.addEventListener("scroll", debouncedHandleInfiniteScroll);
+                const response = await fetch(`/load-more-artists?page=${pageIndex}`);
+                const data = await response.json();
 
-    // Initial fetch
-    fetchArtists(currentPage);
+                if (data.html) {
+                    addArtists(data.html); // Insert rendered HTML into the grid
+                    currentPage = pageIndex;
+                }
+
+                if (!data.next_page) {
+                    window.removeEventListener("scroll", debouncedHandleInfiniteScroll);
+                }
+            } catch (error) {
+                console.error('Error fetching artists:', error);
+            } finally {
+                isLoading = false;
+            }
+        };
+
+        const handleInfiniteScroll = () => {
+            const threshold = 200; // Trigger 200px before reaching the bottom
+            const endOfPage = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - threshold;
+
+            if (endOfPage && !isLoading) {
+                fetchArtists(currentPage + 1);
+            }
+        };
+
+        const debounce = (func, delay = 200) => {
+            let timeout;
+            return (...args) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func(...args), delay);
+            };
+        };
+
+        const debouncedHandleInfiniteScroll = debounce(handleInfiniteScroll, 200);
+
+        // Attach debounced handler to the scroll event
+        window.addEventListener("scroll", debouncedHandleInfiniteScroll);
+
+        // Initial fetch
+        fetchArtists(currentPage);
+    }
 </script>
+
 
 @endsection

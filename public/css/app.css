@@ -136,7 +136,7 @@ html, body {
 }
 
 .tickets-list .refresh-button {
-  display: inline-block;
+  margin: auto;
   background-color: var(--primary-color);
   color: white;
   border: none;

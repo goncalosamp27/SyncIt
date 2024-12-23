@@ -171,9 +171,11 @@ CREATE TABLE comment (
     comment_date TIMESTAMP NOT NULL CHECK (comment_date >= CURRENT_DATE),
     event_id INT NOT NULL,
     member_id INT NOT NULL,
+    response_comment_id INT,
     FOREIGN KEY (member_id) REFERENCES member(member_id),
-    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES event(event_id) ON DELETE CASCADE
 );
+
 CREATE INDEX comment_event_id_idx ON comment (event_id);
 CREATE INDEX comment_member_id_idx ON comment (member_id);
 CREATE INDEX comment_date_idx ON comment (comment_date);
@@ -1263,27 +1265,159 @@ VALUES
     (10, 52 + 2),    -- Vibrant
     (10, 1),         -- Music
     -- Afrobeat Summer Jam
-    (21, 17 + 2),    -- Afrobeat
-    (21, 45 + 2),    -- Outdoors
-    (21, 55 + 2),    -- Chill
+    (11, 17 + 2),    -- Afrobeat
+    (11, 45 + 2),    -- Outdoors
+    (11, 55 + 2),    -- Chill
+    (11, 1),         -- Music
+    (11, 2),         -- Dance
+    -- Folk Fest
+    (12, 13 + 2),    -- Folk
+    (12, 45 + 2),    -- Outdoors
+    (12, 56 + 2),    -- Cultural
+    (12, 1),         -- Music
+    -- Disco Fever
+    (13, 9 + 2),     -- Pop
+    (13, 48 + 2),    -- Club
+    (13, 53 + 2),    -- HighEnergy
+    (13, 1),         -- Music
+    (13, 2),         -- Dance
+    -- Lo-Fi Chillout
+    (14, 18 + 2),    -- LoFi
+    (14, 50 + 2),    -- Lounge
+    (14, 54 + 2),    -- Mellow
+    (14, 1),         -- Music
+    -- Hard Rock Havoc
+    (15, 2 + 2),     -- Rock
+    (15, 47 + 2),    -- Arena
+    (15, 53 + 2),    -- HighEnergy
+    (15, 1),         -- Music
+    -- Ambient Chill
+    (16, 18 + 2),    -- LoFi
+    (16, 42 + 2),    -- Garden
+    (16, 55 + 2),    -- Chill
+    (16, 1),         -- Music
+    -- Opera Under the Stars
+    (17, 3 + 2),     -- Classical
+    (17, 45 + 2),    -- Outdoors
+    (17, 60 + 2),    -- Sophisticated
+    (17, 1),         -- Music
+    -- Country Fair
+    (18, 16 + 2),    -- Country
+    (18, 46 + 2),    -- Park
+    (18, 56 + 2),    -- Cultural
+    (18, 1),         -- Music
+    -- Tribal Beats Night
+    (19, 17 + 2),    -- Afrobeat
+    (19, 42 + 2),    -- Garden
+    (19, 53 + 2),    -- HighEnergy
+    (19, 1),         -- Music
+    (19, 2),         -- Dance
+    -- Zumba Fiesta
+    (20, 32 + 2),    -- Zumba
+    (20, 41 + 2),    -- Indoors
+    (20, 51 + 2),    -- Energetic
+    (20, 2),         -- Dance
+    -- Psytrance Universe
+    (21, 15 + 2),    -- Psytrance
+    (21, 49 + 2),    -- Rooftop
+    (21, 52 + 2),    -- Vibrant
     (21, 1),         -- Music
     (21, 2),         -- Dance
-    -- Folk Fest
-    (22, 13 + 2),    -- Folk
-    (22, 45 + 2),    -- Outdoors
-    (22, 56 + 2),    -- Cultural
+    -- Flamenco Fire
+    (22, 29 + 2),    -- Flamenco
+    (22, 57 + 2),    -- Theater
+    (22, 59 + 2),    -- Intimate
     (22, 1),         -- Music
+    -- Neo Soul Groove
+    (23, 12 + 2),    -- Soul
+    (23, 50 + 2),    -- Lounge
+    (23, 54 + 2),    -- Mellow
+    (23, 1),         -- Music
+    -- Blues on the Bayou
+    (24, 10 + 2),    -- Blues
+    (24, 42 + 2),    -- Garden
+    (24, 56 + 2),    -- Cultural
+    (24, 1),         -- Music
+    -- Bollywood Beats
+    (25, 34 + 2),    -- Bollywood
+    (25, 41 + 2),    -- Indoors
+    (25, 52 + 2),    -- Vibrant
+    (25, 1),         -- Music
+    (25, 2),         -- Dance
     -- Disco Fever
-    (27, 9 + 2),     -- Pop
-    (27, 48 + 2),    -- Club
-    (27, 53 + 2),    -- HighEnergy
-    (27, 1),         -- Music
-    (27, 2),         -- Dance
+    (26, 9 + 2),     -- Pop
+    (26, 48 + 2),    -- Club
+    (26, 53 + 2),    -- HighEnergy
+    (26, 1),         -- Music
     -- Lo-Fi Chillout
-    (38, 18 + 2),    -- LoFi
-    (38, 50 + 2),    -- Lounge
-    (38, 54 + 2),    -- Mellow
+    (27, 18 + 2),    -- LoFi
+    (27, 50 + 2),    -- Lounge
+    (27, 54 + 2),    -- Mellow
+    (27, 1),         -- Music
+    -- Hard Rock Havoc
+    (28, 2 + 2),     -- Rock
+    (28, 47 + 2),    -- Arena
+    (28, 53 + 2),    -- HighEnergy
+    (28, 1),         -- Music
+    -- Ambient Chill
+    (29, 18 + 2),    -- LoFi
+    (29, 42 + 2),    -- Garden
+    (29, 55 + 2),    -- Chill
+    (29, 1),         -- Music
+    -- Opera Under the Stars
+    (30, 3 + 2),     -- Classical
+    (30, 45 + 2),    -- Outdoors
+    (30, 60 + 2),    -- Sophisticated
+    (30, 1),         -- Music
+    -- Country Fair
+    (31, 16 + 2),    -- Country
+    (31, 46 + 2),    -- Park
+    (31, 56 + 2),    -- Cultural
+    (31, 1),         -- Music
+    -- Tribal Beats Night
+    (32, 17 + 2),    -- Afrobeat
+    (32, 42 + 2),    -- Garden
+    (32, 53 + 2),    -- HighEnergy
+    (32, 1),         -- Music
+    (32, 2),         -- Dance
+    -- Zumba Fiesta
+    (33, 32 + 2),    -- Zumba
+    (33, 41 + 2),    -- Indoors
+    (33, 51 + 2),    -- Energetic
+    (33, 2),         -- Dance
+    -- Psytrance Universe
+    (34, 15 + 2),    -- Psytrance
+    (34, 49 + 2),    -- Rooftop
+    (34, 52 + 2),    -- Vibrant
+    (34, 1),         -- Music
+    (34, 2),         -- Dance
+    -- Flamenco Fire
+    (35, 29 + 2),    -- Flamenco
+    (35, 57 + 2),    -- Theater
+    (35, 59 + 2),    -- Intimate
+    (35, 1),         -- Music
+    -- Neo Soul Groove
+    (36, 12 + 2),    -- Soul
+    (36, 50 + 2),    -- Lounge
+    (36, 54 + 2),    -- Mellow
+    (36, 1),         -- Music
+    -- Blues on the Bayou
+    (37, 10 + 2),    -- Blues
+    (37, 42 + 2),    -- Garden
+    (37, 56 + 2),    -- Cultural
+    (37, 1),         -- Music
+    -- Bollywood Beats
+    (38, 34 + 2),    -- Bollywood
+    (38, 41 + 2),    -- Indoors
+    (38, 52 + 2),    -- Vibrant
     (38, 1),         -- Music
+    (38, 2),         -- Dance
+    -- Salsa Night Fever
+    (39, 22 + 2),    -- Salsa
+    (39, 41 + 2),    -- Indoors
+    (39, 51 + 2),    -- Energetic
+    (39, 1),         -- Music
+    (39, 2),        -- Dance
     -- Hard Rock Havoc
     (40, 2 + 2),     -- Rock
     (40, 47 + 2),    -- Arena
@@ -1342,7 +1476,13 @@ VALUES
     (50, 41 + 2),    -- Indoors
     (50, 52 + 2),    -- Vibrant
     (50, 1),         -- Music
-    (50, 2);         -- Dance
+    (50, 2),         -- Dance
+    -- Salsa Night Fever
+    (51, 22 + 2),    -- Salsa
+    (51, 41 + 2),    -- Indoors
+    (51, 51 + 2),    -- Energetic
+    (51, 1),         -- Music
+    (51, 2);       -- Dance
 
 INSERT INTO ticket (event_id, ticket_date, member_id)
 VALUES -- Tickets for different events

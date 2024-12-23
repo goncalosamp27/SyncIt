@@ -10,7 +10,7 @@
             @foreach($reports as $report)
                 <div class="member-card">
                     <div class="member-profile-pic">
-                        <img src="{{ $report->event->getEventImage() }}" alt="{{ $report->event->event_name }}">
+                        <img src="{{ $report->member->getProfileImage() }}" alt="{{ $report->event->event_name }}">
                     </div>
                     <div class="report-details">
                         <h3 class="member-name">{{ $report->event->event_name }} by {{'@' . $report->event->artist->member->username }}</h3>
