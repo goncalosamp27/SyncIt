@@ -1,4 +1,4 @@
-# --SyncIt!--
+# **SyncIt!**
 
 > Web application for discovering, promoting, and managing music and dance events.
 
@@ -6,7 +6,7 @@
 
 ## About the Project
 
---SyncIt!-- is a web application designed for artists in the Music and Dance industries to promote their events, showcase their work, and connect with a broader audience of fans and art enthusiasts. The platform allows artists to create and manage events, while users can discover events, purchase tickets, interact with artists, and engage with the community through comments, ratings, polls, invitations, and notifications.
+**SyncIt!** is a web application designed for artists in the Music and Dance industries to promote their events, showcase their work, and connect with a broader audience of fans and art enthusiasts. The platform allows artists to create and manage events, while users can discover events, purchase tickets, interact with artists, and engage with the community through comments, ratings, polls, invitations, and notifications.
 
 The project was developed as an academic web application for the Database and Web Applications Laboratory course.
 
