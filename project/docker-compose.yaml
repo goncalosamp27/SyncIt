@@ -1,0 +1,44 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: syncit-app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    environment:
+      APP_NAME: "SyncIt"
+      APP_ENV: "local"
+      APP_KEY: "base64:FzbmqiK8vDPpACXjTq63Hgq9kxz8TJ/anvttR+Vdpqw="
+      APP_DEBUG: "true"
+      APP_URL: "http://localhost:8000"
+
+      DB_CONNECTION: "pgsql"
+      DB_HOST: "postgres"
+      DB_PORT: "5432"
+      DB_DATABASE: "postgres"
+      DB_USERNAME: "postgres"
+      DB_PASSWORD: "pg!password"
+      DB_SCHEMA: "syncit"
+
+      CACHE_DRIVER: "file"
+      QUEUE_CONNECTION: "sync"
+      SESSION_DRIVER: "file"
+      SESSION_LIFETIME: "120"
+      MAIL_MAILER: "log"
+
+  postgres:
+    image: postgres:16.4
+    container_name: syncit-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "pg!password"
+      POSTGRES_DB: "postgres"
+    volumes:
+      - syncit_pgdata:/var/lib/postgresql/data
+
+volumes:
+  syncit_pgdata:

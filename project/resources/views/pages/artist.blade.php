@@ -51,10 +51,6 @@
                 <span class="tag music">Music</span>
                 <span class="tag dance">Dance</span>
               </div>
-              <div class="profile-other-tags">
-                <span class="tag">Tag 1</span>
-                <span class="tag">Tag 2</span>
-              </div>  
             </div>
           </div>
         </div>
